@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 
 
 def index(request):
-    print(request)
     return HttpResponse('<h2>Hello in app BLOG</h2>')
 
 
@@ -13,16 +12,15 @@ def accounts(request, user_name = 'NoName'):
 
 
 def about(request, name = '??', age='??'):
-    print(request.GET)
-    if name == '??' and age == '??':
+    if name == '??':
+        name = request.GET.get('name', '??')
+    if age == '??':
+        age = request.GET.get('age', '??')
+    if age.isdigit() and int(age) > 0 and int(age) < 99 and name.isalpha():
         return HttpResponse(f'''<h2>О сайте</h2>
                     <h2>name: {request.GET.get('name', 'Не передал имени, амебус')}</h2>
-                    <h2>age: {request.GET.get('age', 'Не передал возраста, 0 лет')}</h2>
-                    ''')   # альтернативно -> request.GET['name'] - но будет выдавать ошибку, если не найдет нужный параметр
-    return HttpResponse(f'''<h2>О сайте</h2>
-                        <h2>name: {name}</h2>
-                        <h2>age: {age}</h2>
-                        ''')
+                    <h2>age: {request.GET.get('age', 'Не передал возраста, 0 лет')}</h2>''')   # альтернативно -> request.GET['name'] - но будет выдавать ошибку, если не найдет нужный параметр
+    return HttpResponseBadRequest('Введен неправильный возраст/имя')
 
 
 
@@ -57,10 +55,11 @@ def products_def_comments(request, id):
 
 
 def message(request, category, subcategory, theme, number):
-    return HttpResponse(f'''<ul>
-<li>Категория: {category}</li>
-<li>Подкатегория: {subcategory}</li>
-<li>Тема: {theme}</li>
-<li>Номер: {number}</li>
-</ul>
- ''')
+    return HttpResponsePermanentRedirect('blog')
+#     return HttpResponse(f'''<ul>
+# <li>Категория: {category}</li>
+# <li>Подкатегория: {subcategory}</li>
+# <li>Тема: {theme}</li>
+# <li>Номер: {number}</li>
+# </ul>
+#  ''')
