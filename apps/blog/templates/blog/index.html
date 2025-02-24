@@ -2,9 +2,24 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Учу Django</title>
+    <title>indeXX</title>
 </head>
 <body>
-    <h1>Это мой проект Django с использованием шаблонов</h1>
+    <h1>Hello, {{name}}!</h1>
+    <h1>Your age: {{age}}</h1>
+    {%if age > 18%}
+        <h1>You are adult!</h1>
+    {%else%}
+        <h1>You are not adult</h1>
+    {%endif%}
+    <ul>
+        {%for elem in say_hello_variants%}
+        <li>{{elem}}</li>
+        {%endfor%}
+    </ul>
+    {%comment%}
+    <h2>{{say_hello_variants.0}}! {{say_hello_variants.1}}!</h2>
+    {%endcomment%}
+    <p>Дата (день/месяц/год) - {% now "j/m/Y" %}</p>
 </body>
 </html>

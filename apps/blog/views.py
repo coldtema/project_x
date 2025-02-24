@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanen
 
 
 def index(request):
-    return render(request, 'blog/index.html')
+    return render(request, 'blog/index.html', context={'name': request.GET.get('name', 'stranger'), 'age': int(request.GET.get('age', 'unknown age')), 'say_hello_variants': ['lesgou', 'lesgetit']})
 
 
 def accounts(request, user_name = 'NoName'):
