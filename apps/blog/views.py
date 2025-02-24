@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanen
 
 
 def index(request):
-    return HttpResponse('<h2>Hello in app BLOG</h2>')
+    return render(request, 'blog/index.html')
 
 
 def accounts(request, user_name = 'NoName'):
