@@ -2,8 +2,18 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 
 
+user_list = [{'name': 'Дмитрий', 'experience': 9},
+             {'name': 'Павел',   'experience': 5},
+             {'name': 'Алексей', 'experience': 3},
+             {'name': 'Иван',    'experience': 0},
+             {'name': 'Денис',   'experience': 2},
+             {'name': 'Игорь',   'experience': 7},
+             {'name': 'Руслан',  'experience': 1},
+             {'name': 'Евгений', 'experience': 4},
+             {'name': 'Андрей',  'experience': 2},
+             {'name': 'Николай', 'experience': 8}]
 def index(request):
-    return render(request, 'blog/index.html', context={'name': request.GET.get('name', 'stranger'), 'age': int(request.GET.get('age', 0)), 'say_hello_variants': ['lesgou', 'lesgetit']})
+    return render(request, 'blog/index.html', context={'user_list': user_list, 'name': request.GET.get('name', 'stranger'), 'age': int(request.GET.get('age', 0)), 'say_hello_variants': ['lesgou', 'lesgetit']})
 
 
 def accounts(request, user_name = 'NoName'):
@@ -42,7 +52,7 @@ def products_top(request):
 
 def products_def(request, id=None):
     if id is None:
-        return HttpResponse("<h1>Главная страница в продуктах блога</h1>")
+        return render(request, 'blog/main_product.html')
     return HttpResponse(f"<h1>Продукт {id}</h1>")
 
 def products_def_questions(request, id):

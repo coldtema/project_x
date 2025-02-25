@@ -1,12 +1,6 @@
 {%extends "base.html"%}
 {%load static%}
 {%block content%}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>indeXX</title>
-</head>
 <body>
     <h1>Hello, {{name}}!</h1>
     <h1>Your age: {{age}}</h1>
@@ -25,6 +19,13 @@
     <h2>{{say_hello_variants.0}}! {{say_hello_variants.1}}!</h2>
     {%endcomment%}
     <p>Дата (день/месяц/год) - {% now "j/m/Y" %}</p>
+    <ol>
+    {%for elem in user_list%}
+    {%if 2 >= elem.experience%}
+    <li>{{elem.name}}</li>
+    {%endif%}
+    {%endfor%}
+    </ol>
+    {%include "blog/main_product.html" with name='cold' only%}
 </body>
-</html>
 {%endblock content%}
