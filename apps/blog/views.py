@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 
-
 user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Павел',   'experience': 5},
              {'name': 'Алексей', 'experience': 3},
@@ -12,6 +11,9 @@ user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Евгений', 'experience': 4},
              {'name': 'Андрей',  'experience': 2},
              {'name': 'Николай', 'experience': 8}]
+
+
+
 def index(request):
     return render(request, 'blog/index.html', context={'user_list': user_list, 'name': request.GET.get('name', 'stranger'), 'age': int(request.GET.get('age', 0)), 'say_hello_variants': ['lesgou', 'lesgetit']})
 
