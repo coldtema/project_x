@@ -1,5 +1,12 @@
 from django.db import models
 
+
+class Author(models.Model):
+    nickname = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.nickname
+
 class Post(models.Model):
     title = models.CharField(blank=True, null=False, unique=False, help_text='Введите название поста', verbose_name='Название поста', max_length=120)
     slug = models.SlugField(max_length=80, unique=True, verbose_name='URL')
@@ -8,6 +15,7 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления')
     updated = models.DateTimeField(auto_now=True, verbose_name='Время обновления')
     fixed = models.BooleanField(blank=False, default=False, verbose_name='Прикреплено')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='posts', null=True)
 
     class Meta:
         ordering = ['-created']
