@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
+from .models import Author, Post
 
 user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Павел',   'experience': 5},
@@ -18,8 +19,14 @@ def index(request):
     return render(request, 'blog/index.html', context={'user_list': user_list, 'name': request.GET.get('name', 'stranger'), 'age': int(request.GET.get('age', 0)), 'say_hello_variants': ['lesgou', 'lesgetit']})
 
 
-def accounts(request, user_name = 'NoName'):
-    return HttpResponse(f'Имя аккаунта: {user_name}')
+def accounts(request):
+    data = Author.objects.all()
+    return render(request, 'blog/accounts.html', context={'data': data})
+
+
+def posts(request):
+    data = Post.objects.all()
+    return render(request, 'blog/posts.html', context={'data': data})
 
 
 

@@ -25,5 +25,7 @@ urlpatterns = [
     path(r'about/', include(about_patterns)),
     path('products/', include(product_patterns)),
     # path('message/<str:category>/<str:subcategory>/<str:theme>/<int:number>', views.message, name = 'message'),
-    re_path(r'^message/(?P<category>[a-z]+?)/(?P<subcategory>\D+?)/(?P<theme>\D+?)/(?P<number>\d+)', views.message, name = 'message')
+    re_path(r'^message/(?P<category>[a-z]+?)/(?P<subcategory>\D+?)/(?P<theme>\D+?)/(?P<number>\d+)', views.message, name = 'message'),
+    path('accounts/', views.accounts, name='accounts'),
+    path('posts/', views.posts, name='posts'),
 ]
