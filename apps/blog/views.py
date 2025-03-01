@@ -32,7 +32,8 @@ def posts(request):
 
 def reg(request):
     if request.method == 'POST':
-        return HttpResponse(f'Привет! Твое имя: {request.POST.get('name')}, Твой возраст: {request.POST.get('age')}')
+        Author.objects.create(nickname=request.POST.get('nickname'))
+        return HttpResponse(f'Привет! Твое имя: {request.POST.get('nickname')}, Твой возраст: {request.POST.get('age')}')
     elif request.method == 'GET':
         user_form = UserForm()
         return render(request, 'blog/reg.html', context={'form': user_form})
