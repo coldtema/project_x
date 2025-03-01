@@ -28,4 +28,5 @@ urlpatterns = [
     re_path(r'^message/(?P<category>[a-z]+?)/(?P<subcategory>\D+?)/(?P<theme>\D+?)/(?P<number>\d+)', views.message, name = 'message'),
     path('accounts/', views.accounts, name='accounts'),
     path('posts/', views.posts, name='posts'),
+    path('reg/', views.reg, name='reg')
 ]

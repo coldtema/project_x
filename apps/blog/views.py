@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from .models import Author, Post
+from .forms import UserForm
 
 user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Павел',   'experience': 5},
@@ -28,6 +29,13 @@ def posts(request):
     data = Post.objects.all()
     return render(request, 'blog/posts.html', context={'data': data})
 
+
+def reg(request):
+    if request.method == 'POST':
+        return HttpResponse(f'Привет! Твое имя: {request.POST.get('name')}, Твой возраст: {request.POST.get('age')}')
+    elif request.method == 'GET':
+        user_form = UserForm()
+        return render(request, 'blog/reg.html', context={'form': user_form})
 
 
 def about(request, name = '??', age='??'):
