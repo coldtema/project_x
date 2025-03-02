@@ -3,6 +3,7 @@ from django.db import models
 
 class Author(models.Model):
     nickname = models.CharField(max_length=50)
+    age = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nickname
@@ -21,6 +22,8 @@ class Post(models.Model):
         ordering = ['-created']
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
+        abstract = False
+        proxy = False
 
     def __str__(self):
         return f'{self.text[:20]}...'
