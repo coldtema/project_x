@@ -34,60 +34,47 @@ def reg(request):
     if request.method == 'POST':
         form_obj = UserForm(request.POST)
         if form_obj.is_valid():
-            Author.objects.create(nickname=request.POST.get('nickname'))
-            return HttpResponse(f'Привет! Твое имя: {request.POST.get('nickname')}, Твой возраст: {request.POST.get('age')}')
+            Author.objects.create(nickname=request.POST.get('nickname'), age=request.POST.get('age'))
+            return HttpResponseRedirect('/blog/reg')
         else:
             return HttpResponse('Неправильно введены данные в форме')
     elif request.method == 'GET':
         user_form = UserForm()
-        return render(request, 'blog/reg.html', context={'form': user_form})
+        user_model = Author.objects.all()
+        return render(request, 'blog/reg.html', context={'form': user_form, 'user_model': user_model})
 
 
-def about(request, name = '??', age='??'):
-    if name == '??':
-        name = request.GET.get('name', '??')
-    if age == '??':
-        age = request.GET.get('age', '??')
-    if age.isdigit() and int(age) > 0 and int(age) < 99 and name.isalpha():
-        return HttpResponse(f'''<h2>О сайте</h2>
-                    <h2>name: {request.GET.get('name', 'Не передал имени, амебус')}</h2>
-                    <h2>age: {request.GET.get('age', 'Не передал возраста, 0 лет')}</h2>''')   # альтернативно -> request.GET['name'] - но будет выдавать ошибку, если не найдет нужный параметр
-    return HttpResponseBadRequest('Введен неправильный возраст/имя')
+def about(request):
+    return render(request, 'blog/about.html')
 
 
+# def contacts(request, phone_number):
+#     return HttpResponse(f'<h2>Контакты: {phone_number}</h2>')
 
 
-def contacts(request, phone_number):
-    return HttpResponse(f'<h2>Контакты: {phone_number}</h2>')
+# def products_new(request):
+#     return HttpResponse("<h1>Новые продукты</h1>")
 
 
+# def products_top(request):
+#     return HttpResponse("<h1>Топ продуктов</h1>")
 
+# def products_def(request, id=None):
+#     if id is None:
+#         return render(request, 'blog/main_product.html')
+#     return HttpResponse(f"<h1>Продукт {id}</h1>")
 
+# def products_def_questions(request, id):
+#     return HttpResponse(f"<h1>Вопросы о продукте {id}</h1>")
 
-
-def products_new(request):
-    return HttpResponse("<h1>Новые продукты</h1>")
-
-
-def products_top(request):
-    return HttpResponse("<h1>Топ продуктов</h1>")
-
-def products_def(request, id=None):
-    if id is None:
-        return render(request, 'blog/main_product.html')
-    return HttpResponse(f"<h1>Продукт {id}</h1>")
-
-def products_def_questions(request, id):
-    return HttpResponse(f"<h1>Вопросы о продукте {id}</h1>")
-
-def products_def_comments(request, id):
-    return HttpResponse(f"<h1>Комментарии о продукте {id}</h1>")
+# def products_def_comments(request, id):
+#     return HttpResponse(f"<h1>Комментарии о продукте {id}</h1>")
 
 
 
 
-def message(request, category, subcategory, theme, number):
-    return HttpResponsePermanentRedirect('blog')
+# def message(request, category, subcategory, theme, number):
+#     return HttpResponsePermanentRedirect('blog')
 #     return HttpResponse(f'''<ul>
 # <li>Категория: {category}</li>
 # <li>Подкатегория: {subcategory}</li>
