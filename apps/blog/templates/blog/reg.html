@@ -11,6 +11,26 @@
         {{ form.as_table }}
     </table>
     <input type="submit" value="Send" >
+    <table>
+        <thead align="center">
+            <tr>
+                <th>id</th>
+                <th>nickname</th>
+                <th>age</th>
+                <th>action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {%for elem in user_model%}
+        <tr>
+            <td>{{elem.id}}</td>
+            <td>{{elem.nickname}}</td>
+            <td>{{elem.age}}</td>
+            <td><a href="edit/{{elem.id}}">edit</a> | <a href="delete/{{elem.id}}">delete</a></td>
+        </tr>
+        {%endfor%}
+        </tbody>
+    </table>
 </form>
 </body>
 </html>
