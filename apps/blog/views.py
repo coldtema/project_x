@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from .models import Author, Post
-from .forms import UserForm
+from .forms import UserForm, UserEditForm
 
 user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Павел',   'experience': 5},
@@ -42,7 +42,24 @@ def reg(request):
         user_form = UserForm()
         user_model = Author.objects.all()
         return render(request, 'blog/reg.html', context={'form': user_form, 'user_model': user_model})
+    
+def reg_edit(request, id):
+    if request.method == 'POST':
+        form_to_validate = UserEditForm(request.POST)
+        if form_to_validate.is_valid():
+            object_to_edit = Author.objects.get(id=request.POST.get('id'))
+            object_to_edit.nickname, object_to_edit.age=request.POST.get('nickname'), request.POST.get('age')
+            object_to_edit.save()
+            return HttpResponseRedirect('/blog/reg')
+    else:
+        object_to_edit = Author.objects.get(id=id)
+        object_form = UserEditForm(initial={'age': object_to_edit.age, 'nickname': object_to_edit.nickname, 'id':object_to_edit.id}) #при создании формы initial уже не может измениться
+        # object_form.age.initial=object_to_edit.age
+        return render(request, 'blog/reg_edit.html', context={'object_to_edit': object_to_edit, 'object_form': object_form})
 
+def reg_delete(request, id):
+    Author.objects.get(id=id).delete()
+    return HttpResponseRedirect('/blog/reg')
 
 def about(request):
     return render(request, 'blog/about.html')
