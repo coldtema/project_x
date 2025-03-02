@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Учу Django</title>
-</head>
+{%extends 'base.html'%}
+{%block content%}
 <body>
     <form method="POST">
         {% csrf_token %}
     <table>
         {{ form.as_table }}
     </table>
-    <input type="submit" value="Send" >
+    <input type="submit" value="Send">
+    <h1></h1>
     <table>
         <thead align="center">
             <tr>
@@ -31,6 +28,7 @@
         {%endfor%}
         </tbody>
     </table>
+    <h1></h1>
 </form>
 </body>
-</html>
+{%endblock content%}
