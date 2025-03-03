@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Author(models.Model):
-    nickname = models.CharField(max_length=50)
+    nickname = models.CharField(max_length=20)
     age = models.IntegerField(default=0)
 
     def __str__(self):

@@ -37,29 +37,38 @@ def reg(request):
             Author.objects.create(nickname=request.POST.get('nickname'), age=request.POST.get('age'))
             return HttpResponseRedirect('/blog/reg')
         else:
-            return HttpResponse('Неправильно введены данные в форме')
+            return HttpResponseBadRequest('Неправильно введены данные в форме')
     elif request.method == 'GET':
         user_form = UserForm()
         user_model = Author.objects.all()
         return render(request, 'blog/reg.html', context={'form': user_form, 'user_model': user_model})
     
 def reg_edit(request, id):
+    object_to_edit = Author.objects.get(id=id)
     if request.method == 'POST':
-        form_to_validate = UserEditForm(request.POST)
+        form_to_validate = UserEditForm(request.POST, instance=object_to_edit)
         if form_to_validate.is_valid():
-            object_to_edit = Author.objects.get(id=request.POST.get('id'))
-            object_to_edit.nickname, object_to_edit.age=request.POST.get('nickname'), request.POST.get('age')
-            object_to_edit.save()
+            # object_to_edit = Author.objects.get(id=request.POST.get('id')) #можно было сделать проще, тк id уже передавался в функцию))
+            # object_to_edit.nickname, object_to_edit.age=request.POST.get('nickname'), request.POST.get('age')
+            # object_to_edit.save()
+            form_to_validate.save()
             return HttpResponseRedirect('/blog/reg')
+        else:
+            return HttpResponseRedirect('/blog/reg') 
     else:
-        object_to_edit = Author.objects.get(id=id)
-        object_form = UserEditForm(initial={'age': object_to_edit.age, 'nickname': object_to_edit.nickname, 'id':object_to_edit.id}) #при создании формы initial уже не может измениться
-        # object_form.age.initial=object_to_edit.age
-        return render(request, 'blog/reg_edit.html', context={'object_to_edit': object_to_edit, 'object_form': object_form})
+        try:
+            # object_form = UserEditForm(initial={'age': object_to_edit.age, 'nickname': object_to_edit.nickname, 'id':object_to_edit.id}) #при создании формы initial уже не может измениться
+            object_form = UserEditForm(instance=object_to_edit)
+            return render(request, 'blog/reg_edit.html', context={'object_to_edit': object_to_edit, 'object_form': object_form})
+        except:
+            return HttpResponseNotFound('Пользователь не найден')
 
 def reg_delete(request, id):
-    Author.objects.get(id=id).delete()
-    return HttpResponseRedirect('/blog/reg')
+    try:
+        Author.objects.get(id=id).delete()
+        return HttpResponseRedirect('/blog/reg')
+    except:
+        return HttpResponseNotFound('Пользователь не найден')
 
 def about(request):
     return render(request, 'blog/about.html')
