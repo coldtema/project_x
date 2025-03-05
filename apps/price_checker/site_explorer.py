@@ -1,6 +1,7 @@
 from requests import request
 from bs4 import BeautifulSoup
 import re
+import json
 
 
 def get_shop_of_product(product_url):
@@ -49,10 +50,10 @@ def get_product_tsum(product_url):
 
 
 def get_product_lamoda(product_url):
-    return 'poka delaetsya'
-#     headers = {"User-Agent": "Mozilla/5.0"}
-#     response = request('GET', url=product_url ,headers=headers)
-#     soup_engine = BeautifulSoup(response.text, 'html.parser')
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url ,headers=headers)
+    print(response.text)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
 #     print(soup_engine)
 #     price_element = soup_engine.find("div", class_=re.compile(r'_title_.+')).text.strip()
 #     print(price_element)
@@ -66,13 +67,14 @@ def get_product_lamoda(product_url):
 
 def get_product_street_beat(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url ,headers=headers)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-    price_element = soup_engine.find("div", class_="price-tag").text.strip()
+    response = request('GET', url=product_url, headers=headers)
+    digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
+    json_data = json.loads(digital_data_dict.group(1))
+    name = json_data['product']['name']
+    price_element = json_data['product']['unitPrice']
     print(price_element)
-    # brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
-    # category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey"))
-    # return {'price_element': price_element, 'brand': brand, 'model': model, 'category': category}
+    print(name)
+    return {'price_element': price_element, 'name': name}
 
 shop_to_func = {'brandshop': get_product_brandshop, 'rendez-vous': get_product_rendez_vous, 'tsum': get_product_tsum, 'lamoda': get_product_lamoda, 'street-beat': get_product_street_beat}
 
