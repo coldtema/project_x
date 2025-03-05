@@ -15,7 +15,10 @@ def get_product_brandshop(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
-    price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
+    try:
+        price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
+    except:
+        price_element = soup_engine.find("div", class_="product-order__price-wrapper").text.strip()
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
     print(model)
