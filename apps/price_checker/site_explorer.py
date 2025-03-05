@@ -15,8 +15,9 @@ def get_product_brandshop(product_url):
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
-    category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey"))
-    return {'price_element': price_element, 'brand': brand, 'model': model, 'category': category}
+    category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
+    print(model)
+    return {'price_element': price_element, 'name': brand + ' ' + category}
 
 
 def get_product_rendez_vous(product_url):
@@ -34,7 +35,7 @@ def get_product_rendez_vous(product_url):
             category += f' {elem}'
     brand = brand.strip()
     category = category.strip()
-    return {'price_element': price_element, 'brand': brand, 'model': 'model', 'category': category}
+    return {'price_element': price_element, 'name': brand + ' ' + category}
 
 
 def get_product_tsum(product_url):
@@ -46,7 +47,7 @@ def get_product_tsum(product_url):
     brand = re.search(pattern=r'Бренд: (.+?)С', string=brand).group(1)
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
     category = re.search(pattern=r'[А-Я].+', string=category).group(0)
-    return {'price_element': price_element, 'brand': brand, 'model': 'model', 'category': category}
+    return {'price_element': price_element, 'name': brand + ' ' + category}
 
 
 def get_product_lamoda(product_url):
@@ -72,8 +73,6 @@ def get_product_street_beat(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     name = json_data['product']['name']
     price_element = json_data['product']['unitPrice']
-    print(price_element)
-    print(name)
     return {'price_element': price_element, 'name': name}
 
 shop_to_func = {'brandshop': get_product_brandshop, 'rendez-vous': get_product_rendez_vous, 'tsum': get_product_tsum, 'lamoda': get_product_lamoda, 'street-beat': get_product_street_beat}
