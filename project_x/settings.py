@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.blog.apps.BlogConfig',
     'django_extensions',
+    'apps.price_checker.apps.PriceCheckerConfig'
 ]
 
 MIDDLEWARE = [
