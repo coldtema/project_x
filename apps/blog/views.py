@@ -52,7 +52,7 @@ def reg_edit(request, id):
             # object_to_edit.nickname, object_to_edit.age=request.POST.get('nickname'), request.POST.get('age')
             # object_to_edit.save()
             form_to_validate.save()
-            return HttpResponseRedirect('/blog/reg')
+            return HttpResponseRedirect('/blog/reg') #надо как то обратиться к урлу через имя этого урла
         else:
             return HttpResponseRedirect('/blog/reg') 
     else:
