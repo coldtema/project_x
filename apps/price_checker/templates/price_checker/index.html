@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{%block content%}
+<h1>Введите ссылку на товар</h1>
+
+<form method="POST">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="тык">
+</form>
+<h1></h1>
+{%endblock content%}
