@@ -19,6 +19,7 @@ def get_product_brandshop(product_url):
         price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
     except:
         price_element = soup_engine.find("div", class_="product-order__price-wrapper").text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
     print(model)
@@ -31,6 +32,7 @@ def get_product_rendez_vous(product_url):
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find("span", class_="item-price-value").text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     category_plus_brand = soup_engine.find("span", class_="item-name-title").text.strip()
     brand = ''
     category = ''
@@ -43,7 +45,6 @@ def get_product_rendez_vous(product_url):
     category = category.strip()
     return {'price_element': price_element, 'name': brand + ' ' + category}
 
-
 def get_product_tsum(product_url):
     '''Функция для парсинга товара из tsum'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -54,7 +55,8 @@ def get_product_tsum(product_url):
     brand = re.search(pattern=r'Бренд: (.+?)С', string=brand).group(1)
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
     category = re.search(pattern=r'[А-Я].+', string=category).group(0)
-    return {'price_element': price_element, 'name': brand + ' ' + category}
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category}
 
 
 def get_product_lamoda(product_url):
