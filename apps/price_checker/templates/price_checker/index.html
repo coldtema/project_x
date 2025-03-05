@@ -1,4 +1,5 @@
 {%extends 'base.html'%}
+{% block title %}PriceChecker{% endblock title %}
 {%block content%}
 <h1>Введите ссылку на товар</h1>
 
@@ -10,4 +11,26 @@
     <input type="submit" value="тык">
 </form>
 <h1></h1>
+<table>
+    <thead align="center">
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>price</th>
+            <th>url</th>
+            <th>author_id</th>
+        </tr>
+    </thead>
+    <tbody align="center">
+        {%for elem in db_products%}
+        <tr>
+            <td>{{elem.id}}</td>
+            <td>{{elem.name}}</td>
+            <td>{{elem.price}}</td>
+            <td>{{elem.url}}</td>
+            <td>{{elem.author_id}}</td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
 {%endblock content%}
