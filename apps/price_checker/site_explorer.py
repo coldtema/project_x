@@ -5,11 +5,13 @@ import json
 
 
 def get_shop_of_product(product_url):
+    '''Функция, определяющая, какому магазину принадлежит ссылка'''
     regex = r'://(www.)?([\w-]+).(\w+)/'
     return shop_to_func.get(re.search(pattern=regex, string=product_url).group(2))(product_url)
 
     
 def get_product_brandshop(product_url):
+    '''Функция для парсинга товара из brandshop'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -21,6 +23,7 @@ def get_product_brandshop(product_url):
 
 
 def get_product_rendez_vous(product_url):
+    '''Функция для парсинга товара из rendez-vous'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -39,6 +42,7 @@ def get_product_rendez_vous(product_url):
 
 
 def get_product_tsum(product_url):
+    '''Функция для парсинга товара из tsum'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -51,6 +55,7 @@ def get_product_tsum(product_url):
 
 
 def get_product_lamoda(product_url):
+    '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
     print(response.text)
@@ -67,6 +72,7 @@ def get_product_lamoda(product_url):
 
 
 def get_product_street_beat(product_url):
+    '''Функция для парсинга товара из street beat'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
@@ -75,7 +81,11 @@ def get_product_street_beat(product_url):
     price_element = json_data['product']['unitPrice']
     return {'price_element': price_element, 'name': name}
 
-shop_to_func = {'brandshop': get_product_brandshop, 'rendez-vous': get_product_rendez_vous, 'tsum': get_product_tsum, 'lamoda': get_product_lamoda, 'street-beat': get_product_street_beat}
+shop_to_func = {'brandshop': get_product_brandshop, 
+                'rendez-vous': get_product_rendez_vous, 
+                'tsum': get_product_tsum, 
+                'lamoda': get_product_lamoda, 
+                'street-beat': get_product_street_beat}
 
 
 
