@@ -6,6 +6,7 @@ from .site_explorer import get_product_brandshop, get_shop_of_product
 from apps.blog.models import Author
 import time
 from functools import wraps
+from .chart_builder import plot_price_history
 
 def time_count(func):
     @wraps(func)
@@ -16,6 +17,7 @@ def time_count(func):
         print(end - start)
         return result
     return wrapper
+
 
 def all_price_list(request):
     if request.method == 'POST':
@@ -31,6 +33,26 @@ def all_price_list(request):
         product_form = ProductForm()
         db_products = Product.objects.all()
         return render(request, 'price_checker/index.html', context={'form': product_form, 'db_products': db_products})
+
+
+
+
+def price_history(request, id):
+    product_to_watch = Product.objects.get(id=id)
+    prices_of_product = Price.objects.filter(product_id=id)
+    dates = []
+    prices = []
+    for elem in prices_of_product:
+        dates.append(elem.added_time)
+        prices.append(elem.price)
+    plot_price_history(dates, prices)
+    return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
+                                                                        'prices_of_product': prices_of_product, 
+                                                                        'chart_url': 'apps/price_checker/static/price_checker/chart.png'})
+
+
+
+
 
 @time_count
 def update_prices(request):
@@ -54,6 +76,7 @@ def update_prices(request):
             Price.objects.create(price=maybe_new_price, product=elem)
     broken_elems = []
     if exception_elems:
+        time.sleep(10)
         for elem in exception_elems:
             try:
                 maybe_new_price = get_shop_of_product(elem.url)['price_element']
