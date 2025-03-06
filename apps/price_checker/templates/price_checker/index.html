@@ -19,18 +19,18 @@
             <th>id</th>
             <th>name</th>
             <th>price</th>
-            <th>url</th>
             <th>author_id</th>
+            <th>price_history</th>
         </tr>
     </thead>
     <tbody align="center">
         {%for elem in db_products%}
         <tr>
             <td>{{elem.id}}</td>
-            <td>{{elem.name}}</td>
+            <td><a href="{{elem.url}}">{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
-            <td>{{elem.url}}</td>
             <td>{{elem.author_id}}</td>
+            <td><a href="/price_checker/price_history/{{elem.id}}">История цены</a></td>
         </tr>
         {%endfor%}
     </tbody>
