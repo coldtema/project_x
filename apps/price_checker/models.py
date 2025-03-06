@@ -11,5 +11,8 @@ class Product(models.Model):
 class Price(models.Model):
     price = models.IntegerField()
     added_time = models.DateTimeField(auto_now_add=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='price')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    class Meta:
+        ordering = ['added_time']
+
 
