@@ -62,7 +62,7 @@ def get_product_lamoda(product_url):
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
-    return {'price_element': 5000, 'name': 'Кофта'}
+    return {'price_element': 6000, 'name': 'Кофта'}
 
 
 
