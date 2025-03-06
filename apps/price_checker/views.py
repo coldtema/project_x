@@ -23,9 +23,13 @@ def all_price_list(request):
 
 def update_prices(request):
     all_prod = Product.objects.all()
-    print('hello')
+    exception_elems = []
     for elem in all_prod:
-        maybe_new_price = get_shop_of_product(elem.url)['price_element']
+        try:
+            maybe_new_price = get_shop_of_product(elem.url)['price_element']
+        except:
+            exception_elems.append(elem)
+            continue
         if maybe_new_price != elem.latest_price:
             print(f'''
 Цена изменилась!
@@ -36,4 +40,25 @@ def update_prices(request):
             elem.latest_price = maybe_new_price
             elem.save()
             Price.objects.create(price=maybe_new_price, product=elem)
+    broken_elems = []
+    if exception_elems:
+        for elem in exception_elems:
+            try:
+                maybe_new_price = get_shop_of_product(elem.url)['price_element']
+            except:
+                broken_elems.append(elem)
+                continue
+            if maybe_new_price != elem.latest_price:
+                print(f'''
+    Цена изменилась!
+    Продукт: {elem.name}
+    Было: {elem.latest_price}
+    Стало: {maybe_new_price}
+    ''')
+                elem.latest_price = maybe_new_price
+                elem.save()
+                Price.objects.create(price=maybe_new_price, product=elem)
+        if broken_elems:
+            print(f'Продукты, по которым не удалось обновить цену:')
+            for elem in broken_elems: print(f'id: {elem.id}')
     return HttpResponseRedirect('/price_checker')
