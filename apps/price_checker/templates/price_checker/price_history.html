@@ -1,0 +1,27 @@
+{%extends "base.html"%}
+{%load static%}
+{%block title%}PriceHistory{%endblock title%}
+{%block content%}
+<h1>История цены</h1>
+<h2>Продукт: {{product_to_watch.name}}</h2>
+<h1></h1>
+<table>
+    <thead>
+        <tr>
+            <th style="width: 40%;">price</th>
+            <th style="width: 60%;">added</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for elem in prices_of_product%}
+        <tr align="center">
+            <td>{{elem.price}}</td>
+            <td>{{elem.added_time}}</td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+<h1></h1>
+<h1>График</h1>
+<img src="{%static 'price_checker/chart.png' %}" alt="График цены">
+{%endblock content%}
