@@ -4,6 +4,18 @@ from .forms import ProductForm
 from .models import Product, Price
 from .site_explorer import get_product_brandshop, get_shop_of_product
 from apps.blog.models import Author
+import time
+from functools import wraps
+
+def time_count(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+        return result
+    return wrapper
 
 def all_price_list(request):
     if request.method == 'POST':
@@ -20,7 +32,7 @@ def all_price_list(request):
         db_products = Product.objects.all()
         return render(request, 'price_checker/index.html', context={'form': product_form, 'db_products': db_products})
 
-
+@time_count
 def update_prices(request):
     all_prod = Product.objects.all()
     exception_elems = []
