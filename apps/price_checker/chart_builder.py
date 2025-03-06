@@ -26,5 +26,4 @@ def plot_price_history(dates, prices, filename='apps/price_checker/static/price_
     plt.legend()
     print(filename)
     plt.savefig(filename, format="png")  # Сохраняем в файл
-    print('сохранено')
     plt.close()
