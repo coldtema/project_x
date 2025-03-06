@@ -22,7 +22,6 @@ def get_product_brandshop(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
-    print(model)
     return {'price_element': price_element, 'name': brand + ' ' + category}
 
 
@@ -63,16 +62,7 @@ def get_product_lamoda(product_url):
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
-    print(response.text)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-#     print(soup_engine)
-#     price_element = soup_engine.find("div", class_=re.compile(r'_title_.+')).text.strip()
-#     print(price_element)
-#     # brand = soup_engine.find("div", class_=re.compile(r'ColumnView__infoBlocksRow___\w+')).text.strip()
-#     # brand = re.search(pattern=r'Бренд: (.+?)С', string=brand).group(1)
-#     # category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
-#     # category = re.search(pattern=r'[А-Я].+', string=category).group(0)
-#     # return {'price_element': price_element, 'brand': brand, 'model': 'model', 'category': category}
+    return {'price_element': 5000, 'name': 'Кофта'}
 
 
 

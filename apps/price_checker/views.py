@@ -19,3 +19,21 @@ def all_price_list(request):
         product_form = ProductForm()
         db_products = Product.objects.all()
         return render(request, 'price_checker/index.html', context={'form': product_form, 'db_products': db_products})
+
+
+def update_prices(request):
+    all_prod = Product.objects.all()
+    print('hello')
+    for elem in all_prod:
+        maybe_new_price = get_shop_of_product(elem.url)['price_element']
+        if maybe_new_price != elem.latest_price:
+            print(f'''
+Цена изменилась!
+Продукт: {elem.name}
+Было: {elem.latest_price}
+Стало: {maybe_new_price}
+''')
+            elem.latest_price = maybe_new_price
+            elem.save()
+            Price.objects.create(price=maybe_new_price, product=elem)
+    return HttpResponseRedirect('/price_checker')

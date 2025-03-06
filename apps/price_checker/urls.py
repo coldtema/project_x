@@ -5,5 +5,6 @@ from apps.price_checker import views
 
 urlpatterns = [
     path('', views.all_price_list, name='all_price_list'),
+    path('update_prices/', views.update_prices, name='update_prices')
     
 ]
