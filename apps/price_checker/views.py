@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm
 from .models import Product, Price
-from .site_explorer import get_product_brandshop, get_shop_of_product
+from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
 import time
 from functools import wraps
