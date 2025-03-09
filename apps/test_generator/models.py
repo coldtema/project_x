@@ -11,4 +11,8 @@ class Test(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
+    answer1 = models.CharField(max_length=2000, null=True)
+    answer2 = models.CharField(max_length=2000, null=True)
+    answer3 = models.CharField(max_length=2000, null=True)
+    right_answer = models.CharField(max_length=10, null=True)
     test = models.ForeignKey(Test, on_delete=models.CASCADE)
