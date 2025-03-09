@@ -1,0 +1,32 @@
+{%extends 'base.html'%}
+{%block title%}TestGenerator{%endblock title%}
+{%block content%}
+<h1>Сгенерировать тест:</h1>
+<form method="POST">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="Старт">
+<h1>Все тесты:</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Text</th>
+                <th>Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for elem in all_tests%}
+            <tr>
+                <td>{{elem.name}}</td>
+                <td>{{elem}}</td>
+                <td>{{elem.added}}</td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</form>
+<h1></h1>
+{%endblock content%}
