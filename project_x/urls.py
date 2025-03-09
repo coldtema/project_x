@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include("apps.blog.urls")),
     path('', include("apps.blog.urls")),
-    path('price_checker/', include('apps.price_checker.urls'))
+    path('price_checker/', include('apps.price_checker.urls')),
+    path('test_generator/', include('apps.test_generator.urls'))
 ]
