@@ -76,6 +76,9 @@ def update_prices(request):
             Price.objects.create(price=maybe_new_price, product=elem)
     broken_elems = []
     if exception_elems:
+        print(f'''
+    эти элементы не прошли с первой попытки: {[elem.name for elem in exception_elems]}
+    ''')
         time.sleep(10)
         for elem in exception_elems:
             try:
