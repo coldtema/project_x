@@ -76,11 +76,26 @@ def get_product_street_beat(product_url):
     price_element = json_data['product']['unitPrice']
     return {'price_element': price_element, 'name': name}
 
+
+def get_product_ozon(product_url):
+    ...
+
+
+
+def get_product_sportmaster(product_url):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    print(response.text)
+
+
+
 shop_to_func = {'brandshop': get_product_brandshop, 
                 'rendez-vous': get_product_rendez_vous, 
                 'tsum': get_product_tsum, 
                 'lamoda': get_product_lamoda, 
-                'street-beat': get_product_street_beat}
+                'street-beat': get_product_street_beat,
+                'ozon': get_product_ozon,
+                'sportmaster': get_product_sportmaster}
 
 
 
