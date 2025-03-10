@@ -14,14 +14,14 @@ SESSION_NAME = os.getenv('SESSION_NAME')
 models_dict = {
         '@GPTChatRBot': question_digger.claim_questions_GPTChatRBot,
         '@TypespaceBot': question_digger.claim_questions_TypespaceBot,
-        '@GPT4Telegrambot': question_digger.claim_questions_GPT4Telegrambot,
+        '@GPT4Telegrambot': question_digger.claim_questions_universal,
         # '@ChatGPT_General_Bot': question_digger.claim_questions_ChatGPT_General_Bot, - хрень
-        '@RussiaChatGPTBot': question_digger.claim_questions_GPT4Telegrambot,
-        '@gpt3_unlim_chatbot': question_digger.claim_questions_GPT4Telegrambot,
+        '@RussiaChatGPTBot': question_digger.claim_questions_universal,
+        '@gpt3_unlim_chatbot': question_digger.claim_questions_universal,
         '@chatsgpts_bot': question_digger.claim_questions_chatsgpts_bot,
-        '@GPT4Tbot': question_digger.claim_questions_GPT4Telegrambot,
-        '@Chat_GPT4_rubot': question_digger.claim_questions_GPT4Telegrambot,
-        '@pro_ai_bot': question_digger.claim_questions_GPT4Telegrambot, #оочень мало запросов
+        '@GPT4Tbot': question_digger.claim_questions_universal,
+        '@Chat_GPT4_rubot': question_digger.claim_questions_universal,
+        '@pro_ai_bot': question_digger.claim_questions_universal, #оочень мало запросов
         # '@TypespaceBot': question_digger.claim_questions_TypespaceBot
     }
 

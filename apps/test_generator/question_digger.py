@@ -1,7 +1,7 @@
 import re
 from .models import Question
 
-def claim_questions_GPT4Telegrambot(text, test_object):
+def claim_questions_universal(text, test_object):
     list_of_questions = list(filter(lambda x: True if x != ' ' else False, re.findall(pattern=r'\d+\.\s(.+\?)', string=text)))
     list_of_answers1 = list(filter(lambda x: True if x != ' ' else False, re.findall(pattern=r'A\)\s(.+)\nB\)', string=text)))
     list_of_answers2 = list(filter(lambda x: True if x != ' ' else False, re.findall(pattern=r'B\)\s(.+)\nC\)', string=text)))
