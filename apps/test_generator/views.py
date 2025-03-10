@@ -19,7 +19,7 @@ def pass_test(request, id):
     test_object = Test.objects.get(id=id)
     questions = test_object.question_set.all()
     if request.method == 'POST':
-        user_answers = list(map(lambda x: x[0], filter(lambda x: True if len(x) == 1 else False, request.POST.values())))
+        user_answers = list(map(lambda x: x[0], filter(lambda x: True if len(x) == 1 else False, request.POST.values()))) #filter - чтобы убрать токен
         right_answers = list(map(lambda x: x.right_answer, questions))
         if len(user_answers) != len(right_answers):
             return HttpResponseBadRequest('Ответьте, пожалуйста, на все вопросы')
@@ -32,7 +32,11 @@ def pass_test(request, id):
             flag_best_result = True
             test_object.best_result = best_result_counter
             test_object.save()
-        return render(request, 'test_generator/finish_page.html', context={'flag_best_result': flag_best_result, 'best_result_counter': best_result_counter})
+        return render(request, 'test_generator/finish_page.html', context={'flag_best_result': flag_best_result, 'best_result_counter': best_result_counter, 'max_result': len(right_answers)})
     return render(request, 'test_generator/pass_test.html', context={'test_object': test_object, 'questions': questions})
+
+def delete_test(request, id):
+    Test.objects.get(id=id).delete()
+    return HttpResponseRedirect('/test_generator')
 
 
