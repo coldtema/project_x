@@ -13,6 +13,7 @@ SESSION_NAME = os.getenv('SESSION_NAME')
 
 models_dict = {
         '@GPTChatRBot': question_digger.claim_questions_GPTChatRBot,
+        '@kun4sun_bot': question_digger.claim_questions_universal,
         '@TypespaceBot': question_digger.claim_questions_TypespaceBot,
         '@GPT4Telegrambot': question_digger.claim_questions_universal,
         # '@ChatGPT_General_Bot': question_digger.claim_questions_ChatGPT_General_Bot, - хрень
@@ -49,7 +50,7 @@ def send_message_and_get_reply(text, test_object):
 формат - вопрос, и три варианта ответа + пронумеруй вопросы + не делай отступов ТОЛЬКО в начале строки, в остальных моментах ставь пробелы как обычно плюс отступай одну строку между тестами, 
 ОБЯЗАТЕЛЬНО пронумеруй вопросы
 в конце обязательно список правильных ответов в виде 1. A)
-Вот текст: {text}'''
+Вот текст: {text}'''[:4000]
     for model in models_dict.keys():
         print(f'работает {model}')
         which_chat = model
