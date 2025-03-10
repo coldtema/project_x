@@ -25,8 +25,6 @@ def pass_test(request, id):
         right_answers = list(map(lambda x: x.right_answer, questions))
         if len(user_answers) != len(right_answers):
             return HttpResponseBadRequest('Ответьте, пожалуйста, на все вопросы')
-        print(user_answers)
-        print(right_answers)
         best_result_counter = 0
         flag_best_result = False
         for i in range(len(user_answers)):
