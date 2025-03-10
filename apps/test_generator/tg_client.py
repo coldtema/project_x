@@ -14,7 +14,6 @@ async def send_and_wait_for_reply(text):
 
     async with Client(SESSION_NAME, API_ID, API_HASH) as app:
         sent_message = await app.send_message('@GPT4Telegrambot', text)
-        print(f"Отправлено: {sent_message.text}")
 
         # Обработчик ответа
         @app.on_message(filters.chat("@GPT4Telegrambot") & filters.text)
