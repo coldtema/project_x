@@ -12,17 +12,21 @@
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Text</th>
-                <th>Added</th>
+                <th>Имя</th>
+                <th>Текст теста</th>
+                <th>Добавлен</th>
+                <th>Кнопка</th>
+                <th>Лучший результат</th>
             </tr>
         </thead>
         <tbody>
             {%for elem in all_tests%}
             <tr>
-                <td>{{elem.name}}</td>
-                <td>{{elem}}</td>
-                <td>{{elem.added}}</td>
+                <td align="center">{{elem.name}}</td>
+                <td align="center">{{elem}}</td>
+                <td align="center">{{elem.added}}</td>
+                <td align="center"><a href="pass_test/{{elem.id}}">Пройти тест</a></td>
+                <td align="center">{{elem.best_result}}/{{elem.question_set.count}}</td>
             </tr>
             {%endfor%}
         </tbody>
