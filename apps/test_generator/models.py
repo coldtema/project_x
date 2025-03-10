@@ -1,7 +1,7 @@
 from django.db import models
 
 class Test(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     text = models.TextField()
     added = models.DateTimeField(auto_now_add=True)
     best_result = models.IntegerField(default=0)
