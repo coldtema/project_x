@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}FinishPage{% endblock title %}
+{% block content %}
+<h1>Спасибо, что прошли тест!</h1>
+<h2>Ваш результат: {{best_result_counter}}</h2>
+{%if flag_best_result%}
+<h3>Это ваш лучший результат! Поздравляем!</h3>
+{%endif%}
+{% endblock content %}
