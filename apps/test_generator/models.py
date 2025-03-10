@@ -4,6 +4,7 @@ class Test(models.Model):
     name = models.CharField(max_length=100)
     text = models.TextField()
     added = models.DateTimeField(auto_now_add=True)
+    best_result = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.text[:20]}...'
