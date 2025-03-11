@@ -76,7 +76,7 @@
 <form action="{{answers_page}}" method="post">
     {% csrf_token %}
     <input type="hidden" name="user_answers" value="{{ user_answers }}">
-    <button type="submit">Показать ответы</button>
+    <input type="submit" value="Показать ответы">
 </form>
 <h1></h1>
 {% endblock content %}
