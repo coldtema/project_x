@@ -32,11 +32,29 @@ def pass_test(request, id):
             flag_best_result = True
             test_object.best_result = best_result_counter
             test_object.save()
-        return render(request, 'test_generator/finish_page.html', context={'flag_best_result': flag_best_result, 'best_result_counter': best_result_counter, 'max_result': len(right_answers)})
+        questions_user_answers = zip(questions, user_answers)
+        return render(request, 'test_generator/finish_page.html', 
+                      context={'flag_best_result': flag_best_result, 
+                               'best_result_counter': best_result_counter, 
+                               'max_result': len(right_answers), 
+                               'answers_page': f'{id}/answers/',
+                               'questions_user_answers': questions_user_answers,
+                               'user_answers': user_answers,
+                               'test_object': test_object,
+                               })
     return render(request, 'test_generator/pass_test.html', context={'test_object': test_object, 'questions': questions})
+
+
+def answers_on_test(request, id):
+    test_object = Test.objects.get(id=id)
+    questions = test_object.question_set.all()
+    user_answers = eval(request.POST['user_answers']) #из формы возвращается str - можно ли это поменять?
+    questions_user_answers = zip(questions, user_answers)
+    return render(request, 'test_generator/answers.html', context={'questions_user_answers': questions_user_answers, 'test_object': test_object, 'main_url': f'/text_generator/'})
 
 def delete_test(request, id):
     Test.objects.get(id=id).delete()
     return HttpResponseRedirect('/test_generator')
+
 
 
