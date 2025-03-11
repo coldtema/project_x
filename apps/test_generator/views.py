@@ -53,7 +53,10 @@ def answers_on_test(request, id):
     except:
         return HttpResponseBadRequest('Не смотри ответики, пока не ответишь на вопросы!!')
     questions_user_answers = zip(questions, user_answers)
-    return render(request, 'test_generator/answers.html', context={'questions_user_answers': questions_user_answers, 'test_object': test_object, 'main_url': f'/text_generator/'})
+    return render(request, 'test_generator/answers.html', context={'questions_user_answers': questions_user_answers, 
+                                                                   'test_object': test_object, 
+                                                                   'test_url': f'/test_generator/pass_test/{id}',
+                                                                   'main_url': f'/test_generator'})
 
 def delete_test(request, id):
     Test.objects.get(id=id).delete()

@@ -81,4 +81,13 @@
     </ol>
     <h1></h1>
 </form>
+<form action="{{test_url}}" method="get">
+    {% csrf_token %}
+    <button type="submit">Пройти тест заново</button>
+</form>
+<form action="{{main_url}}" method="get">
+    {% csrf_token %}
+    <button type="submit">Вернуться на главную</button>
+</form>
+<h1></h1>
 {% endblock content %}
