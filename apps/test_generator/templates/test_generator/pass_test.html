@@ -4,18 +4,20 @@
 <h1>{{ test_object.name }}</h1>
 <form method="post">
     {% csrf_token %}
-    {% for elem in questions %}
-        <h2>{{ elem.text }}</h2>
-        <label>
-            <input type="radio" name="question_{{ elem.id }}" value="A"> A) {{ elem.answer1 }}
-        </label><br>
-        <label>
-            <input type="radio" name="question_{{ elem.id }}" value="B"> B) {{ elem.answer2 }}
-        </label><br>
-        <label>
-            <input type="radio" name="question_{{ elem.id }}" value="C"> C) {{ elem.answer3 }}
-        </label><br>
-    {% endfor %}
+    <ol>
+        {% for elem in questions %}
+            <li><h3>{{ elem.text }}</h3></li>
+            <label>
+                <input type="radio" name="question_{{ elem.id }}" value="A"> A) {{ elem.answer1 }}
+            </label><br>
+            <label>
+                <input type="radio" name="question_{{ elem.id }}" value="B"> B) {{ elem.answer2 }}
+            </label><br>
+            <label>
+                <input type="radio" name="question_{{ elem.id }}" value="C"> C) {{ elem.answer3 }}
+            </label><br>
+        {% endfor %}
+    </ol>
     <h1></h1>
     <input type="submit" value="Ответить">
 </form>
