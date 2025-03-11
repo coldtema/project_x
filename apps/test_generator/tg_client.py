@@ -12,18 +12,17 @@ SESSION_NAME = os.getenv('SESSION_NAME')
 
 
 models_dict = {
-        '@GPTChatRBot': question_digger.claim_questions_GPTChatRBot,
+        '@GPTChatRBot': question_digger.claim_questions_universal,
         '@kun4sun_bot': question_digger.claim_questions_universal,
-        '@TypespaceBot': question_digger.claim_questions_TypespaceBot,
+        '@TypespaceBot': question_digger.claim_questions_universal,
         '@GPT4Telegrambot': question_digger.claim_questions_universal,
         # '@ChatGPT_General_Bot': question_digger.claim_questions_ChatGPT_General_Bot, - хрень
         '@RussiaChatGPTBot': question_digger.claim_questions_universal,
         '@gpt3_unlim_chatbot': question_digger.claim_questions_universal,
-        '@chatsgpts_bot': question_digger.claim_questions_chatsgpts_bot,
+        '@chatsgpts_bot': question_digger.claim_questions_universal,
         '@GPT4Tbot': question_digger.claim_questions_universal,
         '@Chat_GPT4_rubot': question_digger.claim_questions_universal,
         '@pro_ai_bot': question_digger.claim_questions_universal, #оочень мало запросов
-        # '@TypespaceBot': question_digger.claim_questions_TypespaceBot
     }
 
 
@@ -48,7 +47,7 @@ def send_message_and_get_reply(text, test_object):
     which_chat = ''
     prompt = f'''Напиши, пожалуйста, тесты по этой теме, чтобы они были очень интересные:
 формат - вопрос, и три варианта ответа + пронумеруй вопросы + не делай отступов ТОЛЬКО в начале строки, в остальных моментах ставь пробелы как обычно плюс отступай одну строку между тестами, 
-ОБЯЗАТЕЛЬНО пронумеруй вопросы
+ОБЯЗАТЕЛЬНО пронумеруй вопросы, варианты ответов должны быть под буквами A), B), C) - это английские буквы
 в конце обязательно список правильных ответов в виде 1. A)
 Вот текст: {text}'''[:4000]
     for model in models_dict.keys():
