@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}AnswersOnTest{% endblock title %}
+{% block content %}
+<h1>ответы на {{ test_object.name }}</h1>
+<style>
+    .red-radio {
+        background-color: rgb(255, 60, 0);
+    }
+    
+    .green-radio {
+        background-color: green;
+    }
+  </style>
+<form method="post">
+    {% csrf_token %}
+    <ol>
+        {% for elem, user_answer in questions_user_answers %}
+            <li><h3>{{ elem.text }}</h3></li>
+
+            {% if elem.right_answer == 'A' and user_answer == 'A'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="A" checked> A) {{ elem.answer1 }}
+                </label><br>
+                <label>
+            {%elif elem.right_answer != 'A' and user_answer == 'A'%}
+                <label class="red-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="A" checked> A) {{ elem.answer1 }}
+                </label><br>
+            {%elif elem.right_answer == 'A'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="A"> A) {{ elem.answer1 }}
+                </label><br>
+            {%else%}
+                <label>
+                    <input type="radio" name="question_{{ elem.id }}" value="A"> A) {{ elem.answer1 }}
+                </label><br>
+            {%endif%}
+
+
+
+            {% if elem.right_answer == 'B' and user_answer == 'B'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="B" checked> B) {{ elem.answer2 }}
+                </label><br>
+                <label>
+            {%elif elem.right_answer != 'B' and user_answer == 'B'%}
+                <label class="red-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="B" checked> B) {{ elem.answer2 }}
+                </label><br>
+            {%elif elem.right_answer == 'B'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="B"> B) {{ elem.answer2 }}
+                </label><br>
+            {%else%}
+                <label>
+                    <input type="radio" name="question_{{ elem.id }}" value="B"> B) {{ elem.answer1 }}
+                </label><br>
+            {%endif%}
+
+
+
+            {% if elem.right_answer == 'C' and user_answer == 'C'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="C" checked> C) {{ elem.answer3 }}
+                </label><br>
+                <label>
+            {%elif elem.right_answer != 'C' and user_answer == 'C'%}
+                <label class="red-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="C" checked> C) {{ elem.answer3 }}
+                </label><br>
+            {%elif elem.right_answer == 'C'%}
+                <label class="green-radio">
+                    <input type="radio" name="question_{{ elem.id }}" value="C"> C) {{ elem.answer3 }}
+                </label><br>
+            {%else%}
+                <label>
+                    <input type="radio" name="question_{{ elem.id }}" value="C"> C) {{ elem.answer1 }}
+                </label><br>
+            {%endif%}
+        {% endfor %}
+    </ol>
+    <h1></h1>
+</form>
+{% endblock content %}
