@@ -34,13 +34,13 @@ def pass_test(request, id):
             test_object.save()
         questions_user_answers = zip(questions, user_answers)
         return render(request, 'test_generator/finish_page.html', 
-                      context={'flag_best_result': flag_best_result, 
-                               'best_result_counter': best_result_counter, 
-                               'max_result': len(right_answers), 
-                               'answers_page': f'{id}/answers/',
-                               'questions_user_answers': questions_user_answers,
-                               'user_answers': user_answers,
-                               'test_object': test_object,
+                      context={'flag_best_result': flag_best_result, #переключатель лучшего результата (для показывания фразы в шаблоне)
+                               'best_result_counter': best_result_counter, #результат пользователя
+                               'max_result': len(right_answers), #максимальный результат по тесту - берется из БД
+                               'answers_page': f'{id}/answers/', #ссылка для вызова action из формы для перехода на страницу ответов
+                               'questions_user_answers': questions_user_answers, #зипка для итерации внутри шаблона
+                               'user_answers': user_answers, #для передачи по последующий шаблон (answers) и склейки с вопросами для интерации внутри шаблона + невозможно посмотреть ответ по прямой ссылке))
+                               'test_object': test_object, #объект теста, вопросы которого выводим
                                })
     return render(request, 'test_generator/pass_test.html', context={'test_object': test_object, 'questions': questions})
 
@@ -48,7 +48,10 @@ def pass_test(request, id):
 def answers_on_test(request, id):
     test_object = Test.objects.get(id=id)
     questions = test_object.question_set.all()
-    user_answers = eval(request.POST['user_answers']) #из формы возвращается str - можно ли это поменять?
+    try:
+        user_answers = eval(request.POST['user_answers']) #из формы возвращается str - можно ли это поменять?
+    except:
+        return HttpResponseBadRequest('Не смотри ответики, пока не ответишь на вопросы!!')
     questions_user_answers = zip(questions, user_answers)
     return render(request, 'test_generator/answers.html', context={'questions_user_answers': questions_user_answers, 'test_object': test_object, 'main_url': f'/text_generator/'})
 
