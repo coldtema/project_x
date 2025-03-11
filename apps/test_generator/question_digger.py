@@ -52,6 +52,8 @@ def claim_questions_TypespaceBot(text, test_object):
                                     answer3=list_of_answers3[i].strip(), 
                                     right_answer = list_of_right_answers[i].strip(), 
                                     test=test_object)
+    else:
+        raise Exception
 
 def claim_questions_GPTChatRBot(text, test_object):
     list_of_questions = list(filter(lambda x: True if x != ' ' else False, re.findall(pattern=r'\d+\.\s(.+\?)', string=text)))
@@ -68,3 +70,5 @@ def claim_questions_GPTChatRBot(text, test_object):
                                     answer3=list_of_answers3[i].strip(), 
                                     right_answer = list_of_right_answers[i].strip(), 
                                     test=test_object)
+    else:
+        raise Exception
