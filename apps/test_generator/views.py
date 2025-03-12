@@ -10,7 +10,7 @@ def all_tests_list(request):
         form = AddTest(request.POST)
         if form.is_valid():
             new_test = Test(name=request.POST.get('name'), text=request.POST.get('text'))
-            send_message_and_get_reply(request.POST.get('text'), new_test)
+            send_message_and_get_reply(request.POST.get('text'), new_test, request.POST.get('max_questions'))
             return HttpResponseRedirect('/test_generator')
     else:
         return render(request, 'test_generator/all_tests.html', context={'form': AddTest, 'all_tests': all_tests})
