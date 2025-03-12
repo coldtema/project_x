@@ -43,7 +43,7 @@ async def send_and_wait_for_reply(text, model):
         except asyncio.TimeoutError:
             return "Ответ не получен"
 
-def send_message_and_get_reply(text, test_object):
+def send_message_and_get_reply(text, test_object, max_questions):
     which_chat = ''
     prompt = f'''Напиши, пожалуйста, тесты по этой теме, чтобы они были очень интересные:
 формат - вопрос, и три варианта ответа + пронумеруй вопросы + не делай отступов ТОЛЬКО в начале строки, в остальных моментах ставь пробелы как обычно плюс отступай одну строку между тестами, 
@@ -57,7 +57,8 @@ def send_message_and_get_reply(text, test_object):
         try:
             models_dict[model](result, test_object)
             print(f'{model} завершился корректно')
-            break
+            if not max_questions:
+                break
         except:
             print(f'модель {model} отвалилась')
             continue
