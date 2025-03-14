@@ -3,6 +3,7 @@ from apps.blog.models import Author
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
+    shop = models.CharField(max_length=100, blank=True)
     latest_price = models.IntegerField()
     url = models.URLField()
     image = models.URLField(null=True)
