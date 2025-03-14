@@ -10,19 +10,39 @@ def get_shop_of_product(product_url):
     return shop_to_func.get(re.search(pattern=regex, string=product_url).group(2))(product_url)
 
     
+
 def get_product_brandshop(product_url):
     '''Функция для парсинга товара из brandshop'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url ,headers=headers)
+    response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
     except:
         price_element = soup_engine.find("div", class_="product-order__price-wrapper").text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split())))) #добавление только цифр в поле price
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
     return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop'}
+
+
+
+def get_product_superstep(product_url):
+    '''Функция для парсинга товара из superstep'a'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find("div", class_="product-detail__sale-price--black").text.strip()
+    except:
+        price_element = soup_engine.find("div", class_="price").text.strip()
+        price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    name = soup_engine.find("div", class_="detail__info-wrapper") #.split('\n')[0].strip()
+    name = ' '.join(list(name.stripped_strings)) #переделанный в строку генератор отредактированных строк
+    name = re.search(pattern=r'(.+?) Цвет', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'superstep'}
+
 
 
 def get_product_rendez_vous(product_url):
@@ -60,6 +80,7 @@ def get_product_tsum(product_url):
     return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum'}
 
 
+
 def get_product_lamoda(product_url):
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -77,6 +98,7 @@ def get_product_street_beat(product_url):
     name = json_data['product']['name']
     price_element = json_data['product']['unitPrice']
     return {'price_element': price_element, 'name': name, 'shop': 'street-beat'}
+
 
 
 def get_product_ozon(product_url):
@@ -97,7 +119,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lamoda': get_product_lamoda, 
                 'street-beat': get_product_street_beat,
                 'ozon': get_product_ozon,
-                'sportmaster': get_product_sportmaster}
+                'sportmaster': get_product_sportmaster,
+                'superstep': get_product_superstep}
 
 
 
