@@ -17,6 +17,7 @@
     <thead align="center">
         <tr>
             <th>id</th>
+            <th>shop</th>
             <th>name</th>
             <th>price</th>
             <th>author_id</th>
@@ -27,6 +28,7 @@
         {%for elem in db_products%}
         <tr>
             <td>{{elem.id}}</td>
+            <td>{{elem.shop}}</td>
             <td><a href="{{elem.url}}">{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
             <td>{{elem.author_id}}</td>
@@ -35,4 +37,5 @@
         {%endfor%}
     </tbody>
 </table>
+<h1></h1>
 {%endblock content%}
