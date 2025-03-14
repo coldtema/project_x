@@ -51,6 +51,9 @@ def price_history(request, id):
                                                                         'chart_url': 'apps/price_checker/static/price_checker/chart.png'})
 
 
+def delete_product(request, id):
+    Product.objects.get(id=id).delete()
+    return HttpResponseRedirect('/price_checker')
 
 
 
