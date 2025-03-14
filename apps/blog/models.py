@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Author(models.Model):
-    nickname = models.CharField(max_length=20, verbose_name='Имя')
+    nickname = models.CharField(max_length=20, verbose_name='Никнейм')
     age = models.IntegerField(default=0, verbose_name='Возраст')
 
     class Meta:
