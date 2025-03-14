@@ -22,7 +22,7 @@ def get_product_brandshop(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
-    return {'price_element': price_element, 'name': brand + ' ' + category}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop'}
 
 
 def get_product_rendez_vous(product_url):
@@ -42,7 +42,9 @@ def get_product_rendez_vous(product_url):
             category += f' {elem}'
     brand = brand.strip()
     category = category.strip()
-    return {'price_element': price_element, 'name': brand + ' ' + category}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'rendez-vous'}
+
+
 
 def get_product_tsum(product_url):
     '''Функция для парсинга товара из tsum'a'''
@@ -55,7 +57,7 @@ def get_product_tsum(product_url):
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
     category = re.search(pattern=r'[А-Я].+', string=category).group(0)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category}
+    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum'}
 
 
 def get_product_lamoda(product_url):
@@ -74,7 +76,7 @@ def get_product_street_beat(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     name = json_data['product']['name']
     price_element = json_data['product']['unitPrice']
-    return {'price_element': price_element, 'name': name}
+    return {'price_element': price_element, 'name': name, 'shop': 'street-beat'}
 
 
 def get_product_ozon(product_url):
