@@ -140,7 +140,6 @@ def get_product_vipavenue(product_url):
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find("div", class_="product__card--price-actual").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-    print(price_element)
     name = soup_engine.find("div", class_="product__card--title").text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'vipavenue'}
 
