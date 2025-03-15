@@ -248,6 +248,20 @@ def get_product_sportcourt(product_url):
 
 
 
+def get_product_1811stores(product_url):
+    '''Функция для парсинга товара из 1811stores'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    full = soup_engine.find("title").text.strip()
+    print(full)
+    price_element = re.search(pattern=r'(за )(.+?)( руб.)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores'}
+
+
+
 
 
 
@@ -296,6 +310,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'gate31': get_product_gate31,
                 'incanto': get_product_incanto,
                 'sportcourt': get_product_sportcourt,
+                '1811stores': get_product_1811stores,
 
 
                 #не работают с requests
