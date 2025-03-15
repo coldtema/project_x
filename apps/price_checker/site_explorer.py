@@ -176,6 +176,23 @@ def get_product_befree(product_url):
     return {'price_element': price_element, 'name': name, 'shop': 'befree'}
 
 
+def get_product_loverepublic(product_url):
+    '''Функция для парсинга товара из love republic'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_='item-prices').text.strip()
+    price_element = price_element.split('₽')
+    print(price_element)
+    if price_element[1]:
+        price_element = price_element[1].split('%')[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='catalog-element__title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'love republic'}
+
+
 
 def get_product_lamoda(product_url): #блокает
     '''Функция для парсинга товара из lamoda'''
@@ -238,7 +255,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'elyts': get_product_elyts,
                 'vipavenue': get_product_vipavenue,
                 'aimclo': get_product_aimclo,
-                'befree': get_product_befree}
+                'befree': get_product_befree,
+                'loverepublic': get_product_loverepublic}
 
 
 
