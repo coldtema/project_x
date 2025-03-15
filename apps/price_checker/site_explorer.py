@@ -206,8 +206,34 @@ def get_product_youstore(product_url):
 
 
 
-def get_product_goldapple(product_url):
+def get_product_gate31(product_url):
     '''Функция для парсинга товара из youstore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_='product-price__default').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("div", class_='ProductPage__title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'gate31'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#магазины, которые блокируют обычные requests, поэтому их нужно делать по-другому
+
+
+def get_product_goldapple(product_url):
+    '''Функция для парсинга товара из goldapple'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -215,11 +241,11 @@ def get_product_goldapple(product_url):
     price_element = price_element.split('₽')[0].strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'youstore'}
+    return {'price_element': price_element, 'name': name, 'shop': 'goldapple'}
 
 
 
-def get_product_lamoda(product_url): #блокает
+def get_product_lamoda(product_url):
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url ,headers=headers)
@@ -268,13 +294,9 @@ def get_product_sportmaster(product_url): #блокает
 
 shop_to_func = {'brandshop': get_product_brandshop, 
                 'rendez-vous': get_product_rendez_vous, 
-                'tsum': get_product_tsum, 
-                'lamoda': get_product_lamoda, 
+                'tsum': get_product_tsum,  
                 'street-beat': get_product_street_beat,
-                'ozon': get_product_ozon,
-                'sportmaster': get_product_sportmaster,
                 'superstep': get_product_superstep,
-                'lgcity': get_product_lgcity,
                 'lacoste': get_product_lacoste,
                 'sv77': get_product_sv77,
                 'elyts': get_product_elyts,
@@ -282,7 +304,14 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'aimclo': get_product_aimclo,
                 'befree': get_product_befree,
                 'loverepublic': get_product_loverepublic,
-                'youstore': get_product_youstore}
+                'youstore': get_product_youstore,
+                'goldapple': get_product_goldapple,
+                'lamoda': get_product_lamoda,
+                'sportmaster': get_product_sportmaster,
+                'lgcity': get_product_lgcity,
+                'ozon': get_product_ozon,
+                'gate31': get_product_gate31,
+                }
 
 
 
