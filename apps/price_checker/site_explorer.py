@@ -254,11 +254,32 @@ def get_product_1811stores(product_url):
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     full = soup_engine.find("title").text.strip()
-    print(full)
     price_element = re.search(pattern=r'(за )(.+?)( руб.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
     return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores'}
+
+
+
+def get_product_bask(product_url):
+    '''Функция для парсинга товара из bask'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("span", class_='avail-b').text.strip()
+    price_element = re.search(pattern=r'(.+?)(Доступно)', string=price_element).group(1)
+    if price_element.split('₽')[1]:
+        price_element = price_element.split('₽')[1]
+    else:
+        price_element = price_element.split('₽')[0]
+    print(price_element)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("title").text.strip()
+    name = re.search(pattern=r'(.+?)( - )', string=name).group(1)
+    print(name)
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'bask'}
+
+
 
 
 
@@ -311,6 +332,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'incanto': get_product_incanto,
                 'sportcourt': get_product_sportcourt,
                 '1811stores': get_product_1811stores,
+                'bask': get_product_bask,
 
 
                 #не работают с requests
