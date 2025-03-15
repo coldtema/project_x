@@ -183,7 +183,6 @@ def get_product_loverepublic(product_url):
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find("div", class_='item-prices').text.strip()
     price_element = price_element.split('₽')
-    print(price_element)
     if price_element[1]:
         price_element = price_element[1].split('%')[1]
     else:
@@ -191,6 +190,32 @@ def get_product_loverepublic(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='catalog-element__title').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'love republic'}
+
+
+
+def get_product_youstore(product_url):
+    '''Функция для парсинга товара из youstore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_='product-view-price').text.strip()
+    price_element = price_element.split('₽')[0].strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1").text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'youstore'}
+
+
+
+def get_product_goldapple(product_url):
+    '''Функция для парсинга товара из youstore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_='product-view-price').text.strip()
+    price_element = price_element.split('₽')[0].strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1").text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'youstore'}
 
 
 
@@ -256,7 +281,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'vipavenue': get_product_vipavenue,
                 'aimclo': get_product_aimclo,
                 'befree': get_product_befree,
-                'loverepublic': get_product_loverepublic}
+                'loverepublic': get_product_loverepublic,
+                'youstore': get_product_youstore}
 
 
 
