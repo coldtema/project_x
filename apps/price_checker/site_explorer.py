@@ -6,8 +6,8 @@ import json
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www.)?([\w-]+).(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(2).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?([\w-]+).(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(3).strip())(product_url)
 
     
 
@@ -104,6 +104,23 @@ def get_product_lacoste(product_url):
 
 
 
+def get_product_sv77(product_url):
+    '''Функция для парсинга товара из superstep'a'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("button", class_="button button-bordered items-center button-rect w-100 db fade button-hover-black").text.strip().split('руб.')
+    if price_element[1] != '':
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    name = soup_engine.find("h1", class_="product-view-title uppercase").text.strip()
+    name = ' '.join(name.split('\n'))
+    return {'price_element': price_element, 'name': name, 'shop': 'sv77'}
+
+
+
 def get_product_lamoda(product_url): #блокает
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -160,7 +177,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'sportmaster': get_product_sportmaster,
                 'superstep': get_product_superstep,
                 'lgcity': get_product_lgcity,
-                'lacoste': get_product_lacoste}
+                'lacoste': get_product_lacoste,
+                'sv77': get_product_sv77}
 
 
 
