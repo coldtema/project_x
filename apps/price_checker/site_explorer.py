@@ -93,7 +93,7 @@ def get_product_street_beat(product_url):
 
 
 def get_product_lacoste(product_url):
-    '''Функция для парсинга товара из superstep'a'''
+    '''Функция для парсинга товара из lacoste'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -105,7 +105,7 @@ def get_product_lacoste(product_url):
 
 
 def get_product_sv77(product_url):
-    '''Функция для парсинга товара из superstep'a'''
+    '''Функция для парсинга товара из sv77'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -118,6 +118,18 @@ def get_product_sv77(product_url):
     name = soup_engine.find("h1", class_="product-view-title uppercase").text.strip()
     name = ' '.join(name.split('\n'))
     return {'price_element': price_element, 'name': name, 'shop': 'sv77'}
+
+
+
+def get_product_elyts(product_url):
+    '''Функция для парсинга товара из elyts'a'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_="final-price-block").text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    name = soup_engine.find("h1").text
+    return {'price_element': price_element, 'name': name, 'shop': 'elyts'}
 
 
 
@@ -178,7 +190,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'superstep': get_product_superstep,
                 'lgcity': get_product_lgcity,
                 'lacoste': get_product_lacoste,
-                'sv77': get_product_sv77}
+                'sv77': get_product_sv77,
+                'elyts': get_product_elyts}
 
 
 
