@@ -72,6 +72,11 @@ def get_product_tsum(product_url):
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find("p", class_=re.compile(r'Price__price___\w+')).text.strip()
+    price_element = price_element.split('₽')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
     brand = soup_engine.find("div", class_=re.compile(r'ColumnView__infoBlocksRow___\w+')).text.strip()
     brand = re.search(pattern=r'Бренд: (.+?)С', string=brand).group(1)
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
