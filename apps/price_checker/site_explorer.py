@@ -281,6 +281,21 @@ def get_product_bask(product_url):
 
 
 
+def get_product_noone(product_url):
+    '''Функция для парсинга товара из noone'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_='item-price').text.strip()
+    price_element = price_element.split('RUB')[0].strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("title").text.strip()
+    name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
+    print(name)
+    return {'price_element': price_element, 'name': name, 'shop': 'noone'}
+
+
+
 
 
 
@@ -333,6 +348,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'sportcourt': get_product_sportcourt,
                 '1811stores': get_product_1811stores,
                 'bask': get_product_bask,
+                'noone': get_product_noone,
 
 
                 #не работают с requests
