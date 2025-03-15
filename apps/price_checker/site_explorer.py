@@ -133,6 +133,19 @@ def get_product_elyts(product_url):
 
 
 
+def get_product_vipavenue(product_url):
+    '''Функция для парсинга товара из vipavenue'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_="product__card--price-actual").text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    print(price_element)
+    name = soup_engine.find("div", class_="product__card--title").text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'vipavenue'}
+
+
+
 def get_product_lamoda(product_url): #блокает
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -191,7 +204,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lgcity': get_product_lgcity,
                 'lacoste': get_product_lacoste,
                 'sv77': get_product_sv77,
-                'elyts': get_product_elyts}
+                'elyts': get_product_elyts,
+                'vipavenue': get_product_vipavenue}
 
 
 
