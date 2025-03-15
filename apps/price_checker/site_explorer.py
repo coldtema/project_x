@@ -165,6 +165,18 @@ def get_product_aimclo(product_url):
 
 
 
+def get_product_befree(product_url):
+    '''Функция для парсинга товара из befree'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("div", class_=re.compile(r'.+(digi-product-price)')).text.strip()
+    price_element = price_element.split('₽')[0]
+    name = soup_engine.find("span", class_=re.compile(r'.+( title)')).text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'befree'}
+
+
+
 def get_product_lamoda(product_url): #блокает
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -225,7 +237,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'sv77': get_product_sv77,
                 'elyts': get_product_elyts,
                 'vipavenue': get_product_vipavenue,
-                'aimclo': get_product_aimclo}
+                'aimclo': get_product_aimclo,
+                'befree': get_product_befree}
 
 
 
