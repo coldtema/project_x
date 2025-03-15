@@ -206,8 +206,8 @@ def get_product_youstore(product_url):
 
 
 
-def get_product_gate31(product_url):
-    '''Функция для парсинга товара из youstore'''
+def get_product_gate31(product_url): #вообще не увидел раздел скидок
+    '''Функция для парсинга товара из gate31'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
@@ -215,6 +215,20 @@ def get_product_gate31(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='ProductPage__title').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'gate31'}
+
+
+
+def get_product_incanto(product_url):
+    '''Функция для парсинга товара из incanto'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    full = soup_engine.find("title").text.strip()
+    price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
+    name = re.search(pattern=r'(.+)( Incanto)', string=full).group(1)
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'incanto'}
+
+
 
 
 
@@ -230,66 +244,23 @@ def get_product_gate31(product_url):
 
 
 #магазины, которые блокируют обычные requests, поэтому их нужно делать по-другому
-
-
 def get_product_goldapple(product_url):
-    '''Функция для парсинга товара из goldapple'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-    price_element = soup_engine.find("div", class_='product-view-price').text.strip()
-    price_element = price_element.split('₽')[0].strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'goldapple'}
-
-
+    ...
 
 def get_product_lamoda(product_url):
-    '''Функция для парсинга товара из lamoda'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url ,headers=headers)
-    return {'price_element': 6000, 'name': 'Кофта'}
-
-
+    ...
 
 def get_product_lgcity(product_url): #блокает
-    '''Функция для парсинга товара из lady & gentleman city'''
-    headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": "https://google.com",
-    "Accept-Encoding": "gzip, deflate, br"
-}
-    response = request('GET', url=product_url, headers=headers)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-    print(soup_engine.text)
-    try:
-        price_element = soup_engine.find("div", class_="card__info-price-text").text.strip()
-    except:
-        price_element = soup_engine.find("div", class_="card__info-price-text card__info-price-text--new").text.strip()
-    # price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-    print('зашел')
-    print(price_element)
-    return
-    name = soup_engine.find("div", class_="detail__info-wrapper") #.split('\n')[0].strip()
-    name = ' '.join(list(name.stripped_strings)) #переделанный в строку генератор отредактированных строк
-    name = re.search(pattern=r'(.+?) Цвет', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'lady & gentleman city'}
-
-
+    ...
 
 def get_product_ozon(product_url): #блокает
     ...
 
-
-
 def get_product_sportmaster(product_url): #блокает
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
-    print(response.text)
+    ...
 
+def get_product_2moodstore(product_url):
+    ...
 
 
 shop_to_func = {'brandshop': get_product_brandshop, 
@@ -305,12 +276,16 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'befree': get_product_befree,
                 'loverepublic': get_product_loverepublic,
                 'youstore': get_product_youstore,
+                'gate31': get_product_gate31,
+                'incanto': get_product_incanto,
+
+                #не работают с requests
                 'goldapple': get_product_goldapple,
                 'lamoda': get_product_lamoda,
                 'sportmaster': get_product_sportmaster,
                 'lgcity': get_product_lgcity,
                 'ozon': get_product_ozon,
-                'gate31': get_product_gate31,
+                '2moodstore': get_product_2moodstore
                 }
 
 
