@@ -291,9 +291,19 @@ def get_product_noone(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    print(name)
     return {'price_element': price_element, 'name': name, 'shop': 'noone'}
 
+
+
+def get_product_elis(product_url):
+    '''Функция для парсинга товара из elis'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find("span", class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='item-detail__title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'elis'}
 
 
 
@@ -349,6 +359,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 '1811stores': get_product_1811stores,
                 'bask': get_product_bask,
                 'noone': get_product_noone,
+                'elis': get_product_elis,
 
 
                 #не работают с requests
