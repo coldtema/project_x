@@ -150,6 +150,21 @@ def get_product_vipavenue(product_url):
 
 
 
+def get_product_aimclo(product_url):
+    '''Функция для парсинга товара из aimclo'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find("div", class_="product-information__price js-element-price").text.strip()
+    except:
+        price_element = soup_engine.find("div", class_="product-information__price product-information__sale js-element-price").text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_="product-information__title").text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'aimclo'}
+
+
+
 def get_product_lamoda(product_url): #блокает
     '''Функция для парсинга товара из lamoda'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -209,7 +224,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lacoste': get_product_lacoste,
                 'sv77': get_product_sv77,
                 'elyts': get_product_elyts,
-                'vipavenue': get_product_vipavenue}
+                'vipavenue': get_product_vipavenue,
+                'aimclo': get_product_aimclo}
 
 
 
