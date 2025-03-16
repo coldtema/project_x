@@ -6,8 +6,8 @@ import json
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?([\w-]+).(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(5).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?([\w-]+).(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(6).strip())(product_url)
 
     
 
@@ -66,8 +66,29 @@ def get_product_rendez_vous(product_url):
 
 
 
+def get_product_tsum_outlet(product_url):
+    '''Функция для парсинга товара из tsum_outlet'a'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_=re.compile(r'Price__wrapper___\w+')).text.strip()
+    price_element = price_element.split('₽')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
+    name = soup_engine.find("title").text.strip()
+    name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
+    return {'price_element': int(str(price_element)), 'name': name, 'shop': 'tsum-outlet', 'category': shop_to_category['tsum-outlet']}
+
+
+
+
 def get_product_tsum(product_url):
     '''Функция для парсинга товара из tsum'a'''
+    if 'outlet' in product_url:
+        return get_product_tsum_outlet(product_url)
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
@@ -358,6 +379,8 @@ def get_product_crockid(product_url):
 
 
 
+
+
 #магазины, которые блокируют обычные requests, поэтому их нужно делать по-другому
 def get_product_goldapple(product_url):
     ...
@@ -434,6 +457,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'elis': 'Одежда/обувь/аксессуары',
                 'afinabags': 'Одежда/обувь/аксессуары',
                 'crockid': 'Детская одежда/Одежда для мам',
+                'tsum-outlet': 'Одежда/обувь/аксессуары', 
 
 
                 #не работают с requests
