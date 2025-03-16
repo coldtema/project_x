@@ -6,8 +6,8 @@ import json
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?([\w-]+).(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(3).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?([\w-]+).(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(5).strip())(product_url)
 
     
 
@@ -23,7 +23,7 @@ def get_product_brandshop(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split())))) #добавление только цифр в поле price
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
-    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop', 'category': shop_to_category['brandshop']}
 
 
 
@@ -41,7 +41,7 @@ def get_product_superstep(product_url):
     name = soup_engine.find("div", class_="detail__info-wrapper")
     name = ' '.join(list(name.stripped_strings)) #переделанный в строку генератор отредактированных строк
     name = re.search(pattern=r'(.+?) Цвет', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'superstep', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'superstep', 'category': shop_to_category['superstep']}
 
 
 
@@ -62,7 +62,7 @@ def get_product_rendez_vous(product_url):
             category += f' {elem}'
     brand = brand.strip()
     category = category.strip()
-    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'rendez-vous', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'rendez-vous', 'category': shop_to_category['rendez-vous']}
 
 
 
@@ -82,7 +82,7 @@ def get_product_tsum(product_url):
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
     category = re.search(pattern=r'[А-Я].+', string=category).group(0)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum', 'category': shop_to_category['tsum']}
 
 
 
@@ -94,7 +94,7 @@ def get_product_street_beat(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     name = json_data['product']['name']
     price_element = json_data['product']['unitPrice']
-    return {'price_element': price_element, 'name': name, 'shop': 'street-beat', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'street-beat', 'category': shop_to_category['street-beat']}
 
 
 def get_product_lacoste(product_url):
@@ -105,7 +105,7 @@ def get_product_lacoste(product_url):
     price_element = soup_engine.find("div", class_="nl-product-price nl-product-configuration__price").text.strip().split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h4", class_="nl-product-configuration__title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lacoste', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'lacoste', 'category': shop_to_category['lacoste']}
 
 
 
@@ -122,7 +122,7 @@ def get_product_sv77(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h1", class_="product-view-title uppercase").text.strip()
     name = ' '.join(name.split('\n'))
-    return {'price_element': price_element, 'name': name, 'shop': 'sv77', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'sv77', 'category': shop_to_category['sv77']}
 
 
 
@@ -134,7 +134,7 @@ def get_product_elyts(product_url):
     price_element = soup_engine.find("div", class_="final-price-block").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h1").text
-    return {'price_element': price_element, 'name': name, 'shop': 'elyts', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'elyts', 'category': shop_to_category['elyts']}
 
 
 
@@ -146,7 +146,7 @@ def get_product_vipavenue(product_url):
     price_element = soup_engine.find("div", class_="product__card--price-actual").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("div", class_="product__card--title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'vipavenue', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'vipavenue', 'category': shop_to_category['vipavenue']}
 
 
 
@@ -161,7 +161,7 @@ def get_product_aimclo(product_url):
         price_element = soup_engine.find("div", class_="product-information__price product-information__sale js-element-price").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_="product-information__title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'aimclo', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'aimclo', 'category': shop_to_category['aimclo']}
 
 
 
@@ -173,7 +173,7 @@ def get_product_befree(product_url):
     price_element = soup_engine.find("div", class_=re.compile(r'.+(digi-product-price)')).text.strip()
     price_element = price_element.split('₽')[0]
     name = soup_engine.find("span", class_=re.compile(r'.+( title)')).text.strip()
-    return {'price_element': int(price_element), 'name': name, 'shop': 'befree', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(price_element), 'name': name, 'shop': 'befree', 'category': shop_to_category['befree']}
 
 
 def get_product_loverepublic(product_url):
@@ -189,7 +189,7 @@ def get_product_loverepublic(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='catalog-element__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'love republic', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'love republic', 'category': shop_to_category['loverepublic']}
 
 
 
@@ -202,7 +202,7 @@ def get_product_youstore(product_url):
     price_element = price_element.split('₽')[0].strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'youstore', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'youstore', 'category': shop_to_category['youstore']}
 
 
 
@@ -214,7 +214,7 @@ def get_product_gate31(product_url): #вообще не увидел разде�
     price_element = soup_engine.find("div", class_='product-price__default').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='ProductPage__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'gate31', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'gate31', 'category': shop_to_category['gate31']}
 
 
 
@@ -226,7 +226,7 @@ def get_product_incanto(product_url):
     full = soup_engine.find("title").text.strip()
     price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
     name = re.search(pattern=r'(.+)( Incanto)', string=full).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'incanto', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'incanto', 'category': shop_to_category['incanto']}
 
 
 
@@ -243,7 +243,7 @@ def get_product_sportcourt(product_url):
         price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='model_name').text.strip()
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'sportcourt', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'sportcourt', 'category': shop_to_category['sportcourt']}
 
 
 
@@ -257,7 +257,7 @@ def get_product_1811stores(product_url):
     price_element = re.search(pattern=r'(за )(.+?)( руб.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores', 'category': shop_to_category['1811stores']}
 
 
 
@@ -275,7 +275,7 @@ def get_product_bask(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( - )', string=name).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'bask', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'bask', 'category': shop_to_category['bask']}
 
 
 
@@ -289,7 +289,7 @@ def get_product_noone(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'noone', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'noone', 'category': shop_to_category['noone']}
 
 
 
@@ -301,7 +301,7 @@ def get_product_elis(product_url):
     price_element = soup_engine.find("span", class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='item-detail__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'elis', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'elis', 'category': shop_to_category['elis']}
 
 
 
@@ -322,7 +322,23 @@ def get_product_afinabags(product_url):
         name = re.search(pattern=r'(.+?)( по \d)', string=name).group(1)
     except:
         name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'afinabags', 'category': 'Одежда/обувь/аксессуары'}
+    return {'price_element': price_element, 'name': name, 'shop': 'afinabags', 'category': shop_to_category['afinabags']}
+
+
+
+def get_product_crockid(product_url):
+    '''Функция для парсинга товара из crockid'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_=re.compile(r'(cost)(.+)?')).text.strip()
+    price_element = price_element.split('р.')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='name').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'crockid', 'category': shop_to_category['crockid']}
+
+
+
 
 
 
@@ -383,6 +399,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'noone': get_product_noone,
                 'elis': get_product_elis,
                 'afinabags': get_product_afinabags,
+                'crockid': get_product_crockid,
 
 
                 #не работают с requests
@@ -395,7 +412,39 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 }
 
 
+shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары', 
+                'rendez-vous': 'Одежда/обувь/аксессуары', 
+                'tsum': 'Одежда/обувь/аксессуары',  
+                'street-beat': 'Одежда/обувь/аксессуары',
+                'superstep': 'Одежда/обувь/аксессуары',
+                'lacoste': 'Одежда/обувь/аксессуары',
+                'sv77': 'Одежда/обувь/аксессуары',
+                'elyts': 'Одежда/обувь/аксессуары',
+                'vipavenue': 'Одежда/обувь/аксессуары',
+                'aimclo': 'Одежда/обувь/аксессуары',
+                'befree': 'Одежда/обувь/аксессуары',
+                'loverepublic': 'Одежда/обувь/аксессуары',
+                'youstore': 'Одежда/обувь/аксессуары',
+                'gate31': 'Одежда/обувь/аксессуары',
+                'incanto': 'Одежда/обувь/аксессуары',
+                'sportcourt': 'Одежда/обувь/аксессуары',
+                '1811stores': 'Одежда/обувь/аксессуары',
+                'bask': 'Одежда/обувь/аксессуары',
+                'noone': 'Одежда/обувь/аксессуары',
+                'elis': 'Одежда/обувь/аксессуары',
+                'afinabags': 'Одежда/обувь/аксессуары',
+                'crockid': 'Детская одежда/Одежда для мам',
 
+
+                #не работают с requests
+                'goldapple': 'Парфюмерия',
+                'lamoda': 'Одежда/обувь/аксессуары',
+                'sportmaster': 'Одежда/обувь/аксессуары',
+                'lgcity': 'Одежда/обувь/аксессуары',
+                'ozon': 'Маркетплейс',
+                '2moodstore': 'Одежда/обувь/аксессуары'
+
+}
 
 
 # ненужная регулярка для вычленения цены, тк bs4 сам это делает при переводе .text
