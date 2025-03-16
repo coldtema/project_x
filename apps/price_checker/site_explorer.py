@@ -400,6 +400,20 @@ def get_product_sohoshop(product_url):
 
 
 
+def get_product_lichi(product_url):
+    '''Функция для парсинга товара из lichi'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_=re.compile(r'(product-content_price_box__).+')).text.strip()
+    price_element = price_element.split('₽')
+    if price_element[2]:
+        price_element = price_element[1]
+    else:
+        price_element=price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1").text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'lichi', 'category': shop_to_category['lichi']} 
 
 
 
@@ -442,6 +456,8 @@ def get_product_2moodstore(product_url):
 def get_product_ostin(product_url):
     ...
 
+def get_product_demix(product_url):
+    ...
 
 shop_to_func = {'brandshop': get_product_brandshop, 
                 'rendez-vous': get_product_rendez_vous, 
@@ -468,6 +484,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bungly': get_product_bungly,
                 'aupontrouge': get_product_aupontrouge,
                 'sohoshop': get_product_sohoshop,
+                'lichi': get_product_lichi,
 
 
                 #не работают с requests
@@ -478,6 +495,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ozon': get_product_ozon,
                 '2moodstore': get_product_2moodstore,
                 'ostin': get_product_ostin,
+                'demix': get_product_demix,
                 }
 
 
@@ -507,6 +525,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bungly': 'Детская одежда/Одежда для мам',
                 'aupontrouge': 'Одежда/обувь/аксессуары',
                 'sohoshop': 'Одежда/обувь/аксессуары',
+                'lichi': 'Одежда/обувь/аксессуары',
 
 
                 #не работают с requests
@@ -517,6 +536,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'ozon': 'Маркетплейс',
                 '2moodstore': 'Одежда/обувь/аксессуары',
                 'ostin': 'Одежда/обувь/аксессуары',
+                'demix': 'Одежда/обувь/аксессуары',
 
 }
 
