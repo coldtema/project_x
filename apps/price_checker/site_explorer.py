@@ -360,6 +360,16 @@ def get_product_crockid(product_url):
 
 
 
+def get_product_bungly(product_url):
+    '''Функция для парсинга товара из bungly'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='price-first-load').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("div", class_='product-title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'bungly', 'category': shop_to_category['bungly']}
+
 
 
 
@@ -400,6 +410,9 @@ def get_product_sportmaster(product_url): #блокает
 def get_product_2moodstore(product_url):
     ...
 
+def get_product_ostin(product_url):
+    ...
+
 
 shop_to_func = {'brandshop': get_product_brandshop, 
                 'rendez-vous': get_product_rendez_vous, 
@@ -423,6 +436,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'elis': get_product_elis,
                 'afinabags': get_product_afinabags,
                 'crockid': get_product_crockid,
+                'bungly': get_product_bungly,
 
 
                 #не работают с requests
@@ -431,7 +445,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'sportmaster': get_product_sportmaster,
                 'lgcity': get_product_lgcity,
                 'ozon': get_product_ozon,
-                '2moodstore': get_product_2moodstore
+                '2moodstore': get_product_2moodstore,
+                'ostin': get_product_ostin,
                 }
 
 
@@ -457,7 +472,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'elis': 'Одежда/обувь/аксессуары',
                 'afinabags': 'Одежда/обувь/аксессуары',
                 'crockid': 'Детская одежда/Одежда для мам',
-                'tsum-outlet': 'Одежда/обувь/аксессуары', 
+                'tsum-outlet': 'Одежда/обувь/аксессуары',
+                'bungly': 'Детская одежда/Одежда для мам',
 
 
                 #не работают с requests
@@ -466,7 +482,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'sportmaster': 'Одежда/обувь/аксессуары',
                 'lgcity': 'Одежда/обувь/аксессуары',
                 'ozon': 'Маркетплейс',
-                '2moodstore': 'Одежда/обувь/аксессуары'
+                '2moodstore': 'Одежда/обувь/аксессуары',
+                'ostin': 'Одежда/обувь/аксессуары',
 
 }
 
