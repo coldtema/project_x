@@ -6,7 +6,7 @@ import json
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?([\w-]+).(\w+)/'
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?([\w-]+)\.(\w+)/'
     return shop_to_func.get(re.search(pattern=regex, string=product_url).group(6).strip())(product_url)
 
     
@@ -413,7 +413,30 @@ def get_product_lichi(product_url):
         price_element=price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lichi', 'category': shop_to_category['lichi']} 
+    return {'price_element': price_element, 'name': name, 'shop': 'lichi', 'category': shop_to_category['lichi']}
+
+
+
+def get_product_askent(product_url):
+    '''Функция для парсинга товара из askent'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='product__currentPrice').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("div", class_='productName').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'askent', 'category': shop_to_category['askent']}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -459,6 +482,23 @@ def get_product_ostin(product_url):
 def get_product_demix(product_url):
     ...
 
+def get_product_thomas_muenz(product_url):
+    ...
+
+def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
+    '''Функция для парсинга товара из postmeridiem-brand'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='product-card__content-wrapper').text.strip()
+    print(price_element)
+    return
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("title").text.strip()
+    name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'postmeridiem-brand', 'category': shop_to_category['postmeridiem-brand']}
+
+
 shop_to_func = {'brandshop': get_product_brandshop, 
                 'rendez-vous': get_product_rendez_vous, 
                 'tsum': get_product_tsum,  
@@ -485,6 +525,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'aupontrouge': get_product_aupontrouge,
                 'sohoshop': get_product_sohoshop,
                 'lichi': get_product_lichi,
+                'askent': get_product_askent,
+                'darsi': get_product_darsi,
 
 
                 #не работают с requests
@@ -496,6 +538,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 '2moodstore': get_product_2moodstore,
                 'ostin': get_product_ostin,
                 'demix': get_product_demix,
+                'thomas-muenz': get_product_thomas_muenz,
+                'postmeridiem-brand': get_product_postmeridiem_brand,
                 }
 
 
@@ -526,7 +570,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'aupontrouge': 'Одежда/обувь/аксессуары',
                 'sohoshop': 'Одежда/обувь/аксессуары',
                 'lichi': 'Одежда/обувь/аксессуары',
-
+                'askent': 'Одежда/обувь/аксессуары',
+                'darsi': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -537,6 +582,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 '2moodstore': 'Одежда/обувь/аксессуары',
                 'ostin': 'Одежда/обувь/аксессуары',
                 'demix': 'Одежда/обувь/аксессуары',
+                'thomas-muenz': 'Одежда/обувь/аксессуары',
+                'postmeridiem-brand': 'Одежда/обувь/аксессуары',
 
 }
 
