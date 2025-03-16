@@ -456,7 +456,16 @@ def get_product_cocos_moscow(product_url):
 
 
 
-
+def get_product_inspireshop(product_url):
+    '''Функция для парсинга товара из inspireshop'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='product-page__item-price-container').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='product-page__item-name').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'inspireshop', 'category': shop_to_category['inspireshop']}
 
 
 
