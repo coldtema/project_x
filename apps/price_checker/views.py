@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm
-from .models import Product, Price  #, DeletedProduct, DeletedPrice
+from .models import Product, Price
 from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
 import time
@@ -62,7 +62,7 @@ def delete_product(request, id):
 
 @time_count
 def update_prices(request):
-    all_prod = Product.objects.filter(shop='noone')
+    all_prod = Product.objects.filter(enabled=True)
     exception_elems = []
     for elem in all_prod:
         try:
@@ -112,22 +112,4 @@ def update_prices(request):
                     elem.save()
                 else:
                     continue
-                    # object_to_delete = Product.objects.get(id=elem.id)
-                    # prices_to_delete = Price.objects.filter(product__id=elem.id)
-                    # print(prices_to_delete)
-                    # new_object_in_deleted_product=DeletedProduct.objects.create(id=object_to_delete.id,
-                    #                               name=object_to_delete.name,
-                    #                               shop=object_to_delete.shop,
-                    #                               category=object_to_delete.category,
-                    #                               latest_price=object_to_delete.latest_price,
-                    #                               url=object_to_delete.url,
-                    #                               image=object_to_delete.image,
-                    #                               author=object_to_delete.author)
-                    # for price in prices_to_delete:
-                    #     DeletedPrice.objects.create(id=price.id,
-                    #                                 price=price.price,
-                    #                                 added_time=price.added_time,
-                    #                                 product=new_object_in_deleted_product)
-
-
     return HttpResponseRedirect('/price_checker')
