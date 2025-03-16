@@ -306,14 +306,26 @@ def get_product_elis(product_url):
 
 
 def get_product_afinabags(product_url):
-    '''Функция для парсинга товара из elis'''
+    '''Функция для парсинга товара из afinabags'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find("span", class_='price').text.strip()
+    price_element = soup_engine.find("div", class_='item-card__price').text.strip()
+    price_element = price_element.split('₽')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find("h1", class_='item-detail__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'elis', 'category': 'Одежда/обувь/аксессуары'}
+    name = soup_engine.find("title").text.strip()
+    try:
+        name = re.search(pattern=r'(.+?)( по \d)', string=name).group(1)
+    except:
+        name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'afinabags', 'category': 'Одежда/обувь/аксессуары'}
+
+
+
 
 
 
@@ -370,6 +382,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bask': get_product_bask,
                 'noone': get_product_noone,
                 'elis': get_product_elis,
+                'afinabags': get_product_afinabags,
 
 
                 #не работают с requests
