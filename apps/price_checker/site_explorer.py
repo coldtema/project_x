@@ -372,6 +372,19 @@ def get_product_bungly(product_url):
 
 
 
+def get_product_aupontrouge(product_url):
+    '''Функция для парсинга товара из aupontrouge'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='product-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("title").text.strip()
+    name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'aupontrouge', 'category': shop_to_category['aupontrouge']}
+
+
 
 
 
@@ -437,6 +450,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'afinabags': get_product_afinabags,
                 'crockid': get_product_crockid,
                 'bungly': get_product_bungly,
+                'aupontrouge': get_product_aupontrouge,
 
 
                 #не работают с requests
@@ -474,6 +488,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'crockid': 'Детская одежда/Одежда для мам',
                 'tsum-outlet': 'Одежда/обувь/аксессуары',
                 'bungly': 'Детская одежда/Одежда для мам',
+                'aupontrouge': 'Одежда/обувь/аксессуары',
 
 
                 #не работают с requests
