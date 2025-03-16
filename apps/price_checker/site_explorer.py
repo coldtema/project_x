@@ -430,7 +430,16 @@ def get_product_askent(product_url):
 
 
 
-
+def get_product_darsi(product_url):
+    '''Функция для парсинга товара из darsi'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find("title").text.strip()
+    price_element = re.search(pattern=r'(цене )(.+?)( руб)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'darsi', 'category': shop_to_category['darsi']}
 
 
 
