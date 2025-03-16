@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm
-from .models import Product, Price
+from .models import Product, Price  #, DeletedProduct, DeletedPrice
 from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
 import time
 from functools import wraps
 from .chart_builder import plot_price_history
+# from .async_shit import process_sites
+import asyncio
 
 def time_count(func):
     @wraps(func)
@@ -55,11 +57,12 @@ def delete_product(request, id):
     Product.objects.get(id=id).delete()
     return HttpResponseRedirect('/price_checker')
 
-
+# def update_prices(request):
+#     asyncio.create_task(process_sites())
 
 @time_count
 def update_prices(request):
-    all_prod = Product.objects.all()
+    all_prod = Product.objects.filter(shop='noone')
     exception_elems = []
     for elem in all_prod:
         try:
@@ -82,7 +85,7 @@ def update_prices(request):
         print(f'''
     эти элементы не прошли с первой попытки: {[elem.name for elem in exception_elems]}
     ''')
-        time.sleep(10)
+        time.sleep(1)
         for elem in exception_elems:
             try:
                 maybe_new_price = get_shop_of_product(elem.url)['price_element']
@@ -101,5 +104,30 @@ def update_prices(request):
                 Price.objects.create(price=maybe_new_price, product=elem)
         if broken_elems:
             print(f'Продукты, по которым не удалось обновить цену:')
-            for elem in broken_elems: print(f'id: {elem.id}')
+            for elem in broken_elems: 
+                print(f'id: {elem.id}, url: {elem.url}')
+                answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
+                if answer == 'd':
+                    elem.enabled = False
+                    elem.save()
+                else:
+                    continue
+                    # object_to_delete = Product.objects.get(id=elem.id)
+                    # prices_to_delete = Price.objects.filter(product__id=elem.id)
+                    # print(prices_to_delete)
+                    # new_object_in_deleted_product=DeletedProduct.objects.create(id=object_to_delete.id,
+                    #                               name=object_to_delete.name,
+                    #                               shop=object_to_delete.shop,
+                    #                               category=object_to_delete.category,
+                    #                               latest_price=object_to_delete.latest_price,
+                    #                               url=object_to_delete.url,
+                    #                               image=object_to_delete.image,
+                    #                               author=object_to_delete.author)
+                    # for price in prices_to_delete:
+                    #     DeletedPrice.objects.create(id=price.id,
+                    #                                 price=price.price,
+                    #                                 added_time=price.added_time,
+                    #                                 product=new_object_in_deleted_product)
+
+
     return HttpResponseRedirect('/price_checker')
