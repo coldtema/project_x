@@ -443,6 +443,17 @@ def get_product_darsi(product_url):
 
 
 
+def get_product_cocos_moscow(product_url):
+    '''Функция для парсинга товара из cocos-moscow'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='product-item-detail-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("div", class_='product_card__title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'cocos-moscow', 'category': shop_to_category['cocos-moscow']}
+
 
 
 
@@ -494,6 +505,10 @@ def get_product_demix(product_url):
 def get_product_thomas_muenz(product_url):
     ...
 
+
+def get_product_ekonika(product_url):
+    ...
+
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -536,6 +551,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lichi': get_product_lichi,
                 'askent': get_product_askent,
                 'darsi': get_product_darsi,
+                'cocos-moscow': get_product_cocos_moscow,
+                'inspireshop': get_product_inspireshop,
 
 
                 #не работают с requests
@@ -549,6 +566,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'demix': get_product_demix,
                 'thomas-muenz': get_product_thomas_muenz,
                 'postmeridiem-brand': get_product_postmeridiem_brand,
+                'ekonika':get_product_ekonika,
                 }
 
 
@@ -581,6 +599,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'lichi': 'Одежда/обувь/аксессуары',
                 'askent': 'Одежда/обувь/аксессуары',
                 'darsi': 'Одежда/обувь/аксессуары',
+                'cocos-moscow': 'Одежда/обувь/аксессуары',
+                'inspireshop': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -593,6 +613,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'demix': 'Одежда/обувь/аксессуары',
                 'thomas-muenz': 'Одежда/обувь/аксессуары',
                 'postmeridiem-brand': 'Одежда/обувь/аксессуары',
+                'ekonika': 'Одежда/обувь/аксессуары',
 
 }
 
