@@ -314,11 +314,10 @@ def get_product_noone(product_url):
     return {'price_element': price_element, 'name': name, 'shop': 'noone', 'category': shop_to_category['noone']}
 
 
-
 def get_product_elis(product_url):
     '''Функция для парсинга товара из elis'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = httpx.get(url=product_url, headers=headers, verify=False) #пока выключил проверку SSL-сертификатов - что-то с ними случилось
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -682,6 +681,18 @@ def get_product_alexanderbogdanov(product_url):
 
 
 
+def get_product_werfstore(product_url): #не нашел ссылок
+    '''Функция для парсинга товара из werfstore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('p', class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1', class_='product_title entry-title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'werfstore', 'category': shop_to_category['werfstore']}
+
+
+
 
 
 
@@ -724,6 +735,9 @@ def get_product_studio_29(product_url):
     ...
 
 def get_product_baon(product_url):
+    ...
+
+def get_product_presentandsimple(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -785,6 +799,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'danielonline': get_product_danielonline,
                 'zarina': get_product_zarina,
                 'alexanderbogdanov': get_product_alexanderbogdanov,
+                'werfstore': get_product_werfstore,
 
 
                 #не работают с requests
@@ -802,6 +817,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'studio-29': get_product_studio_29,
                 'baon': get_product_baon,
                 'voishe': get_product_voishe,
+                'presentandsimple': get_product_presentandsimple,
                 }
 
 
@@ -852,6 +868,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'danielonline': 'Одежда/обувь/аксессуары',
                 'zarina': 'Одежда/обувь/аксессуары',
                 'alexanderbogdanov': 'Одежда/обувь/аксессуары',
+                'werfstore': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -867,6 +884,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'ekonika': 'Одежда/обувь/аксессуары',
                 'studio-29': 'Одежда/обувь/аксессуары',
                 'baon': 'Одежда/обувь/аксессуары',
+                'presentandsimple': 'Одежда/обувь/аксессуары',
 
 }
 
