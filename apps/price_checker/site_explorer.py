@@ -2,6 +2,7 @@ from requests import request
 from bs4 import BeautifulSoup
 import re
 import json
+import httpx
 
 
 def get_shop_of_product(product_url):
@@ -520,6 +521,18 @@ def get_product_annapekun(product_url):
 
 
 
+def get_product_amazingred(product_url):
+    '''Функция для парсинга товара из amazingred'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = httpx.get(product_url, headers=headers)
+    digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
+    json_data = json.loads(digital_data_dict.group(1))
+    price_element = json_data['product']['unitSalePrice']
+    name = json_data['product']['name']
+    return {'price_element': price_element, 'name': name, 'shop': 'amazingred', 'category': shop_to_category['amazingred']}
+
+
+
 
 
 
@@ -611,6 +624,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'pompa': get_product_pompa,
                 'bunnyhill': get_product_bunnyhill,
                 'annapekun': get_product_annapekun,
+                'amazingred': get_product_amazingred,
 
 
                 #не работают с requests
@@ -665,6 +679,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'pompa': 'Одежда/обувь/аксессуары',
                 'bunnyhill': 'Детская одежда/Одежда для мам', 
                 'annapekun': 'Одежда/обувь/аксессуары',
+                'amazingred': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
