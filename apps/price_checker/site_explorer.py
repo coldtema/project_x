@@ -782,6 +782,18 @@ def get_product_biggeek(product_url):
 
 
 
+def get_product_tefal(product_url):
+    '''Функция для парсинга товара из tefal'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = int(float(re.search(pattern=r'(цена )(.+)( руб)', string=full).group(2)))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'tefal', 'category': shop_to_category['tefal']}
+
+
+
 
 
 
@@ -926,6 +938,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'henderson': get_product_henderson,
                 'finn-flare': get_product_finn_flare,
                 'biggeek': get_product_biggeek,
+                'tefal': get_product_tefal,
                 }
 
 
@@ -983,6 +996,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'alpindustria': 'Экипировка',
                 'indiwd': 'Одежда/обувь/аксессуары',
                 'biggeek': 'Электроника',
+                'tefal': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
