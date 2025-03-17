@@ -643,6 +643,18 @@ def get_product_zolla(product_url):
 
 
 
+def get_product_danielonline(product_url):
+    '''Функция для парсинга товара из danielonline'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='item-price__value').text.strip()
+    price_element = price_element.split('руб.')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'danielonline', 'category': shop_to_category['danielonline']}
+
+
 
 
 
@@ -740,6 +752,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'kanzler-style': get_product_kanzler_style,
                 'belleyou': get_product_belleyou,
                 'zolla': get_product_zolla,
+                'danielonline': get_product_danielonline,
 
 
                 #не работают с requests
@@ -804,6 +817,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'kanzler-style': 'Одежда/обувь/аксессуары',
                 'belleyou': 'Одежда/обувь/аксессуары',
                 'zolla': 'Одежда/обувь/аксессуары',
+                'danielonline': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
