@@ -928,6 +928,23 @@ def get_product_babor(product_url):
 
 
 
+def get_product_mir_kubikov(product_url):
+    '''Функция для парсинга товара из mir-kubikov'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('p', class_='product__info__price g-h2 m-old').text.strip()
+        price_element = price_element.split('\n')[0]
+    except:
+        price_element = soup_engine.find('p', class_='product__info__price g-h2').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'(.+)( \- купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'mir-kubikov', 'category': shop_to_category['mir-kubikov']}
+
+
+
 
 
 
@@ -1066,6 +1083,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'doctorslon': get_product_doctorslon,
                 'randewoo': get_product_randewoo,
                 'babor': get_product_babor,
+                'mir-kubikov': get_product_mir_kubikov,
 
 
                 #не работают с requests
@@ -1158,6 +1176,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'doctorslon': 'Стоматологические товары',
                 'randewoo': 'Косметика и парфюмерия',
                 'babor': 'Косметика и парфюмерия',
+                'mir-kubikov': 'Конструкторы',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
