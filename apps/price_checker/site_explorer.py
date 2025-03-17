@@ -915,6 +915,19 @@ def get_product_randewoo(product_url): #пока добавляется посл
 
 
 
+def get_product_babor(product_url):
+    '''Функция для парсинга товара из babor'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='productCard-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'babor', 'category': shop_to_category['babor']}
+
+
+
 
 
 
@@ -1052,6 +1065,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'epldiamond': get_product_epldiamond,
                 'doctorslon': get_product_doctorslon,
                 'randewoo': get_product_randewoo,
+                'babor': get_product_babor,
 
 
                 #не работают с requests
@@ -1143,6 +1157,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'epldiamond': 'Ювелирные украшения',
                 'doctorslon': 'Стоматологические товары',
                 'randewoo': 'Косметика и парфюмерия',
+                'babor': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
