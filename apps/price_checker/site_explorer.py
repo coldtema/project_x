@@ -551,6 +551,23 @@ def get_product_m_reason(product_url):
 
 
 
+def get_product_voishe(product_url):
+    '''Функция для парсинга товара из voishe'''
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Referer": "https://www.voishe.ru/",
+    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+}
+    response = httpx.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='js-product-price js-store-prod-price-val t-store__prod-popup__price-value').text.strip()
+    price_element = price_element.split(',')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'voishe', 'category': shop_to_category['voishe']}
+
+
+
 
 
 
@@ -660,6 +677,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ekonika':get_product_ekonika,
                 'studio-29': get_product_studio_29,
                 'baon': get_product_baon,
+                'voishe': get_product_voishe,
                 }
 
 
@@ -700,6 +718,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'annapekun': 'Одежда/обувь/аксессуары',
                 'amazingred': 'Одежда/обувь/аксессуары',
                 'm-reason': 'Одежда/обувь/аксессуары',
+                'voishe': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
