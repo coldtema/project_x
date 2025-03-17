@@ -720,6 +720,45 @@ def get_product_age_of_innocence(product_url):
 
 
 
+def get_product_nice_one(product_url):
+    '''Функция для парсинга товара из nice-one'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = price_element.split('руб.')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'nice-one', 'category': shop_to_category['nice-one']}
+
+
+
+def get_product_alpindustria(product_url):
+    '''Функция для парсинга товара из alpindustria'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product__price-wrap').text.strip()
+    price_element = price_element.split('руб.')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'alpindustria', 'category': shop_to_category['alpindustria']}
+
+
+
+
+
+
+
+
 
 
 
@@ -839,6 +878,9 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'werfstore': get_product_werfstore,
                 'koffer': get_product_koffer,
                 'age-of-innocence': get_product_age_of_innocence,
+                'nice-one': get_product_nice_one,
+                'alpindustria': get_product_alpindustria,
+                'indiwd': get_product_indiwd,
 
 
                 #не работают с requests
@@ -912,6 +954,9 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'werfstore': 'Одежда/обувь/аксессуары',
                 'koffer': 'Одежда/обувь/аксессуары',
                 'age-of-innocence': 'Детская одежда/Одежда для мам',
+                'nice-one': 'Одежда/обувь/аксессуары',
+                'alpindustria': 'Экипировка',
+                'indiwd': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
