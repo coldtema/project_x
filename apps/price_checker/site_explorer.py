@@ -7,8 +7,8 @@ import httpx
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?([\w-]+)\.(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(6).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(7).strip())(product_url)
 
     
 
@@ -831,6 +831,18 @@ def get_product_galaxystore(product_url):
 
 
 
+def get_product_megafon(product_url):
+    '''Функция для парсинга товара из megafon'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='b-price-cards__value b-price__value').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'megafon', 'category': shop_to_category['megafon']}
+
+
+
 
 
 
@@ -957,6 +969,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bombbar': get_product_bombbar,
                 'yves-rocher': get_product_yves_rocher,
                 'galaxystore': get_product_galaxystore,
+                'megafon': get_product_megafon,
 
 
                 #не работают с requests
@@ -1040,6 +1053,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bombbar': 'Спортивное питание',
                 'yves-rocher': 'Косметика и парфюмерия',
                 'galaxystore': 'Электроника',
+                'megafon': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
