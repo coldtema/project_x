@@ -818,6 +818,19 @@ def get_product_yves_rocher(product_url):
 
 
 
+def get_product_galaxystore(product_url):
+    '''Функция для парсинга товара из galaxystore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
+    json_data = json.loads(digital_data_dict.group(1))
+    price_element = int(json_data['product']['unitSalePrice'])
+    name = json_data['product']['name']
+    return {'price_element': price_element, 'name': name, 'shop': 'galaxystore', 'category': shop_to_category['galaxystore']}
+
+
+
 
 
 
@@ -943,6 +956,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'indiwd': get_product_indiwd,
                 'bombbar': get_product_bombbar,
                 'yves-rocher': get_product_yves_rocher,
+                'galaxystore': get_product_galaxystore,
 
 
                 #не работают с requests
@@ -1025,6 +1039,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'tefal': 'Бытовая техника',
                 'bombbar': 'Спортивное питание',
                 'yves-rocher': 'Косметика и парфюмерия',
+                'galaxystore': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
