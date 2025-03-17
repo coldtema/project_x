@@ -754,7 +754,17 @@ def get_product_alpindustria(product_url):
 
 
 
-
+def get_product_indiwd(product_url):
+    '''Функция для парсинга товара из indiwd'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='h3 product__page-price').text.strip()
+    price_element = price_element.split('₽')
+    price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'indiwd', 'category': shop_to_category['indiwd']}
 
 
 
