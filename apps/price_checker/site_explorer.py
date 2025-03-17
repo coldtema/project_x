@@ -681,7 +681,7 @@ def get_product_alexanderbogdanov(product_url):
 
 
 
-def get_product_werfstore(product_url): #не нашел ссылок
+def get_product_werfstore(product_url): #не нашел скидок
     '''Функция для парсинга товара из werfstore'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers)
@@ -690,6 +690,19 @@ def get_product_werfstore(product_url): #не нашел ссылок
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product_title entry-title').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'werfstore', 'category': shop_to_category['werfstore']}
+
+
+
+def get_product_koffer(product_url):
+    '''Функция для парсинга товара из koffer'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-info__buy-block').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'koffer', 'category': shop_to_category['koffer']}
 
 
 
@@ -800,6 +813,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'zarina': get_product_zarina,
                 'alexanderbogdanov': get_product_alexanderbogdanov,
                 'werfstore': get_product_werfstore,
+                'koffer': get_product_koffer,
 
 
                 #не работают с requests
@@ -869,6 +883,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'zarina': 'Одежда/обувь/аксессуары',
                 'alexanderbogdanov': 'Одежда/обувь/аксессуары',
                 'werfstore': 'Одежда/обувь/аксессуары',
+                'koffer': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
