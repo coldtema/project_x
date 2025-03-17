@@ -843,6 +843,19 @@ def get_product_megafon(product_url):
 
 
 
+def get_product_ecco(product_url):
+    '''Функция для парсинга товара из ecco'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='price').text.strip()
+    print(price_element)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'ecco', 'category': shop_to_category['ecco']}
+
+
+
 
 
 
@@ -970,6 +983,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'yves-rocher': get_product_yves_rocher,
                 'galaxystore': get_product_galaxystore,
                 'megafon': get_product_megafon,
+                'ecco': get_product_ecco,
 
 
                 #не работают с requests
@@ -1054,6 +1068,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'yves-rocher': 'Косметика и парфюмерия',
                 'galaxystore': 'Электроника',
                 'megafon': 'Электроника',
+                'ecco': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
