@@ -494,7 +494,15 @@ def get_product_pompa(product_url):
 
 
 
-
+def get_product_bunnyhill(product_url):
+    '''Функция для парсинга товара из bunnyhill'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("span", class_='price price_to_change').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='name js-ga-name').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'bunnyhill', 'category': shop_to_category['bunnyhill']}
 
 
 
