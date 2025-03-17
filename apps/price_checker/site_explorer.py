@@ -868,6 +868,19 @@ def get_product_xcom_shop(product_url):
 
 
 
+def get_product_epldiamond(product_url):
+    '''Функция для парсинга товара из epldiamond'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(цене )(.+)( руб)', string=price_element).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'epldiamond', 'category': shop_to_category['epldiamond']}
+
+
+
 
 
 
@@ -923,6 +936,9 @@ def get_product_henderson(product_url):
     ...
 
 def get_product_finn_flare(product_url):
+    ...
+
+def get_product_askona(product_url):
     ...
 
 
@@ -997,6 +1013,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'megafon': get_product_megafon,
                 'ecco': get_product_ecco,
                 'xcom-shop': get_product_xcom_shop,
+                'epldiamond': get_product_epldiamond,
 
 
                 #не работают с requests
@@ -1019,6 +1036,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'finn-flare': get_product_finn_flare,
                 'biggeek': get_product_biggeek,
                 'tefal': get_product_tefal,
+                'askona': get_product_askona,
                 }
 
 
@@ -1083,6 +1101,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'megafon': 'Электроника',
                 'ecco': 'Одежда/обувь/аксессуары',
                 'xcom-shop': 'Электроника',
+                'epldiamond': 'Ювелирные украшения',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1101,6 +1120,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'presentandsimple': 'Одежда/обувь/аксессуары',
                 'henderson': 'Одежда/обувь/аксессуары',
                 'finn-flare': 'Одежда/обувь/аксессуары',
+                'askona': 'Товары для дома'
 
 }
 
