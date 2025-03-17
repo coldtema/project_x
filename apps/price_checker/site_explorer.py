@@ -469,6 +469,19 @@ def get_product_inspireshop(product_url):
 
 
 
+def get_product_respect_shoes(product_url):
+    '''Функция для парсинга товара из respect-shoes'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='price-div-flex').text.strip()
+    price_element = price_element.split('р.')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='h1-cart').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'respect-shoes', 'category': shop_to_category['respect-shoes']}
+
+
+
 
 
 
@@ -562,6 +575,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'darsi': get_product_darsi,
                 'cocos-moscow': get_product_cocos_moscow,
                 'inspireshop': get_product_inspireshop,
+                'respect-shoes': get_product_respect_shoes,
 
 
                 #не работают с requests
@@ -610,6 +624,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'darsi': 'Одежда/обувь/аксессуары',
                 'cocos-moscow': 'Одежда/обувь/аксессуары',
                 'inspireshop': 'Одежда/обувь/аксессуары',
+                'respect-shoes': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
