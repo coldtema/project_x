@@ -482,7 +482,15 @@ def get_product_respect_shoes(product_url):
 
 
 
-
+def get_product_pompa(product_url):
+    '''Функция для парсинга товара из pompa'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("span", class_='current_price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find("h1", class_='detail-item-title d-sm-block d-none').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'pompa', 'category': shop_to_category['pompa']}
 
 
 
@@ -531,6 +539,9 @@ def get_product_thomas_muenz(product_url):
 def get_product_ekonika(product_url):
     ...
 
+def get_product_studio_29(product_url):
+    ...
+
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -576,6 +587,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'cocos-moscow': get_product_cocos_moscow,
                 'inspireshop': get_product_inspireshop,
                 'respect-shoes': get_product_respect_shoes,
+                'pompa': get_product_pompa,
+                'bunnyhill': get_product_bunnyhill,
 
 
                 #не работают с requests
@@ -590,6 +603,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'thomas-muenz': get_product_thomas_muenz,
                 'postmeridiem-brand': get_product_postmeridiem_brand,
                 'ekonika':get_product_ekonika,
+                'studio-29': get_product_studio_29
                 }
 
 
@@ -625,6 +639,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'cocos-moscow': 'Одежда/обувь/аксессуары',
                 'inspireshop': 'Одежда/обувь/аксессуары',
                 'respect-shoes': 'Одежда/обувь/аксессуары',
+                'pompa': 'Одежда/обувь/аксессуары',
+                'bunnyhill': 'Детская одежда/Одежда для мам', 
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -638,6 +654,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'thomas-muenz': 'Одежда/обувь/аксессуары',
                 'postmeridiem-brand': 'Одежда/обувь/аксессуары',
                 'ekonika': 'Одежда/обувь/аксессуары',
+                'studio-29': 'Одежда/обувь/аксессуары',
 
 }
 
