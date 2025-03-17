@@ -806,6 +806,18 @@ def get_product_bombbar(product_url):
 
 
 
+def get_product_yves_rocher(product_url):
+    '''Функция для парсинга товара из yves-rocher'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='bold text_size_20 tab_text_size_24').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'yves-rocher', 'category': shop_to_category['yves-rocher']}
+
+
+
 
 
 
@@ -930,6 +942,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'alpindustria': get_product_alpindustria,
                 'indiwd': get_product_indiwd,
                 'bombbar': get_product_bombbar,
+                'yves-rocher': get_product_yves_rocher,
 
 
                 #не работают с requests
@@ -1011,6 +1024,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'biggeek': 'Электроника',
                 'tefal': 'Бытовая техника',
                 'bombbar': 'Спортивное питание',
+                'yves-rocher': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
