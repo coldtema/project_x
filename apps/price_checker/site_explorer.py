@@ -506,7 +506,17 @@ def get_product_bunnyhill(product_url):
 
 
 
-
+def get_product_annapekun(product_url):
+    '''Функция для парсинга товара из annapekun'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='catalog-item__price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'(.+?)( - купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'annapekun', 'category': shop_to_category['annapekun']}
 
 
 
@@ -548,6 +558,9 @@ def get_product_ekonika(product_url):
     ...
 
 def get_product_studio_29(product_url):
+    ...
+
+def get_product_baon(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -597,6 +610,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'respect-shoes': get_product_respect_shoes,
                 'pompa': get_product_pompa,
                 'bunnyhill': get_product_bunnyhill,
+                'annapekun': get_product_annapekun,
 
 
                 #не работают с requests
@@ -611,7 +625,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'thomas-muenz': get_product_thomas_muenz,
                 'postmeridiem-brand': get_product_postmeridiem_brand,
                 'ekonika':get_product_ekonika,
-                'studio-29': get_product_studio_29
+                'studio-29': get_product_studio_29,
+                'baon': get_product_baon,
                 }
 
 
@@ -649,6 +664,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'respect-shoes': 'Одежда/обувь/аксессуары',
                 'pompa': 'Одежда/обувь/аксессуары',
                 'bunnyhill': 'Детская одежда/Одежда для мам', 
+                'annapekun': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -663,6 +679,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'postmeridiem-brand': 'Одежда/обувь/аксессуары',
                 'ekonika': 'Одежда/обувь/аксессуары',
                 'studio-29': 'Одежда/обувь/аксессуары',
+                'baon': 'Одежда/обувь/аксессуары',
 
 }
 
