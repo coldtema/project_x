@@ -631,6 +631,17 @@ def get_product_belleyou(product_url):
 
 
 
+def get_product_zolla(product_url):
+    '''Функция для парсинга товара из zolla'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='catalog-detail--redesign__aside-price-current').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1', class_='catalog-detail--redesign__aside-title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'zolla', 'category': shop_to_category['zolla']}
+
+
 
 
 
@@ -728,6 +739,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'selfmade': get_product_selfmade,
                 'kanzler-style': get_product_kanzler_style,
                 'belleyou': get_product_belleyou,
+                'zolla': get_product_zolla,
 
 
                 #не работают с requests
@@ -791,6 +803,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'selfmade': 'Одежда/обувь/аксессуары',
                 'kanzler-style': 'Одежда/обувь/аксессуары',
                 'belleyou': 'Одежда/обувь/аксессуары',
+                'zolla': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
