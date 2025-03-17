@@ -706,6 +706,24 @@ def get_product_koffer(product_url):
 
 
 
+def get_product_age_of_innocence(product_url):
+    '''Функция для парсинга товара из age-of-innocence'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('div', class_='v-stack')
+    price_element = ''.join(list(map(lambda x: x.text.strip(), price_element)))
+    price_element = re.search(pattern=r'(₽)(.+?)\,', string=price_element).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'age-of-innocence', 'category': shop_to_category['age-of-innocence']}
+
+
+
+
+
+
+
 
 
 
@@ -740,7 +758,6 @@ def get_product_demix(product_url):
 def get_product_thomas_muenz(product_url):
     ...
 
-
 def get_product_ekonika(product_url):
     ...
 
@@ -752,6 +769,13 @@ def get_product_baon(product_url):
 
 def get_product_presentandsimple(product_url):
     ...
+
+def get_product_henderson(product_url):
+    ...
+
+def get_product_finn_flare(product_url):
+    ...
+
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
@@ -814,6 +838,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'alexanderbogdanov': get_product_alexanderbogdanov,
                 'werfstore': get_product_werfstore,
                 'koffer': get_product_koffer,
+                'age-of-innocence': get_product_age_of_innocence,
 
 
                 #не работают с requests
@@ -832,6 +857,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'baon': get_product_baon,
                 'voishe': get_product_voishe,
                 'presentandsimple': get_product_presentandsimple,
+                'henderson': get_product_henderson,
+                'finn-flare': get_product_finn_flare,
                 }
 
 
@@ -884,6 +911,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'alexanderbogdanov': 'Одежда/обувь/аксессуары',
                 'werfstore': 'Одежда/обувь/аксессуары',
                 'koffer': 'Одежда/обувь/аксессуары',
+                'age-of-innocence': 'Детская одежда/Одежда для мам',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -900,6 +928,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'studio-29': 'Одежда/обувь/аксессуары',
                 'baon': 'Одежда/обувь/аксессуары',
                 'presentandsimple': 'Одежда/обувь/аксессуары',
+                'henderson': 'Одежда/обувь/аксессуары',
+                'finn-flare': 'Одежда/обувь/аксессуары',
 
 }
 
