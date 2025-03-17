@@ -533,6 +533,24 @@ def get_product_amazingred(product_url):
 
 
 
+def get_product_m_reason(product_url):
+    '''Функция для парсинга товара из m-reason'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', url=product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find("div", class_='price-card__price').text.strip()
+    price_element = price_element.split('i')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('div', class_='product-detail__title').text.strip()
+    name = ' '.join(name.split())
+    return {'price_element': price_element, 'name': name, 'shop': 'm-reason', 'category': shop_to_category['m-reason']}
+
+
+
 
 
 
@@ -625,6 +643,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bunnyhill': get_product_bunnyhill,
                 'annapekun': get_product_annapekun,
                 'amazingred': get_product_amazingred,
+                'm-reason': get_product_m_reason,
 
 
                 #не работают с requests
@@ -680,6 +699,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bunnyhill': 'Детская одежда/Одежда для мам', 
                 'annapekun': 'Одежда/обувь/аксессуары',
                 'amazingred': 'Одежда/обувь/аксессуары',
+                'm-reason': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
