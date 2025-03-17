@@ -891,6 +891,30 @@ def get_product_doctorslon(product_url):
 
 
 
+def get_product_randewoo(product_url): #пока добавляется последний элемент, если там список ароматов, подумать, как предложить выбор
+    '''Функция для парсинга товара из randewoo'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find_all('span', class_='s-productType__priceNewValue')
+        price_element = tuple(map(lambda x: x.text, price_element))
+        first_name = soup_engine.find('title').text.strip()
+        first_name = re.search(pattern=r'(.+?)( купить)', string=first_name).group(1).strip(' -')
+        last_name = soup_engine.find_all('div', class_='s-productType__title')
+        name = tuple(map(lambda x: first_name + ' ' + x.text.strip('? \r\n'), last_name))
+        if not name: raise Exception
+        dict_prices = dict(zip(name, price_element))
+        name = tuple(dict_prices.keys())[-1]
+        price_element = tuple(dict_prices.values())[-1]
+    except:
+        price_element = soup_engine.find('strong', class_='b-productSummary__priceNew').text.strip()
+        name = soup_engine.find('title').text.strip()
+        name = re.search(pattern=r'(.+?)( купить)', string=name).group(1).strip(' -')
+    return {'price_element': price_element, 'name': name, 'shop': 'randewoo', 'category': shop_to_category['randewoo']}
+
+
+
 
 
 
@@ -1027,6 +1051,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'xcom-shop': get_product_xcom_shop,
                 'epldiamond': get_product_epldiamond,
                 'doctorslon': get_product_doctorslon,
+                'randewoo': get_product_randewoo,
 
 
                 #не работают с requests
@@ -1117,6 +1142,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'xcom-shop': 'Электроника',
                 'epldiamond': 'Ювелирные украшения',
                 'doctorslon': 'Стоматологические товары',
+                'randewoo': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
