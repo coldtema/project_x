@@ -606,6 +606,19 @@ def get_product_selfmade(product_url):
 
 
 
+def get_product_kanzler_style(product_url):
+    '''Функция для парсинга товара из kanzler-style'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product__price-wrapper').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1', class_='product__title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'kanzler-style', 'category': shop_to_category['kanzler-style']}
+
+
+
 
 
 
@@ -701,6 +714,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'choux': get_product_choux,
                 'fablestore': get_product_fablestore,
                 'selfmade': get_product_selfmade,
+                'kanzler-style': get_product_kanzler_style,
 
 
                 #не работают с requests
@@ -762,6 +776,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'choux': 'Одежда/обувь/аксессуары',
                 'fablestore': 'Одежда/обувь/аксессуары',
                 'selfmade': 'Одежда/обувь/аксессуары',
+                'kanzler-style': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
