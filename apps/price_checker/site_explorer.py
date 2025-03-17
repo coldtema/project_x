@@ -568,6 +568,19 @@ def get_product_voishe(product_url):
 
 
 
+def get_product_choux(product_url):
+    '''Функция для парсинга товара из choux'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'choux', 'category': shop_to_category['choux']}
+
+
+
 
 
 
@@ -661,6 +674,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'annapekun': get_product_annapekun,
                 'amazingred': get_product_amazingred,
                 'm-reason': get_product_m_reason,
+                'choux': get_product_choux,
 
 
                 #не работают с requests
@@ -719,6 +733,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'amazingred': 'Одежда/обувь/аксессуары',
                 'm-reason': 'Одежда/обувь/аксессуары',
                 'voishe': 'Одежда/обувь/аксессуары',
+                'choux': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
