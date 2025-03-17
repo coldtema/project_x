@@ -768,6 +768,20 @@ def get_product_indiwd(product_url):
 
 
 
+def get_product_biggeek(product_url):
+    '''Функция для парсинга товара из biggeek'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='total-prod-price').text.strip()
+    price_element = price_element.split('₽')
+    price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'biggeek', 'category': shop_to_category['biggeek']}
+
+
+
 
 
 
@@ -911,6 +925,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'presentandsimple': get_product_presentandsimple,
                 'henderson': get_product_henderson,
                 'finn-flare': get_product_finn_flare,
+                'biggeek': get_product_biggeek,
                 }
 
 
@@ -967,6 +982,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'nice-one': 'Одежда/обувь/аксессуары',
                 'alpindustria': 'Экипировка',
                 'indiwd': 'Одежда/обувь/аксессуары',
+                'biggeek': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
