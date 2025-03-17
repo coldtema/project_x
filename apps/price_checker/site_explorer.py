@@ -594,6 +594,18 @@ def get_product_fablestore(product_url):
 
 
 
+def get_product_selfmade(product_url):
+    '''Функция для парсинга товара из selfmade'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1', class_='product-name').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'selfmade', 'category': shop_to_category['selfmade']}
+
+
+
 
 
 
@@ -688,6 +700,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'm-reason': get_product_m_reason,
                 'choux': get_product_choux,
                 'fablestore': get_product_fablestore,
+                'selfmade': get_product_selfmade,
 
 
                 #не работают с requests
@@ -748,6 +761,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'voishe': 'Одежда/обувь/аксессуары',
                 'choux': 'Одежда/обувь/аксессуары',
                 'fablestore': 'Одежда/обувь/аксессуары',
+                'selfmade': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
