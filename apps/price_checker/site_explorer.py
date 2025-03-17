@@ -856,6 +856,18 @@ def get_product_ecco(product_url):
 
 
 
+def get_product_xcom_shop(product_url):
+    '''Функция для парсинга товара из xcom-shop'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='card-content-total-price__current').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'xcom-shop', 'category': shop_to_category['xcom-shop']}
+
+
+
 
 
 
@@ -984,6 +996,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'galaxystore': get_product_galaxystore,
                 'megafon': get_product_megafon,
                 'ecco': get_product_ecco,
+                'xcom-shop': get_product_xcom_shop,
 
 
                 #не работают с requests
@@ -1069,6 +1082,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'galaxystore': 'Электроника',
                 'megafon': 'Электроника',
                 'ecco': 'Одежда/обувь/аксессуары',
+                'xcom-shop': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
