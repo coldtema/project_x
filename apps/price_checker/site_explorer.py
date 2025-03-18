@@ -933,6 +933,18 @@ def get_product_mir_kubikov(product_url):
 
 
 
+def get_product_bombbar(product_url): #может отлетать - надо давать таймаут
+    '''Функция для парсинга товара из bombbar'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'bombbar', 'category': shop_to_category['bombbar']}
+
+
+
 
 
 
@@ -994,16 +1006,6 @@ def get_product_askona(product_url):
 
 def get_product_sokolov(product_url):
     ...
-
-def get_product_bombbar(product_url):
-    '''Функция для парсинга товара из bombbar'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
-    soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('div', class_='price').text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bombbar', 'category': shop_to_category['bombbar']}
 
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1081,6 +1083,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'randewoo': get_product_randewoo,
                 'babor': get_product_babor,
                 'mir-kubikov': get_product_mir_kubikov,
+                'bombbar': get_product_bombbar,
 
 
                 #не работают с requests
@@ -1105,7 +1108,6 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tefal': get_product_tefal,
                 'askona': get_product_askona,
                 'sokolov': get_product_sokolov,
-                'bombbar': get_product_bombbar, #кинул в роботы после запросов (первые несколько штук отдал)
                 }
 
 
@@ -1164,7 +1166,6 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'indiwd': 'Одежда/обувь/аксессуары',
                 'biggeek': 'Электроника',
                 'tefal': 'Бытовая техника',
-                'bombbar': 'Спортивное питание',
                 'yves-rocher': 'Косметика и парфюмерия',
                 'galaxystore': 'Электроника',
                 'megafon': 'Электроника',
@@ -1175,6 +1176,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'randewoo': 'Косметика и парфюмерия',
                 'babor': 'Косметика и парфюмерия',
                 'mir-kubikov': 'Конструкторы',
+                'bombbar': 'Спортивное питание',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
