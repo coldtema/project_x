@@ -1158,6 +1158,21 @@ def get_product_quke(product_url):
 
 
 
+def get_product_leonardo(product_url):
+    '''Функция для парсинга товара из leonardo'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text
+    price_element = re.search(pattern=r'(за )(.+)( ₽)', string=full).group(2)
+    price_element = ''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element)))
+    price_element = int(price_element.split(',')[0])
+    name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'leonardo', 'category': shop_to_category['leonardo']}
+
+
+
 
 
 
@@ -1231,6 +1246,9 @@ def get_product_holodilnik(product_url):
     ...
 
 def get_product_letu(product_url):
+    ...
+
+def get_product_petrovich(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1346,6 +1364,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tefal': get_product_tefal,
                 'litres': get_product_litres,
                 'orteka': get_product_orteka,
+                'quke': get_product_quke,
+                'leonardo': get_product_leonardo,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1368,7 +1388,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'holodilnik': get_product_holodilnik,
                 'letu': get_product_letu,
                 'askona': get_product_askona,
-                'quke': get_product_quke,
+                'petrovich': get_product_petrovich,
                 }
 
 
@@ -1453,6 +1473,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'litres': 'Книги и аудиокниги',
                 'orteka': 'Ортопедический салон',
                 'quke': 'Электроника',
+                'leonardo': 'Товары для хобби',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1475,6 +1496,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'holodilnik': 'Бытовая техника',
                 'letu': 'Косметика и парфюмерия',
                 'askona': 'Товары для дома',
+                'petrovich': 'Товары для дома',
 
 }
 
