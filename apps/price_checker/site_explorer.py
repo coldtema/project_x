@@ -1231,6 +1231,20 @@ def get_product_aquaphor(product_url):
 
 
 
+def get_product_mnogomebeli(product_url):
+    '''Функция для парсинга товара из mnogomebeli'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(ли )(\- )?(.+)( руб\.)', string=full).group(3)
+    price_element = int(''.join(price_element.split('.')))
+    name = re.search(pattern=r'(.+)?(\: )', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'mnogomebeli', 'category': shop_to_category['mnogomebeli']}
+
+
+
 
 
 
@@ -1446,6 +1460,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tvoydom': get_product_tvoydom,
                 'sela': get_product_sela,
                 'aquaphor': get_product_aquaphor,
+                'mnogomebeli': get_product_mnogomebeli,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1564,6 +1579,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'tvoydom': 'Товары для дома',
                 'sela': 'Одежда/обувь/аксессуары',
                 'aquaphor': 'Фильтры для воды',
+                'mnogomebeli': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
