@@ -1327,6 +1327,25 @@ def get_product_evitastore(product_url):
 
 
 
+def get_product_chitai_gorod(product_url):
+    '''Функция для парсинга товара из chitai-gorod'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-offer-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    try:
+        author = soup_engine.find('a', class_='product-info-authors__author').text.strip()
+        name = soup_engine.find('h1').text.strip()
+        name = f'{name} ({author})'
+    except:
+        name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'chitai-gorod', 'category': shop_to_category['chitai-gorod']}
+
+
+
 
 
 
@@ -1552,6 +1571,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ipiter': get_product_ipiter,
                 'mie': get_product_mie,
                 'evitastore': get_product_evitastore,
+                'chitai-gorod': get_product_chitai_gorod,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1678,6 +1698,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'ipiter': 'Электроника',
                 'mie': 'Ювелирные украшения',
                 'evitastore': 'Косметика и парфюмерия',
+                'chitai-gorod': 'Книги и канцтовары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
