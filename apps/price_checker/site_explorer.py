@@ -957,6 +957,18 @@ def get_product_iledebeaute(product_url): #может отлетать - над�
 
 
 
+def get_product_shop_polaris(product_url): #может отлетать - надо давать таймаут
+    '''Функция для парсинга товара из shop-polaris'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price d-flex').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'shop-polaris', 'category': shop_to_category['shop-polaris']}
+
+
+
 
 
 
@@ -1101,6 +1113,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mir-kubikov': get_product_mir_kubikov,
                 'bombbar': get_product_bombbar,
                 'iledebeaute': get_product_iledebeaute,
+                'shop-polaris': get_product_shop_polaris,
 
 
                 #не работают с requests
@@ -1195,6 +1208,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'mir-kubikov': 'Конструкторы',
                 'bombbar': 'Спортивное питание',
                 'iledebeaute': 'Косметика и парфюмерия',
+                'shop-polaris': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
