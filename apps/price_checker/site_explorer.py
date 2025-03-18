@@ -1069,6 +1069,23 @@ def get_product_kuppersberg(product_url):
 
 
 
+def get_product_bosssleep(product_url):
+    '''Функция для парсинга товара из bosssleep'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('p', class_='item-header__price')
+    price_element = list(map(lambda x: x.text, price_element))
+    if '%' in price_element[1]:
+        price_element = price_element[2]
+    else:
+        price_element = price_element[0]
+    name = soup_engine.find('h1').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    return {'price_element': price_element, 'name': name, 'shop': 'bosssleep', 'category': shop_to_category['bosssleep']}
+
+
+
 
 
 
@@ -1223,6 +1240,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bestmebelshop': get_product_bestmebelshop,
                 'garlyn': get_product_garlyn,
                 'kuppersberg': get_product_kuppersberg,
+                'bosssleep': get_product_bosssleep,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1325,6 +1343,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bestmebelshop': 'Товары для дома',
                 'garlyn': 'Бытовая техника',
                 'kuppersberg': 'Бытовая техника',
+                'bosssleep': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
