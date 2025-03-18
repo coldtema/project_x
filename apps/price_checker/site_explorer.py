@@ -1012,6 +1012,20 @@ def get_product_apple_avenue(product_url):
 
 
 
+def get_product_re_store(product_url):
+    '''Функция для парсинга товара из re-store'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name':'description'}))
+    full = re.search(pattern=r'(\<meta content\=\")(.+)(от официального магазина)', string=full).group(2)
+    price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = re.search(pattern=r'(Купить )(.+)( по цене)', string=full).group(2)
+    return {'price_element': price_element, 'name': name, 'shop': 're-store', 'category': shop_to_category['re-store']}
+
+
+
 
 
 
@@ -1159,6 +1173,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'patchandgo': get_product_patchandgo,
                 'madwave': get_product_madwave,
                 'apple-avenue': get_product_apple_avenue,
+                're-store': get_product_re_store,
 
 
                 #не работают с requests
@@ -1257,6 +1272,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'patchandgo': 'Косметика и парфюмерия',
                 'madwave': 'Экипировка',
                 'apple-avenue': 'Электроника',
+                're-store': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
