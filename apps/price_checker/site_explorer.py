@@ -1057,6 +1057,18 @@ def get_product_garlyn(product_url):
 
 
 
+def get_product_kuppersberg(product_url):
+    '''Функция для парсинга товара из kuppersberg'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='prodMain__price--new').text.strip()
+    name = soup_engine.find('h1').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    return {'price_element': price_element, 'name': name, 'shop': 'kuppersberg', 'category': shop_to_category['kuppersberg']}
+
+
+
 
 
 
@@ -1210,7 +1222,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 're-store': get_product_re_store,
                 'bestmebelshop': get_product_bestmebelshop,
                 'garlyn': get_product_garlyn,
-
+                'kuppersberg': get_product_kuppersberg,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1312,6 +1324,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 're-store': 'Электроника',
                 'bestmebelshop': 'Товары для дома',
                 'garlyn': 'Бытовая техника',
+                'kuppersberg': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
