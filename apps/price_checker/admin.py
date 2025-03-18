@@ -3,9 +3,10 @@ from .models import Product, Price
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'shop', 'latest_price', 'url', 'image', 'author']
+    list_display = ['name', 'shop', 'latest_price', 'created', 'updated', 'author']
     list_filter = ['shop', 'author__nickname']
     search_fields = ['name']
+    ordering = ['-updated']
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
