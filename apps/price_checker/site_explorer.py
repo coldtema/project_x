@@ -1182,7 +1182,7 @@ def get_product_beeline(product_url):
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
     price_element = re.search(pattern=r'(цена )(.+)( руб.)', string=full).group(2)
-    price_element = ''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element)))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element))))
     name = re.search(pattern=r'(купить )(.+)(\: цена)', string=full).group(2)
     return {'price_element': price_element, 'name': name, 'shop': 'beeline', 'category': shop_to_category['beeline']}
 
@@ -1197,7 +1197,7 @@ def get_product_tvoydom(product_url):
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(цене )(.+)( руб.)', string=full).group(2)
-    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'tvoydom', 'category': shop_to_category['tvoydom']}
 
@@ -1211,7 +1211,7 @@ def get_product_sela(product_url):
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name': 'Description'}))
     price_element = re.search(pattern=r'(цене )(.+?)( руб\.)', string=full).group(2)
-    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'\"(.+)(, артикул)', string=full).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'sela', 'category': shop_to_category['sela']}
 
@@ -1225,7 +1225,7 @@ def get_product_aquaphor(product_url):
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-block').text.strip()
     price_element=price_element.split('₽')[0]
-    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'aquaphor', 'category': shop_to_category['aquaphor']}
 
@@ -1269,6 +1269,20 @@ def get_product_vsesmart(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'vsesmart', 'category': shop_to_category['vsesmart']}
+
+
+
+def get_product_boobl_goom(product_url):
+    '''Функция для парсинга товара из boobl-goom'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name': 'description'}))
+    price_element = re.search(pattern=r'(Цена )(.+)( рублей)', string=full).group(2)
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = re.search(pattern=r'(Купить )(.+)( в интернет)', string=full).group(2)
+    return {'price_element': price_element, 'name': name, 'shop': 'boobl-goom', 'category': shop_to_category['boobl-goom']}
 
 
 
@@ -1490,6 +1504,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mnogomebeli': get_product_mnogomebeli,
                 'davines': get_product_davines,
                 'vsesmart': get_product_vsesmart,
+                'boobl-goom': get_product_boobl_goom,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1611,6 +1626,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'mnogomebeli': 'Товары для дома',
                 'davines': 'Косметика и парфюмерия',
                 'vsesmart': 'Электроника',
+                'boobl-goom': 'Детская одежда/Одежда для мам',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
