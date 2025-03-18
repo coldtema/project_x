@@ -8,8 +8,8 @@ import cloudscraper
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(moskva\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(8).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(msk\.)?(moskva\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(9).strip())(product_url)
 
     
 
@@ -1203,6 +1203,20 @@ def get_product_tvoydom(product_url):
 
 
 
+def get_product_sela(product_url):
+    '''Функция для парсинга товара из sela'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name': 'Description'}))
+    price_element = re.search(pattern=r'(цене )(.+?)( руб\.)', string=full).group(2)
+    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    name = re.search(pattern=r'\"(.+)(, артикул)', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'sela', 'category': shop_to_category['sela']}
+
+
+
 
 
 
@@ -1285,6 +1299,15 @@ def get_product_shoppinglive(product_url): #точно бан
     ...
 
 def get_product_ormatek(product_url): #точно бан
+    ...
+
+def get_product_oldi(product_url): #точно бан
+    ...
+
+def get_product_gulliver(product_url): #точно бан
+    ...
+
+def get_product_imperiatechno(product_url): #точно бан
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1404,6 +1427,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'leonardo': get_product_leonardo,
                 'beeline': get_product_beeline,
                 'tvoydom': get_product_tvoydom,
+                'sela': get_product_sela,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1429,6 +1453,9 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'petrovich': get_product_petrovich,
                 'shoppinglive': get_product_shoppinglive,
                 'ormatek': get_product_ormatek,
+                'oldi': get_product_oldi,
+                'gulliver': get_product_gulliver,
+                'imperiatechno': get_product_imperiatechno,
                 }
 
 
@@ -1516,6 +1543,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'leonardo': 'Товары для хобби',
                 'beeline': 'Электроника',
                 'tvoydom': 'Товары для дома',
+                'sela': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1541,6 +1569,9 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'petrovich': 'Товары для дома',
                 'shoppinglive': 'Маркетплейс',
                 'ormatek': 'Товары для дома',
+                'oldi': 'Электроника',
+                'gulliver': 'Детская одежда/Одежда для мам',
+                'imperiatechno': 'Электроника',
 
 }
 
