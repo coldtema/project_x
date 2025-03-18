@@ -8,8 +8,8 @@ import cloudscraper
 
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
-    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
-    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(7).strip())(product_url)
+    regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(moskva\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
+    return shop_to_func.get(re.search(pattern=regex, string=product_url).group(8).strip())(product_url)
 
     
 
@@ -1173,6 +1173,21 @@ def get_product_leonardo(product_url):
 
 
 
+def get_product_beeline(product_url):
+    '''Функция для парсинга товара из beeline'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    response.encoding = response.apparent_encoding
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name':'description'}))
+    price_element = re.search(pattern=r'(цена )(.+)( руб.)', string=full).group(2)
+    price_element = ''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element)))
+    name = re.search(pattern=r'(купить )(.+)(\: цена)', string=full).group(2)
+    return {'price_element': price_element, 'name': name, 'shop': 'beeline', 'category': shop_to_category['beeline']}
+
+
+
 
 
 
@@ -1194,19 +1209,19 @@ def get_product_leonardo(product_url):
 
 
 #магазины, которые блокируют обычные requests, поэтому их нужно делать по-другому
-def get_product_goldapple(product_url):
+def get_product_goldapple(product_url): #точно бан
     ...
 
-def get_product_lamoda(product_url):
+def get_product_lamoda(product_url): #есть имя, но нет цены в тайтле
     ...
 
-def get_product_lgcity(product_url): #блокает
+def get_product_lgcity(product_url): #точно бан
     ...
 
-def get_product_ozon(product_url): #блокает
+def get_product_ozon(product_url): #точно бан
     ...
 
-def get_product_sportmaster(product_url): #блокает
+def get_product_sportmaster(product_url): #точно бан
     ...
 
 def get_product_2moodstore(product_url):
@@ -1239,16 +1254,22 @@ def get_product_henderson(product_url):
 def get_product_sokolov(product_url):
     ...
 
-def get_product_vseinstrumenti(product_url):
+def get_product_vseinstrumenti(product_url): #точно бан
     ...
 
 def get_product_holodilnik(product_url):
     ...
 
-def get_product_letu(product_url):
+def get_product_letu(product_url): #точно бан
     ...
 
-def get_product_petrovich(product_url):
+def get_product_petrovich(product_url): #точно бан
+    ...
+
+def get_product_shoppinglive(product_url): #точно бан
+    ...
+
+def get_product_ormatek(product_url): #точно бан
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1366,6 +1387,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'orteka': get_product_orteka,
                 'quke': get_product_quke,
                 'leonardo': get_product_leonardo,
+                'beeline': get_product_beeline,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1389,6 +1411,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'letu': get_product_letu,
                 'askona': get_product_askona,
                 'petrovich': get_product_petrovich,
+                'shoppinglive': get_product_shoppinglive,
+                'ormatek': get_product_ormatek,
                 }
 
 
@@ -1474,6 +1498,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'orteka': 'Ортопедический салон',
                 'quke': 'Электроника',
                 'leonardo': 'Товары для хобби',
+                'beeline': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1497,6 +1522,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'letu': 'Косметика и парфюмерия',
                 'askona': 'Товары для дома',
                 'petrovich': 'Товары для дома',
+                'shoppinglive': 'Маркетплейс',
+                'ormatek': 'Товары для дома',
 
 }
 
