@@ -937,7 +937,8 @@ def get_product_mir_kubikov(product_url):
 def get_product_bombbar(product_url): #может отлетать - надо давать таймаут
     '''Функция для парсинга товара из bombbar'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1130,6 +1131,23 @@ def get_product_litres(product_url):
 
 
 
+def get_product_orteka(product_url):
+    '''Функция для парсинга товара из orteka'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name':"description"}))
+    price_element = re.search(pattern=r'(по цене )(.+)( руб.)', string=full).group(2)
+    name = re.search(pattern=r'(купить )(.+)( по цене)', string=full).group(2)
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    return {'price_element': price_element, 'name': name, 'shop': 'orteka', 'category': shop_to_category['orteka']}
+
+
+
+
+
+
 
 
 
@@ -1314,6 +1332,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'biggeek': get_product_biggeek,
                 'tefal': get_product_tefal,
                 'litres': get_product_litres,
+                'orteka': get_product_orteka,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1418,6 +1437,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'muztorg': 'Музыкальная аппаратура',
                 'finn-flare': 'Одежда/обувь/аксессуары',
                 'litres': 'Книги и аудиокниги',
+                'orteka': 'Ортопедический салон',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
