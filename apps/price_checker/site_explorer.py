@@ -1145,6 +1145,19 @@ def get_product_orteka(product_url):
 
 
 
+def get_product_quke(product_url):
+    '''Функция для парсинга товара из quke'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='price__value').text
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'quke', 'category': shop_to_category['quke']}
+
+
+
 
 
 
@@ -1355,6 +1368,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'holodilnik': get_product_holodilnik,
                 'letu': get_product_letu,
                 'askona': get_product_askona,
+                'quke': get_product_quke,
                 }
 
 
@@ -1438,6 +1452,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'finn-flare': 'Одежда/обувь/аксессуары',
                 'litres': 'Книги и аудиокниги',
                 'orteka': 'Ортопедический салон',
+                'quke': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
