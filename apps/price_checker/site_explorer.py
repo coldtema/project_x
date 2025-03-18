@@ -1217,6 +1217,20 @@ def get_product_sela(product_url):
 
 
 
+def get_product_aquaphor(product_url):
+    '''Функция для парсинга товара из aquaphor'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price-block').text.strip()
+    price_element=price_element.split('₽')[0]
+    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    name = soup_engine.find('title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'aquaphor', 'category': shop_to_category['aquaphor']}
+
+
+
 
 
 
@@ -1308,6 +1322,9 @@ def get_product_gulliver(product_url): #точно бан
     ...
 
 def get_product_imperiatechno(product_url): #точно бан
+    ...
+
+def get_product_kikocosmetics(product_url): #посмотреть - вроде cloudscraper должен обходить
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1428,6 +1445,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'beeline': get_product_beeline,
                 'tvoydom': get_product_tvoydom,
                 'sela': get_product_sela,
+                'aquaphor': get_product_aquaphor,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1456,6 +1474,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'oldi': get_product_oldi,
                 'gulliver': get_product_gulliver,
                 'imperiatechno': get_product_imperiatechno,
+                'kikocosmetics': get_product_kikocosmetics,
                 }
 
 
@@ -1544,6 +1563,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'beeline': 'Электроника',
                 'tvoydom': 'Товары для дома',
                 'sela': 'Одежда/обувь/аксессуары',
+                'aquaphor': 'Фильтры для воды',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1572,6 +1592,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'oldi': 'Электроника',
                 'gulliver': 'Детская одежда/Одежда для мам',
                 'imperiatechno': 'Электроника',
+                'kikocosmetics': 'Косметика и парфюмерия',
 
 }
 
