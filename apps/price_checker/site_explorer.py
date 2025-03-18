@@ -1026,6 +1026,18 @@ def get_product_re_store(product_url):
 
 
 
+def get_product_bestmebelshop(product_url):
+    '''Функция для парсинга товара из bestmebelshop'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = int(re.search(pattern=r'\- (\d+) р', string=full).group(1))
+    name = re.search(pattern=r'(.+) \- \d', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'bestmebelshop', 'category': shop_to_category['bestmebelshop']}
+
+
+
 
 
 
@@ -1089,6 +1101,9 @@ def get_product_askona(product_url):
     ...
 
 def get_product_sokolov(product_url):
+    ...
+
+def get_product_vseinstrumenti(product_url):
     ...
 
 
@@ -1174,6 +1189,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'madwave': get_product_madwave,
                 'apple-avenue': get_product_apple_avenue,
                 're-store': get_product_re_store,
+                'bestmebelshop': get_product_bestmebelshop,
 
 
                 #не работают с requests
@@ -1198,6 +1214,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tefal': get_product_tefal,
                 'askona': get_product_askona,
                 'sokolov': get_product_sokolov,
+                'vseinstrumenti': get_product_vseinstrumenti,
                 }
 
 
@@ -1273,6 +1290,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'madwave': 'Экипировка',
                 'apple-avenue': 'Электроника',
                 're-store': 'Электроника',
+                'bestmebelshop': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1293,6 +1311,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'finn-flare': 'Одежда/обувь/аксессуары',
                 'askona': 'Товары для дома',
                 'sokolov': 'Ювелирные украшения',
+                'vseinstrumenti': 'Товары для дома',
 
 }
 
