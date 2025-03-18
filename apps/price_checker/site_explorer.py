@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import json
 import httpx
+import cloudscraper
 
 
 def get_shop_of_product(product_url):
@@ -1101,6 +1102,24 @@ def get_product_muztorg(product_url):
 
 
 
+def get_product_finn_flare(product_url):
+    '''Функция для парсинга товара из finn-flare'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(цене от )(.+)( в)', string=full).group(2)
+    name = re.search(pattern=r'(.+) \(', string=full).group(1)
+    price_element = int(int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))) * 0.95) #пока у них стоит скидка при оплате онлайн
+    return {'price_element': price_element, 'name': name, 'shop': 'finn-flare', 'category': shop_to_category['finn-flare']}
+
+
+
+
+
+
+
 
 
 
@@ -1157,12 +1176,6 @@ def get_product_presentandsimple(product_url):
 def get_product_henderson(product_url):
     ...
 
-def get_product_finn_flare(product_url):
-    ...
-
-def get_product_askona(product_url):
-    ...
-
 def get_product_sokolov(product_url):
     ...
 
@@ -1187,6 +1200,26 @@ def get_product_postmeridiem_brand(product_url): #цена не парсится
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'postmeridiem-brand', 'category': shop_to_category['postmeridiem-brand']}
+
+def get_product_askona(product_url): #блокает ip после 5-10 запросов
+    '''Функция для парсинга товара из askona'''
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Referrer": "https://www.askona.ru/",
+    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    try:
+        price_element = re.search(pattern=r'(по цене от )(.+)( руб.)', string=full).group(2)
+        name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
+    except:
+        price_element = re.search(pattern=r'(цена от )(.+)', string=full).group(2)
+        name = re.search(pattern=r'(Купить )(.+)( цена)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    return {'price_element': price_element, 'name': name, 'shop': 'askona', 'category': shop_to_category['askona']}
 
 
 shop_to_func = {'brandshop': get_product_brandshop, 
@@ -1262,6 +1295,10 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'kuppersberg': get_product_kuppersberg,
                 'bosssleep': get_product_bosssleep,
                 'muztorg': get_product_muztorg,
+                'voishe': get_product_voishe,
+                'finn-flare': get_product_finn_flare,
+                'biggeek': get_product_biggeek,
+                'tefal': get_product_tefal,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1277,17 +1314,13 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ekonika':get_product_ekonika,
                 'studio-29': get_product_studio_29,
                 'baon': get_product_baon,
-                'voishe': get_product_voishe,
                 'presentandsimple': get_product_presentandsimple,
                 'henderson': get_product_henderson,
-                'finn-flare': get_product_finn_flare,
-                'biggeek': get_product_biggeek,
-                'tefal': get_product_tefal,
-                'askona': get_product_askona,
                 'sokolov': get_product_sokolov,
                 'vseinstrumenti': get_product_vseinstrumenti,
                 'holodilnik': get_product_holodilnik,
                 'letu': get_product_letu,
+                'askona': get_product_askona,
                 }
 
 
@@ -1368,6 +1401,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'kuppersberg': 'Бытовая техника',
                 'bosssleep': 'Товары для дома',
                 'muztorg': 'Музыкальная аппаратура',
+                'finn-flare': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1385,12 +1419,11 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'baon': 'Одежда/обувь/аксессуары',
                 'presentandsimple': 'Одежда/обувь/аксессуары',
                 'henderson': 'Одежда/обувь/аксессуары',
-                'finn-flare': 'Одежда/обувь/аксессуары',
-                'askona': 'Товары для дома',
                 'sokolov': 'Ювелирные украшения',
                 'vseinstrumenti': 'Товары для дома',
                 'holodilnik': 'Бытовая техника',
                 'letu': 'Косметика и парфюмерия',
+                'askona': 'Товары для дома',
 
 }
 
