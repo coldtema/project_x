@@ -1259,6 +1259,19 @@ def get_product_davines(product_url):
 
 
 
+def get_product_vsesmart(product_url):
+    '''Функция для парсинга товара из vsesmart'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='detail__price-cost').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'vsesmart', 'category': shop_to_category['vsesmart']}
+
+
+
 
 
 
@@ -1476,6 +1489,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'aquaphor': get_product_aquaphor,
                 'mnogomebeli': get_product_mnogomebeli,
                 'davines': get_product_davines,
+                'vsesmart': get_product_vsesmart,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1596,6 +1610,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'aquaphor': 'Фильтры для воды',
                 'mnogomebeli': 'Товары для дома',
                 'davines': 'Косметика и парфюмерия',
+                'vsesmart': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
