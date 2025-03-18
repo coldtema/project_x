@@ -1038,6 +1038,25 @@ def get_product_bestmebelshop(product_url):
 
 
 
+def get_product_garlyn(product_url):
+    '''Функция для парсинга товара из garlyn'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', 'price current-price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    try:
+        price_element_marketplace = soup_engine.find('span', 'price-marketplace').text.strip()
+        price_element_marketplace = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element_marketplace))))
+        if price_element_marketplace < price_element:
+            price_element = price_element_marketplace
+    except: pass
+    finally:
+        name = soup_engine.find('h1', class_ = 'title').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'garlyn', 'category': shop_to_category['garlyn']}
+
+
+
 
 
 
@@ -1190,6 +1209,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'apple-avenue': get_product_apple_avenue,
                 're-store': get_product_re_store,
                 'bestmebelshop': get_product_bestmebelshop,
+                'garlyn': get_product_garlyn,
 
 
                 #не работают с requests
@@ -1291,6 +1311,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'apple-avenue': 'Электроника',
                 're-store': 'Электроника',
                 'bestmebelshop': 'Товары для дома',
+                'garlyn': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
