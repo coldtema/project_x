@@ -1240,8 +1240,22 @@ def get_product_mnogomebeli(product_url):
     full = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(ли )(\- )?(.+)( руб\.)', string=full).group(3)
     price_element = int(''.join(price_element.split('.')))
-    name = re.search(pattern=r'(.+)?(\: )', string=full).group(1)
+    name = re.search(pattern=r'(.+?)(\: )', string=full).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'mnogomebeli', 'category': shop_to_category['mnogomebeli']}
+
+
+
+def get_product_davines(product_url):
+    '''Функция для парсинга товара из davines'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = str(soup_engine.find('meta', attrs={'name': 'description'}))
+    price_element = re.search(pattern=r'(за\s)(.+)(\sруб)', string=full).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = re.search(pattern=r'\"(.+)( за )', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'davines', 'category': shop_to_category['davines']}
 
 
 
@@ -1461,6 +1475,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'sela': get_product_sela,
                 'aquaphor': get_product_aquaphor,
                 'mnogomebeli': get_product_mnogomebeli,
+                'davines': get_product_davines,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1580,6 +1595,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'sela': 'Одежда/обувь/аксессуары',
                 'aquaphor': 'Фильтры для воды',
                 'mnogomebeli': 'Товары для дома',
+                'davines': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
