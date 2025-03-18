@@ -986,6 +986,20 @@ def get_product_patchandgo(product_url):
 
 
 
+def get_product_madwave(product_url):
+    '''Функция для парсинга товара из madwave'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('span', class_='target-price')
+    price_element = list(map(lambda x: x.text, price_element))[-1].strip(' .')
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'((.+)\s\|\s(.+))\|', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'madwave', 'category': shop_to_category['madwave']}
+
+
+
 
 
 
@@ -1132,6 +1146,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'iledebeaute': get_product_iledebeaute,
                 'shop-polaris': get_product_shop_polaris,
                 'patchandgo': get_product_patchandgo,
+                'madwave': get_product_madwave,
 
 
                 #не работают с requests
@@ -1228,6 +1243,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'iledebeaute': 'Косметика и парфюмерия',
                 'shop-polaris': 'Бытовая техника',
                 'patchandgo': 'Косметика и парфюмерия',
+                'madwave': 'Экипировка',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
