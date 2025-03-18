@@ -1086,6 +1086,21 @@ def get_product_bosssleep(product_url):
 
 
 
+def get_product_muztorg(product_url):
+    '''Функция для парсинга товара из muztorg'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('div', class_='mt-product-price__default-value').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='mt-product-price__discounted-value').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'muztorg', 'category': shop_to_category['muztorg']}
+
+
+
 
 
 
@@ -1154,6 +1169,11 @@ def get_product_sokolov(product_url):
 def get_product_vseinstrumenti(product_url):
     ...
 
+def get_product_holodilnik(product_url):
+    ...
+
+def get_product_letu(product_url):
+    ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
@@ -1241,6 +1261,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'garlyn': get_product_garlyn,
                 'kuppersberg': get_product_kuppersberg,
                 'bosssleep': get_product_bosssleep,
+                'muztorg': get_product_muztorg,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1265,6 +1286,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'askona': get_product_askona,
                 'sokolov': get_product_sokolov,
                 'vseinstrumenti': get_product_vseinstrumenti,
+                'holodilnik': get_product_holodilnik,
+                'letu': get_product_letu,
                 }
 
 
@@ -1343,7 +1366,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bestmebelshop': 'Товары для дома',
                 'garlyn': 'Бытовая техника',
                 'kuppersberg': 'Бытовая техника',
-                'bosssleep': 'Бытовая техника',
+                'bosssleep': 'Товары для дома',
+                'muztorg': 'Музыкальная аппаратура',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -1365,6 +1389,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'askona': 'Товары для дома',
                 'sokolov': 'Ювелирные украшения',
                 'vseinstrumenti': 'Товары для дома',
+                'holodilnik': 'Бытовая техника',
+                'letu': 'Косметика и парфюмерия',
 
 }
 
