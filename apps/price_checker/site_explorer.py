@@ -1116,6 +1116,20 @@ def get_product_finn_flare(product_url):
 
 
 
+def get_product_litres(product_url):
+    '''Функция для парсинга товара из litres'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = str(soup_engine.find('meta', itemprop="price"))
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'(.+)( \– )', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'litres', 'category': shop_to_category['litres']}
+
+
+
 
 
 
@@ -1299,6 +1313,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'finn-flare': get_product_finn_flare,
                 'biggeek': get_product_biggeek,
                 'tefal': get_product_tefal,
+                'litres': get_product_litres,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1402,6 +1417,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bosssleep': 'Товары для дома',
                 'muztorg': 'Музыкальная аппаратура',
                 'finn-flare': 'Одежда/обувь/аксессуары',
+                'litres': 'Книги и аудиокниги',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
