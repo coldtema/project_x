@@ -1188,6 +1188,21 @@ def get_product_beeline(product_url):
 
 
 
+def get_product_tvoydom(product_url):
+    '''Функция для парсинга товара из tvoydom'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    response.encoding = response.apparent_encoding
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(цене )(.+)( руб.)', string=full).group(2)
+    price_element = ''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))
+    name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'tvoydom', 'category': shop_to_category['tvoydom']}
+
+
+
 
 
 
@@ -1388,6 +1403,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'quke': get_product_quke,
                 'leonardo': get_product_leonardo,
                 'beeline': get_product_beeline,
+                'tvoydom': get_product_tvoydom,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1499,6 +1515,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'quke': 'Электроника',
                 'leonardo': 'Товары для хобби',
                 'beeline': 'Электроника',
+                'tvoydom': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
