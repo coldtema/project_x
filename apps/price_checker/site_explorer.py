@@ -945,7 +945,7 @@ def get_product_bombbar(product_url): #может отлетать - надо д
 
 
 
-def get_product_iledebeaute(product_url): #может отлетать - надо давать таймаут
+def get_product_iledebeaute(product_url): 
     '''Функция для парсинга товара из iledebeaute'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers)
@@ -957,7 +957,7 @@ def get_product_iledebeaute(product_url): #может отлетать - над�
 
 
 
-def get_product_shop_polaris(product_url): #может отлетать - надо давать таймаут
+def get_product_shop_polaris(product_url): 
     '''Функция для парсинга товара из shop-polaris'''
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers)
@@ -966,6 +966,23 @@ def get_product_shop_polaris(product_url): #может отлетать - над
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'shop-polaris', 'category': shop_to_category['shop-polaris']}
+
+
+
+def get_product_patchandgo(product_url):
+    '''Функция для парсинга товара из patchandgo'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-page__controls__price').text.strip()
+    price_element = price_element.split('р.')
+    if price_element[1]:
+        price_element = price_element[1].strip()
+    else:
+        price_element = price_element[0].strip()
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'patchandgo', 'category': shop_to_category['patchandgo']}
 
 
 
@@ -1114,6 +1131,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bombbar': get_product_bombbar,
                 'iledebeaute': get_product_iledebeaute,
                 'shop-polaris': get_product_shop_polaris,
+                'patchandgo': get_product_patchandgo,
 
 
                 #не работают с requests
@@ -1209,6 +1227,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bombbar': 'Спортивное питание',
                 'iledebeaute': 'Косметика и парфюмерия',
                 'shop-polaris': 'Бытовая техника',
+                'patchandgo': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
