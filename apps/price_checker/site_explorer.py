@@ -794,18 +794,6 @@ def get_product_tefal(product_url):
 
 
 
-def get_product_bombbar(product_url):
-    '''Функция для парсинга товара из bombbar'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
-    soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('div', class_='price').text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bombbar', 'category': shop_to_category['bombbar']}
-
-
-
 def get_product_yves_rocher(product_url):
     '''Функция для парсинга товара из yves-rocher'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -835,7 +823,7 @@ def get_product_megafon(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('span', class_='b-price-cards__value b-price__value').text.strip()
+    price_element = soup_engine.find('div', class_=re.compile(r'(Price_text__).+')).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'megafon', 'category': shop_to_category['megafon']}
@@ -911,7 +899,7 @@ def get_product_randewoo(product_url): #пока добавляется посл
         price_element = soup_engine.find('strong', class_='b-productSummary__priceNew').text.strip()
         name = soup_engine.find('title').text.strip()
         name = re.search(pattern=r'(.+?)( купить)', string=name).group(1).strip(' -')
-    return {'price_element': price_element, 'name': name, 'shop': 'randewoo', 'category': shop_to_category['randewoo']}
+    return {'price_element': int(price_element), 'name': name, 'shop': 'randewoo', 'category': shop_to_category['randewoo']}
 
 
 
@@ -1007,6 +995,16 @@ def get_product_askona(product_url):
 def get_product_sokolov(product_url):
     ...
 
+def get_product_bombbar(product_url):
+    '''Функция для парсинга товара из bombbar'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'bombbar', 'category': shop_to_category['bombbar']}
+
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
@@ -1073,7 +1071,6 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'nice-one': get_product_nice_one,
                 'alpindustria': get_product_alpindustria,
                 'indiwd': get_product_indiwd,
-                'bombbar': get_product_bombbar,
                 'yves-rocher': get_product_yves_rocher,
                 'galaxystore': get_product_galaxystore,
                 'megafon': get_product_megafon,
@@ -1108,6 +1105,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tefal': get_product_tefal,
                 'askona': get_product_askona,
                 'sokolov': get_product_sokolov,
+                'bombbar': get_product_bombbar, #кинул в роботы после запросов (первые несколько штук отдал)
                 }
 
 
