@@ -1826,6 +1826,19 @@ def get_product_ochkov(product_url):
 
 
 
+def get_product_svetlux(product_url):
+    '''Функция для парсинга товара из svetlux'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='catalog-item-price-cur').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'svetlux', 'category': shop_to_category['svetlux']}
+
+
+
 
 
 
@@ -2097,6 +2110,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'golden-line': get_product_golden_line,
                 'tmktools': get_product_tmktools,
                 'ochkov': get_product_ochkov,
+                'svetlux': get_product_svetlux,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2262,6 +2276,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'golden-line': 'Одежда/обувь/аксессуары',
                 'tmktools': 'Инструменты',
                 'ochkov': 'Оптика',
+                'svetlux': 'Светильники',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
