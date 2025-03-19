@@ -1857,6 +1857,21 @@ def get_product_divanboss(product_url):
 
 
 
+def get_product_postel_deluxe(product_url):
+    '''Функция для парсинга товара из postel-deluxe'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = str(soup_engine.find('meta', itemprop='price'))
+    if price_element == 'None':
+        price_element = soup_engine.find('p', class_='special-price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'postel-deluxe', 'category': shop_to_category['postel-deluxe']}
+
+
+
 
 
 
@@ -2129,6 +2144,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ochkov': get_product_ochkov,
                 'svetlux': get_product_svetlux,
                 'divanboss': get_product_divanboss,
+                'postel-deluxe': get_product_postel_deluxe,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2296,6 +2312,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'ochkov': 'Оптика',
                 'svetlux': 'Светильники',
                 'divanboss': 'Товары для дома',
+                'postel-deluxe': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
