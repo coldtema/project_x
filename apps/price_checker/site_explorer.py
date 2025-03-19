@@ -1556,6 +1556,23 @@ def get_product_kubaninstrument(product_url):
 
 
 
+def get_product_nespresso(product_url):
+    '''Функция для парсинга товара из nespresso'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('div', class_='product_prices -hasComparePrice').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='product_prices').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'nespresso', 'category': shop_to_category['nespresso']}
+
+
+
 
 
 
@@ -1796,7 +1813,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tddomovoy': get_product_tddomovoy,
                 'hyperauto': get_product_hyperauto,
                 'kubaninstrument': get_product_kubaninstrument,
-                # 'nespresso': get_product_nespresso,
+                'nespresso': get_product_nespresso,
                 # 'aofb': get_product_aofb,
                 # 'yamanshop': get_product_yamanshop,
                 # 'dvamyacha': get_product_dvamyacha,
