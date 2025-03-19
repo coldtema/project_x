@@ -1690,6 +1690,19 @@ def get_product_wau(product_url):
 
 
 
+def get_product_skinjestique(product_url):
+    '''Функция для парсинга товара из skinjestique'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('div', class_='product-item-price price-actual')[1].text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'skinjestique', 'category': shop_to_category['skinjestique']}
+
+
+
 
 
 
@@ -1949,6 +1962,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'fkniga': get_product_fkniga,
                 'santehnika-tut': get_product_santehnika_tut,
                 'wau': get_product_wau,
+                'skinjestique': get_product_skinjestique,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2103,6 +2117,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'fkniga': 'Книги и аудиокниги',
                 'santehnika-tut': 'Сантехника',
                 'wau': 'Косметика и парфюмерия',
+                'skinjestique': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
