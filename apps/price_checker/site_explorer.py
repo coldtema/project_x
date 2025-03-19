@@ -9,6 +9,7 @@ import cloudscraper
 def get_shop_of_product(product_url):
     '''Функция, определяющая, какому магазину принадлежит ссылка'''
     regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(msk\.)?(moskva\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
+    print(re.search(pattern=regex, string=product_url).group(9).strip())
     return shop_to_func.get(re.search(pattern=regex, string=product_url).group(9).strip())(product_url)
 
     
@@ -1427,6 +1428,23 @@ def get_product_velosklad(product_url):
 
 
 
+def get_product_multivarka(product_url):
+    '''Функция для парсинга товара из multivarka'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('div', class_='product-item-price-new').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='product-item-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'multivarka', 'category': shop_to_category['multivarka']}
+
+
+
 
 
 
@@ -1659,9 +1677,9 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'cozyhome': get_product_cozyhome,
                 'christinacosmetics': get_product_christinacosmetics,
                 'velosklad': get_product_velosklad,
-                # 'multivarka': get_product_multivarka,
-                # 'iboxstore': get_product_iboxstore,
-                # 'market-sveta': get_product_market_sveta,
+                'multivarka': get_product_multivarka,
+                'iboxstore': get_product_iboxstore,
+                'market-sveta': get_product_market_sveta,
                 # 'aravia': get_product_aravia,
                 # 'krona': get_product_krona,
                 # 'tddomovoy': get_product_tddomovoy,
