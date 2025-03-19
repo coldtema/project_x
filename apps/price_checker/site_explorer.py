@@ -1885,6 +1885,20 @@ def get_product_dushevoi(product_url):
 
 
 
+def get_product_tastycoffee(product_url):
+    '''Функция для парсинга товара из tastycoffee'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = str(soup_engine.find('meta', itemprop='price'))
+    price_element = re.search(pattern=r'(content)(.+?)\s', string=price_element).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'tastycoffee', 'category': shop_to_category['tastycoffee']}
+
+
+
 
 
 
@@ -2159,6 +2173,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'divanboss': get_product_divanboss,
                 'postel-deluxe': get_product_postel_deluxe,
                 'dushevoi': get_product_dushevoi,
+                'tastycoffee': get_product_tastycoffee,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2328,6 +2343,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'divanboss': 'Товары для дома',
                 'postel-deluxe': 'Товары для дома',
                 'dushevoi': 'Сантехника',
+                'tastycoffee': 'Кофе',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
