@@ -1808,6 +1808,24 @@ def get_product_tmktools(product_url):
 
 
 
+def get_product_ochkov(product_url):
+    '''Функция для парсинга товара из ochkov'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='nfe_single-product__price').text.strip()
+    price_element = price_element.split('руб.')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'ochkov', 'category': shop_to_category['ochkov']}
+
+
+
 
 
 
@@ -2078,6 +2096,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'santehmoll': get_product_santehmoll,
                 'golden-line': get_product_golden_line,
                 'tmktools': get_product_tmktools,
+                'ochkov': get_product_ochkov,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2242,6 +2261,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'santehmoll': 'Сантехника',
                 'golden-line': 'Одежда/обувь/аксессуары',
                 'tmktools': 'Инструменты',
+                'ochkov': 'Оптика',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
