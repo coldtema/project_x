@@ -1388,6 +1388,23 @@ def get_product_mann_ivanov_ferber(product_url):
 
 
 
+def get_product_cozyhome(product_url):
+    '''Функция для парсинга товара из cozyhome'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', attrs={'data-role': 'price'}).text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'cozyhome', 'category': shop_to_category['cozyhome']}
+
+
+
+
+
+
+
 
 
 
@@ -1617,6 +1634,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bestwatch': get_product_bestwatch,
                 'koleso': get_product_koleso,
                 'mann-ivanov-ferber': get_product_mann_ivanov_ferber,
+                'cozyhome': get_product_cozyhome,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1747,6 +1765,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'bestwatch': 'Часы',
                 'koleso': 'Автотовары',
                 'mann-ivanov-ferber': 'Книги и аудиокниги',
+                'cozyhome': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
