@@ -1346,6 +1346,21 @@ def get_product_chitai_gorod(product_url):
 
 
 
+def get_product_bestwatch(product_url):
+    '''Функция для парсинга товара из bestwatch'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', itemprop='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name1 = soup_engine.find('p', class_='card-model').text.strip()
+    name2 = soup_engine.find('p', class_='card-name').text.strip()
+    name = name2 + ' ' + name1
+    return {'price_element': price_element, 'name': name, 'shop': 'bestwatch', 'category': shop_to_category['bestwatch']}
+
+
+
 
 
 
@@ -1572,6 +1587,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mie': get_product_mie,
                 'evitastore': get_product_evitastore,
                 'chitai-gorod': get_product_chitai_gorod,
+                'bestwatch': get_product_bestwatch,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1699,6 +1715,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'mie': 'Ювелирные украшения',
                 'evitastore': 'Косметика и парфюмерия',
                 'chitai-gorod': 'Книги и канцтовары',
+                'bestwatch': 'Часы',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
