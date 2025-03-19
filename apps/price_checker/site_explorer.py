@@ -1743,6 +1743,19 @@ def get_product_zvet(product_url):
 
 
 
+def get_product_x_moda(product_url):
+    '''Функция для парсинга товара из x-moda'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-b__price-new').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'x-moda', 'category': shop_to_category['x-moda']}
+
+
+
 
 
 
@@ -2006,6 +2019,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'igroray': get_product_igroray,
                 'hansa': get_product_hansa,
                 'zvet': get_product_zvet,
+                'x-moda': get_product_x_moda,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2164,6 +2178,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'igroray': 'Игровые товары',
                 'hansa': 'Бытовая техника',
                 'zvet': 'Товары для дома',
+                'x-moda': 'Одежда/обувь/аксессуары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
