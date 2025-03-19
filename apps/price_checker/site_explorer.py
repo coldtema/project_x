@@ -1528,6 +1528,20 @@ def get_product_ansaligy(product_url):
 
 
 
+def get_product_hyperauto(product_url):
+    '''Функция для парсинга товара из hyperauto'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', itemprop='price').text.strip()
+    price_element = price_element.split(',')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'hyperauto', 'category': shop_to_category['hyperauto']}
+
+
+
 
 
 
@@ -1766,7 +1780,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'aravia': get_product_aravia,
                 'krona': get_product_krona,
                 'tddomovoy': get_product_tddomovoy,
-                # 'hyperauto': get_product_hyperauto,
+                'hyperauto': get_product_hyperauto,
                 # 'kubaninstrument': get_product_kubaninstrument,
                 # 'nespresso': get_product_nespresso,
                 # 'aofb': get_product_aofb,
