@@ -1647,6 +1647,20 @@ def get_product_hi_stores(product_url):
 
 
 
+def get_product_fkniga(product_url):
+    '''Функция для парсинга товара из fkniga'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price price--ruble price--md').text.strip()
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'fkniga', 'category': shop_to_category['fkniga']}
+
+
+
 
 
 
@@ -1894,6 +1908,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'dvamyacha': get_product_dvamyacha,
                 'ochkarik': get_product_ochkarik,
                 'hi-stores': get_product_hi_stores,
+                'fkniga': get_product_fkniga,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2043,6 +2058,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'ochkarik': 'Оптика',
                 'ansaligy': 'Косметика и парфюмерия',
                 'hi-stores': 'Электроника',
+                'fkniga': 'Книги и аудиокниги',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
