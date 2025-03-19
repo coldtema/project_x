@@ -1676,6 +1676,19 @@ def get_product_santehnika_tut(product_url):
 
 
 
+def get_product_wau(product_url):
+    '''Функция для парсинга товара из wau'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='product__price-wrapper').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'wau', 'category': shop_to_category['wau']}
+
+
 
 
 
@@ -1778,6 +1791,12 @@ def get_product_kikocosmetics(product_url): #посмотреть - вроде c
     ...
 
 def get_product_huawei(product_url):
+    ...
+
+def get_product_santehnika_room(product_url):
+    ...
+
+def get_product_maxidom(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -1929,6 +1948,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'hi-stores': get_product_hi_stores,
                 'fkniga': get_product_fkniga,
                 'santehnika-tut': get_product_santehnika_tut,
+                'wau': get_product_wau,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1960,6 +1980,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'kikocosmetics': get_product_kikocosmetics,
                 'huawei': get_product_huawei,
                 'ansaligy': get_product_ansaligy,
+                'santehnika-room': get_product_santehnika_room,
+                'maxidom': get_product_maxidom,
                 }
 
 
@@ -2080,6 +2102,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'hi-stores': 'Электроника',
                 'fkniga': 'Книги и аудиокниги',
                 'santehnika-tut': 'Сантехника',
+                'wau': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -2110,6 +2133,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'imperiatechno': 'Электроника',
                 'kikocosmetics': 'Косметика и парфюмерия',
                 'huawei': 'Электроника',
+                'santehnika-room': 'Сантехника',
+                'maxidom': 'Товары для дома',
 
 }
 
