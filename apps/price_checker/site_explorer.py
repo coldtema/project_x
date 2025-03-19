@@ -1912,6 +1912,22 @@ def get_product_eurodom(product_url):
 
 
 
+def get_product_happylook(product_url):
+    '''Функция для парсинга товара из happylook'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find('div', class_='product-detail__price js-product-detail__price').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='actual-price product-detail__price js-price-id').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'happylook', 'category': shop_to_category['happylook']}
+
+
+
 
 
 
@@ -2188,6 +2204,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'dushevoi': get_product_dushevoi,
                 'tastycoffee': get_product_tastycoffee,
                 'eurodom': get_product_eurodom,
+                'happylook': get_product_happylook,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2359,6 +2376,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'dushevoi': 'Сантехника',
                 'tastycoffee': 'Кофе',
                 'eurodom': 'Товары для дома',
+                'happylook': 'Оптика',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
