@@ -1769,6 +1769,19 @@ def get_product_playtoday(product_url):
 
 
 
+def get_product_santehmoll(product_url):
+    '''Функция для парсинга товара из santehmoll'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='pcard-info__price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'santehmoll', 'category': shop_to_category['santehmoll']}
+
+
+
 
 
 
@@ -1876,6 +1889,9 @@ def get_product_santehnika_room(product_url):
     ...
 
 def get_product_maxidom(product_url):
+    ...
+
+def get_product_velodrive(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -2034,6 +2050,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'zvet': get_product_zvet,
                 'x-moda': get_product_x_moda,
                 'playtoday': get_product_playtoday,
+                'santehmoll': get_product_santehmoll,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2067,6 +2084,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ansaligy': get_product_ansaligy,
                 'santehnika-room': get_product_santehnika_room,
                 'maxidom': get_product_maxidom,
+                'velodrive': get_product_velodrive,
                 }
 
 
@@ -2194,6 +2212,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'zvet': 'Товары для дома',
                 'x-moda': 'Одежда/обувь/аксессуары',
                 'playtoday': 'Детская одежда/Одежда для мам',
+                'santehmoll': 'Сантехника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -2226,6 +2245,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'huawei': 'Электроника',
                 'santehnika-room': 'Сантехника',
                 'maxidom': 'Товары для дома',
+                'velodrive': 'Велосипеды',
 
 }
 
