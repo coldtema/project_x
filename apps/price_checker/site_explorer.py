@@ -1620,6 +1620,20 @@ def get_product_dvamyacha(product_url):
 
 
 
+def get_product_ochkarik(product_url):
+    '''Функция для парсинга товара из ochkarik'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = re.search(r'(price":")(.+?)\"', response.text).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'ochkarik', 'category': shop_to_category['ochkarik']}
+
+
+
+
 
 
 
@@ -1864,7 +1878,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'aofb': get_product_aofb,
                 'yamanshop': get_product_yamanshop,
                 'dvamyacha': get_product_dvamyacha,
-                # 'ochkarik': get_product_ochkarik,
+                'ochkarik': get_product_ochkarik,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
