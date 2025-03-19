@@ -1502,6 +1502,19 @@ def get_product_krona(product_url):
 
 
 
+def get_product_tddomovoy(product_url):
+    '''Функция для парсинга товара из tddomovoy'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='base-product-price__main').text.strip()
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'tddomovoy', 'category': shop_to_category['tddomovoy']}
+
+
+
 
 
 
@@ -1739,7 +1752,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'market-sveta': get_product_market_sveta,
                 'aravia': get_product_aravia,
                 'krona': get_product_krona,
-                # 'tddomovoy': get_product_tddomovoy,
+                'tddomovoy': get_product_tddomovoy,
                 # 'hyperauto': get_product_hyperauto,
                 # 'kubaninstrument': get_product_kubaninstrument,
                 # 'nespresso': get_product_nespresso,
