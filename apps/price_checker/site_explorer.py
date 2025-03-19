@@ -1703,6 +1703,19 @@ def get_product_skinjestique(product_url):
 
 
 
+def get_product_igroray(product_url):
+    '''Функция для парсинга товара из igroray'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='product-info-main__price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'igroray', 'category': shop_to_category['igroray']}
+
+
+
 
 
 
@@ -1963,6 +1976,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'santehnika-tut': get_product_santehnika_tut,
                 'wau': get_product_wau,
                 'skinjestique': get_product_skinjestique,
+                'igroray': get_product_igroray,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2118,6 +2132,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'santehnika-tut': 'Сантехника',
                 'wau': 'Косметика и парфюмерия',
                 'skinjestique': 'Косметика и парфюмерия',
+                'igroray': 'Игровые товары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
