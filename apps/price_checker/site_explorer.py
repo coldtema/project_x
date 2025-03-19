@@ -1605,6 +1605,21 @@ def get_product_yamanshop(product_url):
 
 
 
+def get_product_dvamyacha(product_url):
+    '''Функция для парсинга товара из dvamyacha'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='elem-description-price').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'(.+)\sв\sИ', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'dvamyacha', 'category': shop_to_category['dvamyacha']}
+
+
+
 
 
 
@@ -1848,7 +1863,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'nespresso': get_product_nespresso,
                 'aofb': get_product_aofb,
                 'yamanshop': get_product_yamanshop,
-                # 'dvamyacha': get_product_dvamyacha,
+                'dvamyacha': get_product_dvamyacha,
                 # 'ochkarik': get_product_ochkarik,
 
                 #не работают с requests
