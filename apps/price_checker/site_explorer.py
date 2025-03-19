@@ -1716,6 +1716,20 @@ def get_product_igroray(product_url):
 
 
 
+def get_product_hansa(product_url):
+    '''Функция для парсинга товара из hansa'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    full = soup_engine.find('script', attrs={'type':'application/ld+json'}).text
+    price_element = re.search(pattern=r'\"price\"\: \"(.+)\.', string=full).group(1)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'hansa', 'category': shop_to_category['hansa']}
+
+
+
 
 
 
@@ -1977,6 +1991,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'wau': get_product_wau,
                 'skinjestique': get_product_skinjestique,
                 'igroray': get_product_igroray,
+                'hansa': get_product_hansa,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2133,6 +2148,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'wau': 'Косметика и парфюмерия',
                 'skinjestique': 'Косметика и парфюмерия',
                 'igroray': 'Игровые товары',
+                'hansa': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
