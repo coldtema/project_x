@@ -1471,6 +1471,24 @@ def get_product_market_sveta(product_url):
 
 
 
+def get_product_aravia(product_url):
+    '''Функция для парсинга товара из aravia'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-detail-price-block').text.strip()
+    price_element = price_element.split('₽')
+    if price_element[1]:
+        price_element = price_element[1]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'aravia', 'category': shop_to_category['aravia']}
+
+
+
 
 
 
@@ -1706,8 +1724,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'multivarka': get_product_multivarka,
                 'iboxstore': get_product_iboxstore,
                 'market-sveta': get_product_market_sveta,
-                # 'aravia': get_product_aravia,
-                # 'krona': get_product_krona,
+                'aravia': get_product_aravia,
+                'krona': get_product_krona,
                 # 'tddomovoy': get_product_tddomovoy,
                 # 'hyperauto': get_product_hyperauto,
                 # 'kubaninstrument': get_product_kubaninstrument,
