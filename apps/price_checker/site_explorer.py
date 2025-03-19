@@ -1872,6 +1872,19 @@ def get_product_postel_deluxe(product_url):
 
 
 
+def get_product_dushevoi(product_url):
+    '''Функция для парсинга товара из dushevoi'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = str(soup_engine.find('meta', itemprop='price'))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'dushevoi', 'category': shop_to_category['dushevoi']}
+
+
+
 
 
 
@@ -2145,6 +2158,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'svetlux': get_product_svetlux,
                 'divanboss': get_product_divanboss,
                 'postel-deluxe': get_product_postel_deluxe,
+                'dushevoi': get_product_dushevoi,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2313,6 +2327,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'svetlux': 'Светильники',
                 'divanboss': 'Товары для дома',
                 'postel-deluxe': 'Товары для дома',
+                'dushevoi': 'Сантехника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
