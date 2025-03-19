@@ -1445,6 +1445,23 @@ def get_product_multivarka(product_url):
 
 
 
+def get_product_iboxstore(product_url):
+    '''Функция для парсинга товара из iboxstore'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='product-card__price-current').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'iboxstore', 'category': shop_to_category['iboxstore']}
+
+
+
+
+
+
+
 
 
 
