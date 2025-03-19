@@ -1414,6 +1414,19 @@ def get_product_christinacosmetics(product_url):
 
 
 
+def get_product_velosklad(product_url):
+    '''Функция для парсинга товара из velosklad'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    name = soup_engine.find('h1').text.strip()
+    price_element = str(soup_engine.find('meta', itemprop='price'))
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    return {'price_element': price_element, 'name': name, 'shop': 'velosklad', 'category': shop_to_category['velosklad']}
+
+
+
 
 
 
@@ -1645,7 +1658,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mann-ivanov-ferber': get_product_mann_ivanov_ferber,
                 'cozyhome': get_product_cozyhome,
                 'christinacosmetics': get_product_christinacosmetics,
-                # 'velosklad': get_product_velosklad,
+                'velosklad': get_product_velosklad,
                 # 'multivarka': get_product_multivarka,
                 # 'iboxstore': get_product_iboxstore,
                 # 'market-sveta': get_product_market_sveta,
