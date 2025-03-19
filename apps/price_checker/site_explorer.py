@@ -1839,6 +1839,23 @@ def get_product_svetlux(product_url):
 
 
 
+def get_product_divanboss(product_url):
+    '''Функция для парсинга товара из divanboss'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('p', class_='item-header__price')
+    price_element = list(map(lambda x: x.text, price_element))
+    if '%' in price_element[1]:
+        price_element = price_element[2]
+    else:
+        price_element = price_element[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'divanboss', 'category': shop_to_category['divanboss']}
+
+
 
 
 
@@ -2111,6 +2128,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tmktools': get_product_tmktools,
                 'ochkov': get_product_ochkov,
                 'svetlux': get_product_svetlux,
+                'divanboss': get_product_divanboss,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2277,6 +2295,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'tmktools': 'Инструменты',
                 'ochkov': 'Оптика',
                 'svetlux': 'Светильники',
+                'divanboss': 'Товары для дома',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
