@@ -1633,6 +1633,20 @@ def get_product_ochkarik(product_url):
 
 
 
+def get_product_hi_stores(product_url):
+    '''Функция для парсинга товара из hi-stores'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='cost prices detail').text.strip()
+    price_element = re.search(pattern=r'(наличными\:)(.+)\n', string=price_element).group(2)
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'hi-stores', 'category': shop_to_category['hi-stores']}
+
+
+
 
 
 
@@ -1879,6 +1893,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'yamanshop': get_product_yamanshop,
                 'dvamyacha': get_product_dvamyacha,
                 'ochkarik': get_product_ochkarik,
+                'hi-stores': get_product_hi_stores,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2027,6 +2042,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'dvamyacha': 'Одежда/обувь/аксессуары',
                 'ochkarik': 'Оптика',
                 'ansaligy': 'Косметика и парфюмерия',
+                'hi-stores': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
