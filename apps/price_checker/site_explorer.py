@@ -1666,7 +1666,10 @@ def get_product_santehnika_tut(product_url):
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('div', class_='price').text.strip()
+    try:
+        price_element = soup_engine.find('div', class_='price clubprice').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut', 'category': shop_to_category['santehnika-tut']}
