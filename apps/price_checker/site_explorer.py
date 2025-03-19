@@ -1401,7 +1401,16 @@ def get_product_cozyhome(product_url):
 
 
 
-
+def get_product_christinacosmetics(product_url):
+    '''Функция для парсинга товара из christinacosmetics'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price-detale').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'christinacosmetics', 'category': shop_to_category['christinacosmetics']}
 
 
 
@@ -1635,6 +1644,21 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'koleso': get_product_koleso,
                 'mann-ivanov-ferber': get_product_mann_ivanov_ferber,
                 'cozyhome': get_product_cozyhome,
+                'christinacosmetics': get_product_christinacosmetics,
+                # 'velosklad': get_product_velosklad,
+                # 'multivarka': get_product_multivarka,
+                # 'iboxstore': get_product_iboxstore,
+                # 'market-sveta': get_product_market_sveta,
+                # 'aravia': get_product_aravia,
+                # 'krona': get_product_krona,
+                # 'tddomovoy': get_product_tddomovoy,
+                # 'hyperauto': get_product_hyperauto,
+                # 'kubaninstrument': get_product_kubaninstrument,
+                # 'nespresso': get_product_nespresso,
+                # 'aofb': get_product_aofb,
+                # 'yamanshop': get_product_yamanshop,
+                # 'dvamyacha': get_product_dvamyacha,
+                # 'ochkarik': get_product_ochkarik,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -1766,6 +1790,21 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'koleso': 'Автотовары',
                 'mann-ivanov-ferber': 'Книги и аудиокниги',
                 'cozyhome': 'Товары для дома',
+                'christinacosmetics': 'Косметика и парфюмерия',
+                'velosklad': 'Велосипеды',
+                'multivarka': 'Бытовая техника',
+                'iboxstore': 'Автоэлектроника',
+                'market-sveta': 'Товары для дома',
+                'aravia': 'Косметика и парфюмерия',
+                'krona': 'Бытовая техника',
+                'tddomovoy': 'Товары для дома',
+                'hyperauto': 'Товары для авто',
+                'kubaninstrument': 'Товары для дома',
+                'nespresso': 'Кофе и кофемашины',
+                'aofb': 'Товары для дома',
+                'yamanshop': 'Косметика и парфюмерия',
+                'dvamyacha': 'Одежда/обувь/аксессуары',
+                'ochkarik': 'Оптика',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
