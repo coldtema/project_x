@@ -2254,6 +2254,44 @@ def get_product_krutizmi(product_url):
 
 
 
+def get_product_pharmacosmetica(product_url):
+    '''Функция для парсинга товара из pharmacosmetica'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find('h2', class_='tprice').text.strip()
+        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+        name = soup_engine.find('h1').text.strip()
+    except:
+        price_element = soup_engine.find_all('tr', class_='colors-table__row')
+        price_element = price_element[2:]
+        final_price_element = []
+        for elem in price_element:
+            if 'уценка' in str(elem):
+                final_price_element.append(int(re.search(pattern=r'(\<span\sclass\=\"tprice\"\>)(.+)\s₽\<', string=str(elem)).group(2)))
+            else:
+                final_price_element.append(int(re.search(pattern=r'(\<span class\=\"tprice\" data-action\-id\=\"0\"\>)(.+)\s₽\<', string=str(elem)).group(2)))
+        name = soup_engine.find_all('td', class_='colors-table__name-cell')
+        name = list(map(lambda x: re.search(pattern=r'(\<span\>)(.+?)\<', string=str(x)).group(2), name))
+        name = list(map(lambda x: f'{soup_engine.find('h1').text.strip()} {x}', name))
+        full = list(zip(final_price_element, name))
+        actions = soup_engine.find_all('td', class_='colors-table__buy-cell')
+        actions = list(map(lambda x: x.text, actions))
+        list_to_delete = []
+        for i in range(len(actions)):
+            if 'Купить' not in actions[i]:
+                list_to_delete.append(i)
+        final_full = []
+        for i in range(len(full)):
+            if i not in list_to_delete:
+                final_full.append(full[i])
+        price_element, name = final_full[0]
+    return {'price_element': price_element, 'name': name, 'shop': 'pharmacosmetica', 'category': shop_to_category['pharmacosmetica']}
+
+
+
 
 
 
@@ -2560,6 +2598,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'z51': get_product_z51,
                 'moulinex': get_product_moulinex,
                 'krutizmi': get_product_krutizmi,
+                'pharmacosmetica': get_product_pharmacosmetica,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2756,6 +2795,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'z51': 'Компьютерная периферия',
                 'moulinex': 'Бытовая техника',
                 'krutizmi': 'Спорт-товары',
+                'pharmacosmetica': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
