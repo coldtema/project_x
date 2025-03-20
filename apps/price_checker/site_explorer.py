@@ -2240,6 +2240,20 @@ def get_product_moulinex(product_url):
 
 
 
+def get_product_krutizmi(product_url):
+    '''Функция для парсинга товара из krutizmi'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='sidebar-card__price').text.strip()
+    price_element = price_element.split('руб.')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'krutizmi', 'category': shop_to_category['krutizmi']}
+
+
+
 
 
 
@@ -2353,6 +2367,9 @@ def get_product_stolplit(product_url):
     ...
 
 def get_product_euro_diski(product_url):
+    ...
+
+def get_product_dvizhcom(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -2542,6 +2559,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'rossko': get_product_rossko,
                 'z51': get_product_z51,
                 'moulinex': get_product_moulinex,
+                'krutizmi': get_product_krutizmi,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2578,6 +2596,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'velodrive': get_product_velodrive,
                 'stolplit': get_product_stolplit,
                 'euro-diski': get_product_euro_diski,
+                'dvizhcom': get_product_dvizhcom,
                 }
 
 
@@ -2736,6 +2755,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'rossko': 'Товары для авто',
                 'z51': 'Компьютерная периферия',
                 'moulinex': 'Бытовая техника',
+                'krutizmi': 'Спорт-товары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -2771,6 +2791,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'velodrive': 'Велосипеды',
                 'stolplit': 'Товары для дома',
                 'euro-diski': 'Шины и диски',
+                'dvizhcom': 'Товары для авто',
 
 }
 
