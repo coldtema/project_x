@@ -1929,6 +1929,25 @@ def get_product_happylook(product_url):
 
 
 
+def get_product_consul_coton(product_url):
+    '''Функция для парсинга товара из consul-coton'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = httpx.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find('div', class_='detail-price__new detail-price__new_red').text
+    except:
+        try:
+            price_element = soup_engine.find('div', class_='detail-price__new ').text
+        except:
+            price_element = soup_engine.find('div', class_='detail-price detail-price_type_compact detail-price_bottom_close').text
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'consul-coton', 'category': shop_to_category['consul-coton']}
+
+
+
+
 
 
 
@@ -2036,6 +2055,12 @@ def get_product_maxidom(product_url):
     ...
 
 def get_product_velodrive(product_url):
+    ...
+
+def get_product_stolplit(product_url):
+    ...
+
+def get_product_euro_diski(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -2205,6 +2230,19 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'tastycoffee': get_product_tastycoffee,
                 'eurodom': get_product_eurodom,
                 'happylook': get_product_happylook,
+                'consul-coton': get_product_consul_coton,
+                # 'planeta-sport': get_product_planeta_sport,
+                # 'krups': get_product_krups,
+                # 'rocky-shop': get_product_rocky_shop,
+                # 'aromacode': get_product_aromacode,
+                # 'kosmetika-proff': get_product_kosmetika_proff,
+                # 'clever-media': get_product_clever_media,
+                # 'elemis': get_product_elemis,
+                # 'audiomania': get_product_audiomania,
+                # 'mdm-complect': get_product_mdm_complect,
+                # 'lu': get_product_lu,
+                # 'litnet': get_product_litnet,
+                # 'mi-shop': get_product_mi_shop,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2239,6 +2277,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'santehnika-room': get_product_santehnika_room,
                 'maxidom': get_product_maxidom,
                 'velodrive': get_product_velodrive,
+                'stolplit': get_product_stolplit,
+                'euro-diski': get_product_euro_diski,
                 }
 
 
@@ -2377,6 +2417,19 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'tastycoffee': 'Кофе',
                 'eurodom': 'Товары для дома',
                 'happylook': 'Оптика',
+                'consul-coton': 'Товары для дома',
+                'planeta-sport': 'Одежда/обувь/аксессуары',
+                'krups': 'Кофе',
+                'rocky-shop': 'Боксерская экипировка',
+                'aromacode': 'Косметика и парфюмерия',
+                'kosmetika-proff': 'Косметика и парфюмерия',
+                'clever-media': 'Книги',
+                'elemis': 'Косметика и парфюмерия',
+                'audiomania': 'Акустическая аппаратура',
+                'mdm-complect': 'Товары для дома',
+                'lu': 'Светильники',
+                'litnet': 'Книги и аудиокниги',
+                'mi-shop': 'Электроника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -2410,6 +2463,8 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'santehnika-room': 'Сантехника',
                 'maxidom': 'Товары для дома',
                 'velodrive': 'Велосипеды',
+                'stolplit': 'Товары для дома',
+                'euro-diski': 'Шины и диски',
 
 }
 
