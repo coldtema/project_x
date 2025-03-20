@@ -1947,6 +1947,25 @@ def get_product_consul_coton(product_url):
 
 
 
+# https://www.audiomania.ru/stereo_usilitel/premiera/premiera_a1.html#98738
+# https://www.audiomania.ru/stereo_usilitel/elac/elac_discovery_amp_ds-a101-g.html#83272
+# https://www.audiomania.ru/stereo_usilitel/iotavx/iotavx_sa3.html#85672
+# https://www.audiomania.ru/vinilovye_plastinki/alain_souchon/alain_souchon_nouvelle_collection.html
+def get_product_audiomania(product_url):
+    '''Функция для парсинга товара из audiomania'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = httpx.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find('span', class_='price-v3 price-sale').text
+    except:
+        price_element = soup_engine.find('span', class_='price-v3').text
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
+    return {'price_element': price_element, 'name': name, 'shop': 'audiomania', 'category': shop_to_category['audiomania']}
+
+
+
 
 
 
@@ -2238,7 +2257,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 # 'kosmetika-proff': get_product_kosmetika_proff,
                 # 'clever-media': get_product_clever_media,
                 # 'elemis': get_product_elemis,
-                # 'audiomania': get_product_audiomania,
+                'audiomania': get_product_audiomania,
                 # 'mdm-complect': get_product_mdm_complect,
                 # 'lu': get_product_lu,
                 # 'litnet': get_product_litnet,
