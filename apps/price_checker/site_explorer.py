@@ -2098,6 +2098,21 @@ def get_product_lu(product_url):
 
 
 
+def get_product_litnet(product_url):
+    '''Функция для парсинга товара из litnet'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('span', class_='ln_btn-get-text').text.strip()
+    price_element = re.search(pattern=r'\s([\d\.]+)\s(RUB)', string=price_element).group(1)
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x == '.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'litnet', 'category': shop_to_category['litnet']}
+
+
+
+
 
 
 
@@ -2390,7 +2405,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'audiomania': get_product_audiomania,
                 'mdm-complect': get_product_mdm_complect,
                 'lu': get_product_lu,
-                # 'litnet': get_product_litnet,
+                'litnet': get_product_litnet,
                 # 'mi-shop': get_product_mi_shop,
 
                 #не работают с requests
