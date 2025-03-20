@@ -1994,6 +1994,19 @@ def get_product_krups(product_url):
 
 
 
+def get_product_rocky_shop(product_url):
+    '''Функция для парсинга товара из rocky-shop'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = re.search(pattern=r'\<meta\sitemprop\=\"price\" content\=\"(\d+)', string=response.text).group(1)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'rocky-shop', 'category': shop_to_category['rocky-shop']}
+
+
+
 
 
 
@@ -2279,7 +2292,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'consul-coton': get_product_consul_coton,
                 'planeta-sport': get_product_planeta_sport,
                 'krups': get_product_krups,
-                # 'rocky-shop': get_product_rocky_shop,
+                'rocky-shop': get_product_rocky_shop,
                 # 'aromacode': get_product_aromacode,
                 # 'kosmetika-proff': get_product_kosmetika_proff,
                 # 'clever-media': get_product_clever_media,
