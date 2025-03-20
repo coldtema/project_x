@@ -1979,6 +1979,21 @@ def get_product_planeta_sport(product_url):
 
 
 
+def get_product_krups(product_url):
+    '''Функция для парсинга товара из krups'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = re.search(pattern=r'items: \[\{(.+?)\}', string=response.text).group(1)
+    price_element = re.search(pattern=r'\"price\"(.+)', string=response.text).group(1)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'krups', 'category': shop_to_category['krups']}
+
+
+
+
 
 
 
@@ -2263,7 +2278,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'happylook': get_product_happylook,
                 'consul-coton': get_product_consul_coton,
                 'planeta-sport': get_product_planeta_sport,
-                # 'krups': get_product_krups,
+                'krups': get_product_krups,
                 # 'rocky-shop': get_product_rocky_shop,
                 # 'aromacode': get_product_aromacode,
                 # 'kosmetika-proff': get_product_kosmetika_proff,
