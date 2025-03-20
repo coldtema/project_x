@@ -2314,6 +2314,19 @@ def get_product_gamepark(product_url):
 
 
 
+def get_product_domsporta(product_url):
+    '''Функция для парсинга товара из domsporta'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='b-detail__price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'domsporta', 'category': shop_to_category['domsporta']}
+
+
+
 
 
 
@@ -2622,6 +2635,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'krutizmi': get_product_krutizmi,
                 'pharmacosmetica': get_product_pharmacosmetica,
                 'gamepark': get_product_gamepark,
+                'domsporta': get_product_domsporta,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2820,6 +2834,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'krutizmi': 'Спорт-товары',
                 'pharmacosmetica': 'Косметика и парфюмерия',
                 'gamepark': 'Компьютерные игры и консоли',
+                'domsporta': 'Спорт-товары',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
