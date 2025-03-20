@@ -1947,10 +1947,8 @@ def get_product_consul_coton(product_url):
 
 
 
-# https://www.audiomania.ru/stereo_usilitel/premiera/premiera_a1.html#98738
-# https://www.audiomania.ru/stereo_usilitel/elac/elac_discovery_amp_ds-a101-g.html#83272
-# https://www.audiomania.ru/stereo_usilitel/iotavx/iotavx_sa3.html#85672
-# https://www.audiomania.ru/vinilovye_plastinki/alain_souchon/alain_souchon_nouvelle_collection.html
+
+
 def get_product_audiomania(product_url):
     '''Функция для парсинга товара из audiomania'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -1963,6 +1961,20 @@ def get_product_audiomania(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
     return {'price_element': price_element, 'name': name, 'shop': 'audiomania', 'category': shop_to_category['audiomania']}
+
+
+
+
+def get_product_planeta_sport(product_url):
+    '''Функция для парсинга товара из planeta-sport'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('span', class_='price_value').text.split()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text
+    return {'price_element': price_element, 'name': name, 'shop': 'planeta-sport', 'category': shop_to_category['planeta-sport']}
 
 
 
@@ -2250,7 +2262,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'eurodom': get_product_eurodom,
                 'happylook': get_product_happylook,
                 'consul-coton': get_product_consul_coton,
-                # 'planeta-sport': get_product_planeta_sport,
+                'planeta-sport': get_product_planeta_sport,
                 # 'krups': get_product_krups,
                 # 'rocky-shop': get_product_rocky_shop,
                 # 'aromacode': get_product_aromacode,
