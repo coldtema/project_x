@@ -2170,6 +2170,19 @@ def get_product_lex1(product_url):
 
 
 
+def get_product_r_ulybka(product_url):
+    '''Функция для парсинга товара из r-ulybka'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('script', attrs={'type':"application/ld+json"}).text.strip()
+    price_element = re.search(pattern=r'(\"price\"\:)([\d ]+)\,', string=price_element).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'r-ulybka', 'category': shop_to_category['r-ulybka']}
+
+
 
 
 
@@ -2467,6 +2480,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mi-shop': get_product_mi_shop,
                 'parfums': get_product_parfums,
                 'lex1': get_product_lex1,
+                'r-ulybka': get_product_r_ulybka,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2656,6 +2670,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'mi-shop': 'Электроника',
                 'parfums': 'Косметика и парфюмерия',
                 'lex1': 'Бытовая техника',
+                'r-ulybka': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
