@@ -2007,6 +2007,27 @@ def get_product_rocky_shop(product_url):
 
 
 
+# https://aromacode.ru/product/mancera-cinque-terre/
+# https://aromacode.ru/product/mancera-cherry-cherry/
+# https://aromacode.ru/product/mancera-cinque-terre/
+# https://aromacode.ru/product/lacoste-booster/
+def get_product_aromacode(product_url):
+    '''Функция для парсинга товара из aromacode'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find_all('span', class_='price prices-price prices-price-regular active')
+    price_element = list(map(lambda x: int(x.text), price_element))
+    name = soup_engine.find_all('span', class_='sku-name')
+    name = list(map(lambda x: x.text.strip(), name))
+    dict_prices = dict(zip(name, price_element))
+    name = tuple(dict_prices.keys())[-1]
+    price_element = tuple(dict_prices.values())[-1]
+    return {'price_element': price_element, 'name': name, 'shop': 'aromacode', 'category': shop_to_category['aromacode']}
+
+
+
 
 
 
@@ -2293,7 +2314,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'planeta-sport': get_product_planeta_sport,
                 'krups': get_product_krups,
                 'rocky-shop': get_product_rocky_shop,
-                # 'aromacode': get_product_aromacode,
+                'aromacode': get_product_aromacode,
                 # 'kosmetika-proff': get_product_kosmetika_proff,
                 # 'clever-media': get_product_clever_media,
                 # 'elemis': get_product_elemis,
