@@ -2153,6 +2153,23 @@ def get_product_parfums(product_url):
 
 
 
+def get_product_lex1(product_url):
+    '''Функция для парсинга товара из lex1'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='item-single-product-price mb-3 price').text.strip()
+    if '%' in price_element:
+        price_element = re.search(pattern=r'(Текущая цена\:)\s([\d\s]+)₽', string = price_element).group(2)
+    else:
+        price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'lex1', 'category': shop_to_category['lex1']}
+
+
+
 
 
 
@@ -2449,6 +2466,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'litnet': get_product_litnet,
                 'mi-shop': get_product_mi_shop,
                 'parfums': get_product_parfums,
+                'lex1': get_product_lex1,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2637,6 +2655,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'litnet': 'Книги и аудиокниги',
                 'mi-shop': 'Электроника',
                 'parfums': 'Косметика и парфюмерия',
+                'lex1': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
