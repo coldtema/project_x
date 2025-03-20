@@ -2113,6 +2113,20 @@ def get_product_litnet(product_url):
 
 
 
+def get_product_mi_shop(product_url):
+    '''Функция для парсинга товара из mi-shop'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='b-product-info__price-new').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'mi-shop', 'category': shop_to_category['mi-shop']}
+
+
+
+
 
 
 
@@ -2406,7 +2420,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'mdm-complect': get_product_mdm_complect,
                 'lu': get_product_lu,
                 'litnet': get_product_litnet,
-                # 'mi-shop': get_product_mi_shop,
+                'mi-shop': get_product_mi_shop,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
