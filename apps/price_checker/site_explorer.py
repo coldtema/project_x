@@ -1,3 +1,4 @@
+import time
 from requests import request
 from bs4 import BeautifulSoup
 import re
@@ -1018,7 +1019,8 @@ def get_product_apple_avenue(product_url):
 def get_product_re_store(product_url):
     '''Функция для парсинга товара из re-store'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
     full = re.search(pattern=r'(\<meta content\=\")(.+)(от официального магазина)', string=full).group(2)
