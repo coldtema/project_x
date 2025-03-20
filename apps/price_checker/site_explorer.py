@@ -2292,6 +2292,28 @@ def get_product_pharmacosmetica(product_url):
 
 
 
+def get_product_gamepark(product_url):
+    '''Функция для парсинга товара из gamepark'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    if 'used' in product_url:
+        price_element = soup_engine.find_all('div', class_='price')[1].text.strip()
+    else:
+        price_element = soup_engine.find('div', class_='price').text.strip()
+    try:
+        price_element = price_element.split('е')[0]
+    except: pass
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    if 'used' in product_url:
+        name = f'{soup_engine.find('h1').text.strip()} (Б/У)'
+    else:
+        name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'gamepark', 'category': shop_to_category['gamepark']}
+
+
+
 
 
 
@@ -2599,6 +2621,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'moulinex': get_product_moulinex,
                 'krutizmi': get_product_krutizmi,
                 'pharmacosmetica': get_product_pharmacosmetica,
+                'gamepark': get_product_gamepark,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2796,6 +2819,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'moulinex': 'Бытовая техника',
                 'krutizmi': 'Спорт-товары',
                 'pharmacosmetica': 'Косметика и парфюмерия',
+                'gamepark': 'Компьютерные игры и консоли',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
