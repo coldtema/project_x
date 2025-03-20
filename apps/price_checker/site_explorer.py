@@ -2084,6 +2084,20 @@ def get_product_mdm_complect(product_url):
 
 
 
+def get_product_lu(product_url):
+    '''Функция для парсинга товара из lu'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='card2-price__current').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'lu', 'category': shop_to_category['lu']}
+
+
+
+
 
 
 
@@ -2375,7 +2389,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'elemis': get_product_elemis,
                 'audiomania': get_product_audiomania,
                 'mdm-complect': get_product_mdm_complect,
-                # 'lu': get_product_lu,
+                'lu': get_product_lu,
                 # 'litnet': get_product_litnet,
                 # 'mi-shop': get_product_mi_shop,
 
