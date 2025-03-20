@@ -2128,6 +2128,31 @@ def get_product_mi_shop(product_url):
 
 
 
+def get_product_parfums(product_url):
+    '''Функция для парсинга товара из parfums'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find_all('label', class_='pd-product__variants-item')
+    price_element = list(map(lambda x: x.text.strip(' \n'), price_element))
+    for i in range(len(price_element)):
+        price_element[i] = ' '.join(list(filter(lambda x: True if x not in '\n ' else False, price_element[i].split()))) #уверен, что проще можно сделать
+        if '%' in price_element[i]:
+            price_element[i] = (re.search(pattern=r'(.+)\-\d', string=price_element[i]).group(1).strip(), int(re.search(pattern=r'\%\s(\d+?)\s(руб)', string=price_element[i]).group(1).strip()))
+        elif 'Нет в наличии' in price_element[i]:
+            price_element[i] = (re.search(pattern=r'(.+)\s(\d+?)\s(руб)', string=price_element[i]).group(1).strip(), 
+                                re.search(pattern=r'(.+)\s(\d+?)\s(руб)', string=price_element[i]).group(2).strip())
+        else:
+            price_element[i] = (re.search(pattern=r'(.+)\s(\d+?)\s(руб)', string=price_element[i]).group(1).strip(), 
+                                int(re.search(pattern=r'(.+)\s(\d+?)\s(руб)', string=price_element[i]).group(2).strip()))
+    price_element = list(filter(lambda x: True if isinstance(x[1], int) else False, price_element))
+    price_element = price_element[-1][1]
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'parfums', 'category': shop_to_category['parfums']}
+
+
+
 
 
 
@@ -2423,6 +2448,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lu': get_product_lu,
                 'litnet': get_product_litnet,
                 'mi-shop': get_product_mi_shop,
+                'parfums': get_product_parfums,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2610,6 +2636,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'lu': 'Светильники',
                 'litnet': 'Книги и аудиокниги',
                 'mi-shop': 'Электроника',
+                'parfums': 'Косметика и парфюмерия',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
