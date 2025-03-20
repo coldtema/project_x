@@ -2226,6 +2226,20 @@ def get_product_z51(product_url):
 
 
 
+def get_product_moulinex(product_url):
+    '''Функция для парсинга товара из moulinex'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('title').text.strip()
+    price_element = re.search(pattern=r'(цене\s)(.+)₽', string=price_element).group(2)
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'moulinex', 'category': shop_to_category['moulinex']}
+
+
+
 
 
 
@@ -2527,6 +2541,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'top-santehnika': get_product_top_santehnika,
                 'rossko': get_product_rossko,
                 'z51': get_product_z51,
+                'moulinex': get_product_moulinex,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2720,6 +2735,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'top-santehnika': 'Сантехника',
                 'rossko': 'Товары для авто',
                 'z51': 'Компьютерная периферия',
+                'moulinex': 'Бытовая техника',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
