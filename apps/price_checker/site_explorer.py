@@ -1022,6 +1022,7 @@ def get_product_re_store(product_url):
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
+    time.sleep(1)
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
     full = re.search(pattern=r'(\<meta content\=\")(.+)(от официального магазина)', string=full).group(2)
     price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
@@ -1046,7 +1047,8 @@ def get_product_bestmebelshop(product_url):
 def get_product_garlyn(product_url):
     '''Функция для парсинга товара из garlyn'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', 'price current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
