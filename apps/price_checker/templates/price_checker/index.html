@@ -31,7 +31,12 @@
         <tr>
             <td>{{elem.id}}</td>
             <td>{{elem.shop}}</td>
-            <th>{{elem.category}}</th>
+            <!-- <td>{{elem.shop.tags.all}}</td> -->
+            <td>
+                {%for item in elem.shop.tags.all%}
+                {{item}}
+                {%endfor%}
+            </td>
             <td><a href="{{elem.url}}">{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
             <td>{{elem.author_id}}</td>
