@@ -2340,6 +2340,20 @@ def get_product_lustrof(product_url):
 
 
 
+def get_product_lakestone(product_url):
+    '''Функция для парсинга товара из lakestone'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = price_element.split('руб.')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'lakestone', 'category': shop_to_category['lakestone']}
+
+
+
 
 
 
@@ -2456,6 +2470,9 @@ def get_product_euro_diski(product_url):
     ...
 
 def get_product_dvizhcom(product_url):
+    ...
+
+def get_product_bbcream(product_url):
     ...
 
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
@@ -2650,6 +2667,15 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'gamepark': get_product_gamepark,
                 'domsporta': get_product_domsporta,
                 'lustrof': get_product_lustrof,
+                'lakestone': get_product_lakestone,
+                # 'bookvoed': get_product_bookvoed,
+                # 'proficosmetics': get_product_proficosmetics,
+                # 'vamvelosiped': get_product_vamvelosiped,
+                # 'book24': get_product_book24,
+                # 'birota': get_product_birota,
+                # 'bebakids': get_product_bebakids,
+                # 'med-magazin': get_product_med_magazin,
+                # 'iherbgroup': get_product_iherbgroup,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
@@ -2687,6 +2713,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'stolplit': get_product_stolplit,
                 'euro-diski': get_product_euro_diski,
                 'dvizhcom': get_product_dvizhcom,
+                'bbcream': get_product_bbcream,
                 }
 
 
@@ -2850,6 +2877,15 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'gamepark': 'Компьютерные игры и консоли',
                 'domsporta': 'Спорт-товары',
                 'lustrof': 'Товары для дома',
+                'lakestone': 'Сумки и рюкзаки',
+                'bookvoed': 'Книги и канцтовары',
+                'proficosmetics': 'Косметика и парфюмерия',
+                'vamvelosiped': 'Велосипеды и аксессуары',
+                'book24': 'Книги и аудиокниги',
+                'birota': 'Велосипеды и аксессуары',
+                'bebakids': 'Детская одежда',
+                'med-magazin': 'Мед инвентарь',
+                'iherbgroup': 'Товары для здоровья',
 
                 #не работают с requests
                 'goldapple': 'Парфюмерия',
@@ -2886,7 +2922,7 @@ shop_to_category = {'brandshop': 'Одежда/обувь/аксессуары',
                 'stolplit': 'Товары для дома',
                 'euro-diski': 'Шины и диски',
                 'dvizhcom': 'Товары для авто',
-
+                'bbcream': 'Косметика и парфюмерия',
 }
 
 
