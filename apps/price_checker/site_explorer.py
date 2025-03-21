@@ -2440,6 +2440,20 @@ def get_product_bebakids(product_url):
 
 
 
+def get_product_med_magazin(product_url):
+    '''Функция для парсинга товара из med-magazin'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price-block').text.strip()
+    price_element = price_element.split('₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'med-magazin', 'category': shop_to_category['med-magazin']}
+
+
+
 
 
 
@@ -2760,7 +2774,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'book24': get_product_book24,
                 'birota': get_product_birota,
                 'bebakids': get_product_bebakids,
-                # 'med-magazin': get_product_med_magazin,
+                'med-magazin': get_product_med_magazin,
                 # 'iherbgroup': get_product_iherbgroup,
 
                 #не работают с requests
