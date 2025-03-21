@@ -2399,6 +2399,19 @@ def get_product_vamvelosiped(product_url):
 
 
 
+def get_product_book24(product_url):
+    '''Функция для парсинга товара из book24'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='app-price product-sidebar-price__price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'book24', 'category': shop_to_category['book24']}
+
+
+
 
 
 
@@ -2716,7 +2729,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'bookvoed': get_product_bookvoed,
                 'proficosmetics': get_product_proficosmetics,
                 'vamvelosiped': get_product_vamvelosiped,
-                # 'book24': get_product_book24,
+                'book24': get_product_book24,
                 # 'birota': get_product_birota,
                 # 'bebakids': get_product_bebakids,
                 # 'med-magazin': get_product_med_magazin,
