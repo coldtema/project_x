@@ -2369,6 +2369,19 @@ def get_product_bookvoed(product_url):
 
 
 
+def get_product_proficosmetics(product_url):
+    '''Функция для парсинга товара из proficosmetics'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('p', class_='new_price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'proficosmetics', 'category': shop_to_category['proficosmetics']}
+
+
+
 
 
 
@@ -2684,7 +2697,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lustrof': get_product_lustrof,
                 'lakestone': get_product_lakestone,
                 'bookvoed': get_product_bookvoed,
-                # 'proficosmetics': get_product_proficosmetics,
+                'proficosmetics': get_product_proficosmetics,
                 # 'vamvelosiped': get_product_vamvelosiped,
                 # 'book24': get_product_book24,
                 # 'birota': get_product_birota,
