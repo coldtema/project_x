@@ -3,10 +3,23 @@ from apps.blog.models import Author
 from django.utils import timezone
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя тега')
+
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+    def __str__(self):
+        return self.name
+
+
+
 class Shop(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя магазина')
     regex_name = models.CharField(max_length=100, verbose_name='Имя из url')
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
+    tags = models.ManyToManyField(Tag)
 
     class Meta:
         verbose_name = 'Магазин'
@@ -19,7 +32,6 @@ class Shop(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продукта')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
-    category = models.CharField(max_length=100, verbose_name='Категория', blank=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     url = models.URLField(verbose_name='URL')
     enabled = models.BooleanField(default=True)
