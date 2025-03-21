@@ -39,3 +39,13 @@ class Price(models.Model):
         ordering = ['added_time']
         verbose_name = 'Цена'
         verbose_name_plural = 'Цены'
+
+
+class Shop(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя магазина')
+    regex_name = models.CharField(max_length=100, verbose_name='Имя из url')
+    main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
+
+    class Meta:
+        verbose_name = 'Магазин'
+        verbose_name_plural = 'Магазины'
