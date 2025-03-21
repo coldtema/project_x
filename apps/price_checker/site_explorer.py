@@ -2354,6 +2354,21 @@ def get_product_lakestone(product_url):
 
 
 
+def get_product_bookvoed(product_url):
+    '''Функция для парсинга товара из bookvoed'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('div', class_='price-block-price-info__price').text.strip()
+    price_element = price_element.split(' ₽')[0]
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('title').text.strip()
+    name = re.search(pattern=r'(.+)\s\-\s(купить)', string=name).group(1)
+    return {'price_element': price_element, 'name': name, 'shop': 'bookvoed', 'category': shop_to_category['bookvoed']}
+
+
+
 
 
 
@@ -2668,7 +2683,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'domsporta': get_product_domsporta,
                 'lustrof': get_product_lustrof,
                 'lakestone': get_product_lakestone,
-                # 'bookvoed': get_product_bookvoed,
+                'bookvoed': get_product_bookvoed,
                 # 'proficosmetics': get_product_proficosmetics,
                 # 'vamvelosiped': get_product_vamvelosiped,
                 # 'book24': get_product_book24,
