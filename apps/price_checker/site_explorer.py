@@ -2382,6 +2382,23 @@ def get_product_proficosmetics(product_url):
 
 
 
+def get_product_vamvelosiped(product_url):
+    '''Функция для парсинга товара из vamvelosiped'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find_all('span', class_='price price-new')
+        price_element = price_element[-1].text.strip()
+    except:
+        price_element = soup_engine.find('span', class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'vamvelosiped', 'category': shop_to_category['vamvelosiped']}
+
+
+
 
 
 
@@ -2698,7 +2715,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lakestone': get_product_lakestone,
                 'bookvoed': get_product_bookvoed,
                 'proficosmetics': get_product_proficosmetics,
-                # 'vamvelosiped': get_product_vamvelosiped,
+                'vamvelosiped': get_product_vamvelosiped,
                 # 'book24': get_product_book24,
                 # 'birota': get_product_birota,
                 # 'bebakids': get_product_bebakids,
