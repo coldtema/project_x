@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm
-from .models import Product, Price
+from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
 import time
@@ -28,7 +28,7 @@ def all_price_list(request):
         if product_form.is_valid():
             product_data = get_shop_of_product(request.POST.get('url'))
             new_product = Product.objects.create(name=product_data['name'], 
-                                                 shop=product_data['shop'], 
+                                                 shop=Shop.objects.get(regex_name=product_data['shop']), 
                                                  latest_price=product_data['price_element'], 
                                                  url=request.POST.get('url'), 
                                                  author=Author.objects.get(id=2), 
