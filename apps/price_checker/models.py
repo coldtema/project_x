@@ -2,9 +2,23 @@ from django.db import models
 from apps.blog.models import Author
 from django.utils import timezone
 
+
+class Shop(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя магазина')
+    regex_name = models.CharField(max_length=100, verbose_name='Имя из url')
+    main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
+
+    class Meta:
+        verbose_name = 'Магазин'
+        verbose_name_plural = 'Магазины'
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продукта')
-    shop = models.CharField(max_length=100, blank=True, verbose_name='Магазин')
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     category = models.CharField(max_length=100, verbose_name='Категория', blank=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     url = models.URLField(verbose_name='URL')
@@ -39,13 +53,3 @@ class Price(models.Model):
         ordering = ['added_time']
         verbose_name = 'Цена'
         verbose_name_plural = 'Цены'
-
-
-class Shop(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Имя магазина')
-    regex_name = models.CharField(max_length=100, verbose_name='Имя из url')
-    main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-
-    class Meta:
-        verbose_name = 'Магазин'
-        verbose_name_plural = 'Магазины'
