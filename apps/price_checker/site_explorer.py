@@ -2454,6 +2454,19 @@ def get_product_med_magazin(product_url):
 
 
 
+def get_product_iherbgroup(product_url):
+    '''Функция для парсинга товара из iherbgroup'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    price_element = soup_engine.find('span', class_='product__price price nowrap').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'iherbgroup', 'category': shop_to_category['iherbgroup']}
+
+
+
 
 
 
@@ -2775,7 +2788,7 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'birota': get_product_birota,
                 'bebakids': get_product_bebakids,
                 'med-magazin': get_product_med_magazin,
-                # 'iherbgroup': get_product_iherbgroup,
+                'iherbgroup': get_product_iherbgroup,
 
                 #не работают с requests
                 'goldapple': get_product_goldapple,
