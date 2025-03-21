@@ -63,6 +63,14 @@ def delete_product(request, id):
     Product.objects.get(id=id).delete()
     return HttpResponseRedirect('/price_checker')
 
+
+
+def delete_price(request, id):
+    product_to_redirect = Price.objects.get(id=id).product
+    id_of_product = product_to_redirect.id
+    Price.objects.get(id=id).delete()
+    return HttpResponseRedirect(f'/price_checker/price_history/{id_of_product}')
+
 # def update_prices(request):
 #     asyncio.create_task(process_sites())
 

@@ -10,6 +10,7 @@
         <tr>
             <th style="width: 40%;">price</th>
             <th style="width: 60%;">added</th>
+            <th>action</th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +18,7 @@
         <tr align="center">
             <td>{{elem.price}}</td>
             <td>{{elem.added_time}}</td>
+            <td><a href="delete_price/{{elem.id}}">Удалить</a></td>
         </tr>
         {%endfor%}
     </tbody>
