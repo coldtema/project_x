@@ -13,7 +13,7 @@ class PriceAdmin(admin.ModelAdmin):
     list_display = ['price', 'added_time', 'product']
     list_filter = ['product__name']
     search_fields = ['product__name']
-    ordering = ['price']
+    ordering = ['added_time']
 
 
 @admin.register(Tag)
