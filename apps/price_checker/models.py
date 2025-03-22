@@ -34,6 +34,7 @@ class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     url = models.URLField(verbose_name='URL')
+    ref_url = models.URLField(verbose_name='Ref-URL')
     enabled = models.BooleanField(default=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='products', verbose_name='Никнейм автора')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
