@@ -27,7 +27,7 @@ def get_product_brandshop(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split())))) #добавление только цифр в поле price
     brand = soup_engine.find("div", class_="product-page__header font font_title-l").text.strip()
     category, model = map(lambda x: x.text.strip(), soup_engine.find_all("div", class_="product-page__subheader font font_m font_grey")) #модель не добавляю
-    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop', 'category': shop_to_category['brandshop']}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'brandshop',}
 
 
 
@@ -45,7 +45,7 @@ def get_product_superstep(product_url):
     name = soup_engine.find("div", class_="detail__info-wrapper")
     name = ' '.join(list(name.stripped_strings)) #переделанный в строку генератор отредактированных строк
     name = re.search(pattern=r'(.+?) Цвет', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'superstep', 'category': shop_to_category['superstep']}
+    return {'price_element': price_element, 'name': name, 'shop': 'superstep',}
 
 
 
@@ -66,7 +66,7 @@ def get_product_rendez_vous(product_url):
             category += f' {elem}'
     brand = brand.strip()
     category = category.strip()
-    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'rendez-vous', 'category': shop_to_category['rendez-vous']}
+    return {'price_element': price_element, 'name': brand + ' ' + category, 'shop': 'rendez-vous'}
 
 
 
@@ -84,7 +84,7 @@ def get_product_tsum_outlet(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': int(str(price_element)), 'name': name, 'shop': 'tsum-outlet', 'category': shop_to_category['tsum-outlet']}
+    return {'price_element': int(str(price_element)), 'name': name, 'shop': 'tsum-outlet'}
 
 
 
@@ -107,7 +107,7 @@ def get_product_tsum(product_url):
     category = soup_engine.find("h1", class_=re.compile(r'description__productName___\w+')).text.strip()
     category = re.search(pattern=r'[А-Я].+', string=category).group(0)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum', 'category': shop_to_category['tsum']}
+    return {'price_element': int(str(price_element)), 'name': brand + ' ' + category, 'shop': 'tsum'}
 
 
 
@@ -119,7 +119,7 @@ def get_product_street_beat(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     name = json_data['product']['name']
     price_element = json_data['product']['unitPrice']
-    return {'price_element': price_element, 'name': name, 'shop': 'street-beat', 'category': shop_to_category['street-beat']}
+    return {'price_element': price_element, 'name': name, 'shop': 'street-beat'}
 
 
 def get_product_lacoste(product_url):
@@ -130,7 +130,7 @@ def get_product_lacoste(product_url):
     price_element = soup_engine.find("div", class_="nl-product-price nl-product-configuration__price").text.strip().split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h4", class_="nl-product-configuration__title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lacoste', 'category': shop_to_category['lacoste']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lacoste'}
 
 
 
@@ -147,7 +147,7 @@ def get_product_sv77(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h1", class_="product-view-title uppercase").text.strip()
     name = ' '.join(name.split('\n'))
-    return {'price_element': price_element, 'name': name, 'shop': 'sv77', 'category': shop_to_category['sv77']}
+    return {'price_element': price_element, 'name': name, 'shop': 'sv77'}
 
 
 
@@ -159,7 +159,7 @@ def get_product_elyts(product_url):
     price_element = soup_engine.find("div", class_="final-price-block").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("h1").text
-    return {'price_element': price_element, 'name': name, 'shop': 'elyts', 'category': shop_to_category['elyts']}
+    return {'price_element': price_element, 'name': name, 'shop': 'elyts'}
 
 
 
@@ -171,7 +171,7 @@ def get_product_vipavenue(product_url):
     price_element = soup_engine.find("div", class_="product__card--price-actual").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
     name = soup_engine.find("div", class_="product__card--title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'vipavenue', 'category': shop_to_category['vipavenue']}
+    return {'price_element': price_element, 'name': name, 'shop': 'vipavenue'}
 
 
 
@@ -186,7 +186,7 @@ def get_product_aimclo(product_url):
         price_element = soup_engine.find("div", class_="product-information__price product-information__sale js-element-price").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_="product-information__title").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'aimclo', 'category': shop_to_category['aimclo']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aimclo'}
 
 
 
@@ -198,7 +198,7 @@ def get_product_befree(product_url):
     price_element = soup_engine.find("div", class_=re.compile(r'.+(digi-product-price)')).text.strip()
     price_element = price_element.split('₽')[0]
     name = soup_engine.find("span", class_=re.compile(r'.+( title)')).text.strip()
-    return {'price_element': int(price_element), 'name': name, 'shop': 'befree', 'category': shop_to_category['befree']}
+    return {'price_element': int(price_element), 'name': name, 'shop': 'befree'}
 
 
 def get_product_loverepublic(product_url):
@@ -214,7 +214,7 @@ def get_product_loverepublic(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='catalog-element__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'love republic', 'category': shop_to_category['loverepublic']}
+    return {'price_element': price_element, 'name': name, 'shop': 'love republic'}
 
 
 
@@ -227,7 +227,7 @@ def get_product_youstore(product_url):
     price_element = price_element.split('₽')[0].strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'youstore', 'category': shop_to_category['youstore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'youstore'}
 
 
 
@@ -239,7 +239,7 @@ def get_product_gate31(product_url): #вообще не увидел разде�
     price_element = soup_engine.find("div", class_='product-price__default').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='ProductPage__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'gate31', 'category': shop_to_category['gate31']}
+    return {'price_element': price_element, 'name': name, 'shop': 'gate31'}
 
 
 
@@ -251,7 +251,7 @@ def get_product_incanto(product_url):
     full = soup_engine.find("title").text.strip()
     price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
     name = re.search(pattern=r'(.+)( Incanto)', string=full).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'incanto', 'category': shop_to_category['incanto']}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'incanto'}
 
 
 
@@ -268,7 +268,7 @@ def get_product_sportcourt(product_url):
         price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='model_name').text.strip()
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'sportcourt', 'category': shop_to_category['sportcourt']}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'sportcourt'}
 
 
 
@@ -282,7 +282,7 @@ def get_product_1811stores(product_url):
     price_element = re.search(pattern=r'(за )(.+?)( руб.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores', 'category': shop_to_category['1811stores']}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': '1811stores'}
 
 
 
@@ -300,7 +300,7 @@ def get_product_bask(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( - )', string=name).group(1)
-    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'bask', 'category': shop_to_category['bask']}
+    return {'price_element': int(float(price_element)), 'name': name, 'shop': 'bask'}
 
 
 
@@ -314,7 +314,7 @@ def get_product_noone(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'noone', 'category': shop_to_category['noone']}
+    return {'price_element': price_element, 'name': name, 'shop': 'noone'}
 
 
 def get_product_elis(product_url):
@@ -325,7 +325,7 @@ def get_product_elis(product_url):
     price_element = soup_engine.find("span", class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='item-detail__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'elis', 'category': shop_to_category['elis']}
+    return {'price_element': price_element, 'name': name, 'shop': 'elis'}
 
 
 
@@ -346,7 +346,7 @@ def get_product_afinabags(product_url):
         name = re.search(pattern=r'(.+?)( по \d)', string=name).group(1)
     except:
         name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'afinabags', 'category': shop_to_category['afinabags']}
+    return {'price_element': price_element, 'name': name, 'shop': 'afinabags'}
 
 
 
@@ -359,7 +359,7 @@ def get_product_crockid(product_url):
     price_element = price_element.split('р.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='name').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'crockid', 'category': shop_to_category['crockid']}
+    return {'price_element': price_element, 'name': name, 'shop': 'crockid'}
 
 
 
@@ -371,7 +371,7 @@ def get_product_bungly(product_url):
     price_element = soup_engine.find("div", class_='price-first-load').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='product-title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bungly', 'category': shop_to_category['bungly']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bungly'}
 
 
 
@@ -385,7 +385,7 @@ def get_product_aupontrouge(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("title").text.strip()
     name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'aupontrouge', 'category': shop_to_category['aupontrouge']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aupontrouge'}
 
 
 
@@ -399,7 +399,7 @@ def get_product_sohoshop(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='topic__inner').text.strip()
     name = name.split('\n')[-1]
-    return {'price_element': price_element, 'name': name, 'shop': 'sohoshop', 'category': shop_to_category['sohoshop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'sohoshop'}
 
 
 
@@ -416,7 +416,7 @@ def get_product_lichi(product_url):
         price_element=price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1").text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lichi', 'category': shop_to_category['lichi']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lichi'}
 
 
 
@@ -429,7 +429,7 @@ def get_product_askent(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='productName').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'askent', 'category': shop_to_category['askent']}
+    return {'price_element': price_element, 'name': name, 'shop': 'askent'}
 
 
 
@@ -442,7 +442,7 @@ def get_product_darsi(product_url):
     price_element = re.search(pattern=r'(цене )(.+?)( руб)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'darsi', 'category': shop_to_category['darsi']}
+    return {'price_element': price_element, 'name': name, 'shop': 'darsi'}
 
 
 
@@ -455,7 +455,7 @@ def get_product_cocos_moscow(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='product_card__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'cocos-moscow', 'category': shop_to_category['cocos-moscow']}
+    return {'price_element': price_element, 'name': name, 'shop': 'cocos-moscow'}
 
 
 
@@ -468,7 +468,7 @@ def get_product_inspireshop(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='product-page__item-name').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'inspireshop', 'category': shop_to_category['inspireshop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'inspireshop'}
 
 
 
@@ -481,7 +481,7 @@ def get_product_respect_shoes(product_url):
     price_element = price_element.split('р.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='h1-cart').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'respect-shoes', 'category': shop_to_category['respect-shoes']}
+    return {'price_element': price_element, 'name': name, 'shop': 'respect-shoes'}
 
 
 
@@ -493,7 +493,7 @@ def get_product_pompa(product_url):
     price_element = soup_engine.find("span", class_='current_price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='detail-item-title d-sm-block d-none').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'pompa', 'category': shop_to_category['pompa']}
+    return {'price_element': price_element, 'name': name, 'shop': 'pompa'}
 
 
 
@@ -505,7 +505,7 @@ def get_product_bunnyhill(product_url):
     price_element = soup_engine.find("span", class_='price price_to_change').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='name js-ga-name').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bunnyhill', 'category': shop_to_category['bunnyhill']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bunnyhill'}
 
 
 
@@ -519,7 +519,7 @@ def get_product_annapekun(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+?)( - купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'annapekun', 'category': shop_to_category['annapekun']}
+    return {'price_element': price_element, 'name': name, 'shop': 'annapekun'}
 
 
 
@@ -531,7 +531,7 @@ def get_product_amazingred(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     price_element = json_data['product']['unitSalePrice']
     name = json_data['product']['name']
-    return {'price_element': price_element, 'name': name, 'shop': 'amazingred', 'category': shop_to_category['amazingred']}
+    return {'price_element': price_element, 'name': name, 'shop': 'amazingred'}
 
 
 
@@ -549,7 +549,7 @@ def get_product_m_reason(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('div', class_='product-detail__title').text.strip()
     name = ' '.join(name.split())
-    return {'price_element': price_element, 'name': name, 'shop': 'm-reason', 'category': shop_to_category['m-reason']}
+    return {'price_element': price_element, 'name': name, 'shop': 'm-reason'}
 
 
 
@@ -566,7 +566,7 @@ def get_product_voishe(product_url):
     price_element = price_element.split(',')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'voishe', 'category': shop_to_category['voishe']}
+    return {'price_element': price_element, 'name': name, 'shop': 'voishe'}
 
 
 
@@ -579,7 +579,7 @@ def get_product_choux(product_url):
     price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+?)( купить)', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'choux', 'category': shop_to_category['choux']}
+    return {'price_element': price_element, 'name': name, 'shop': 'choux'}
 
 
 
@@ -592,7 +592,7 @@ def get_product_fablestore(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product-info__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'fablestore', 'category': shop_to_category['fablestore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'fablestore'}
 
 
 
@@ -604,7 +604,7 @@ def get_product_selfmade(product_url):
     price_element = soup_engine.find('div', class_='product-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product-name').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'selfmade', 'category': shop_to_category['selfmade']}
+    return {'price_element': price_element, 'name': name, 'shop': 'selfmade'}
 
 
 
@@ -617,7 +617,7 @@ def get_product_kanzler_style(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'kanzler-style', 'category': shop_to_category['kanzler-style']}
+    return {'price_element': price_element, 'name': name, 'shop': 'kanzler-style'}
 
 
 
@@ -629,7 +629,7 @@ def get_product_belleyou(product_url):
     price_element = soup_engine.find('span', class_='current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product-desc-title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'belleyou', 'category': shop_to_category['belleyou']}
+    return {'price_element': price_element, 'name': name, 'shop': 'belleyou'}
 
 
 
@@ -641,7 +641,7 @@ def get_product_zolla(product_url):
     price_element = soup_engine.find('div', class_='catalog-detail--redesign__aside-price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='catalog-detail--redesign__aside-title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'zolla', 'category': shop_to_category['zolla']}
+    return {'price_element': price_element, 'name': name, 'shop': 'zolla'}
 
 
 
@@ -654,7 +654,7 @@ def get_product_danielonline(product_url):
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'danielonline', 'category': shop_to_category['danielonline']}
+    return {'price_element': price_element, 'name': name, 'shop': 'danielonline'}
 
 
 
@@ -667,7 +667,7 @@ def get_product_zarina(product_url):
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'zarina', 'category': shop_to_category['zarina']}
+    return {'price_element': price_element, 'name': name, 'shop': 'zarina'}
 
 
 
@@ -680,7 +680,7 @@ def get_product_alexanderbogdanov(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('p', class_='product-card-info__title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'alexanderbogdanov', 'category': shop_to_category['alexanderbogdanov']}
+    return {'price_element': price_element, 'name': name, 'shop': 'alexanderbogdanov'}
 
 
 
@@ -692,7 +692,7 @@ def get_product_werfstore(product_url): #не нашел скидок
     price_element = soup_engine.find('p', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1', class_='product_title entry-title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'werfstore', 'category': shop_to_category['werfstore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'werfstore'}
 
 
 
@@ -705,7 +705,7 @@ def get_product_koffer(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'koffer', 'category': shop_to_category['koffer']}
+    return {'price_element': price_element, 'name': name, 'shop': 'koffer'}
 
 
 
@@ -719,7 +719,7 @@ def get_product_age_of_innocence(product_url):
     price_element = re.search(pattern=r'(₽)(.+?)\,', string=price_element).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'age-of-innocence', 'category': shop_to_category['age-of-innocence']}
+    return {'price_element': price_element, 'name': name, 'shop': 'age-of-innocence'}
 
 
 
@@ -736,7 +736,7 @@ def get_product_nice_one(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'nice-one', 'category': shop_to_category['nice-one']}
+    return {'price_element': price_element, 'name': name, 'shop': 'nice-one'}
 
 
 
@@ -753,7 +753,7 @@ def get_product_alpindustria(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'alpindustria', 'category': shop_to_category['alpindustria']}
+    return {'price_element': price_element, 'name': name, 'shop': 'alpindustria'}
 
 
 
@@ -767,7 +767,7 @@ def get_product_indiwd(product_url):
     price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'indiwd', 'category': shop_to_category['indiwd']}
+    return {'price_element': price_element, 'name': name, 'shop': 'indiwd'}
 
 
 
@@ -781,7 +781,7 @@ def get_product_biggeek(product_url):
     price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'biggeek', 'category': shop_to_category['biggeek']}
+    return {'price_element': price_element, 'name': name, 'shop': 'biggeek'}
 
 
 
@@ -793,7 +793,7 @@ def get_product_tefal(product_url):
     full = soup_engine.find('title').text.strip()
     price_element = int(float(re.search(pattern=r'(цена )(.+)( руб)', string=full).group(2)))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'tefal', 'category': shop_to_category['tefal']}
+    return {'price_element': price_element, 'name': name, 'shop': 'tefal'}
 
 
 
@@ -805,7 +805,7 @@ def get_product_yves_rocher(product_url):
     price_element = soup_engine.find('span', class_='bold text_size_20 tab_text_size_24').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'yves-rocher', 'category': shop_to_category['yves-rocher']}
+    return {'price_element': price_element, 'name': name, 'shop': 'yves-rocher'}
 
 
 
@@ -817,7 +817,7 @@ def get_product_galaxystore(product_url):
     json_data = json.loads(digital_data_dict.group(1))
     price_element = int(json_data['product']['unitSalePrice'])
     name = json_data['product']['name']
-    return {'price_element': price_element, 'name': name, 'shop': 'galaxystore', 'category': shop_to_category['galaxystore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'galaxystore'}
 
 
 
@@ -829,7 +829,7 @@ def get_product_megafon(product_url):
     price_element = soup_engine.find('div', class_=re.compile(r'(Price_text__).+')).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'megafon', 'category': shop_to_category['megafon']}
+    return {'price_element': price_element, 'name': name, 'shop': 'megafon'}
 
 
 
@@ -841,7 +841,7 @@ def get_product_ecco(product_url):
     price_element = soup_engine.find('span', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'ecco', 'category': shop_to_category['ecco']}
+    return {'price_element': price_element, 'name': name, 'shop': 'ecco'}
 
 
 
@@ -853,7 +853,7 @@ def get_product_xcom_shop(product_url):
     price_element = soup_engine.find('div', class_='card-content-total-price__current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'xcom-shop', 'category': shop_to_category['xcom-shop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'xcom-shop'}
 
 
 
@@ -866,7 +866,7 @@ def get_product_epldiamond(product_url):
     price_element = re.search(pattern=r'(цене )(.+)( руб)', string=price_element).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'epldiamond', 'category': shop_to_category['epldiamond']}
+    return {'price_element': price_element, 'name': name, 'shop': 'epldiamond'}
 
 
 
@@ -878,7 +878,7 @@ def get_product_doctorslon(product_url):
     price_element = soup_engine.find('div', class_='product-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'doctorslon', 'category': shop_to_category['doctorslon']}
+    return {'price_element': price_element, 'name': name, 'shop': 'doctorslon'}
 
 
 
@@ -902,7 +902,7 @@ def get_product_randewoo(product_url): #пока добавляется посл
         price_element = soup_engine.find('strong', class_='b-productSummary__priceNew').text.strip()
         name = soup_engine.find('title').text.strip()
         name = re.search(pattern=r'(.+?)( купить)', string=name).group(1).strip(' -')
-    return {'price_element': int(price_element), 'name': name, 'shop': 'randewoo', 'category': shop_to_category['randewoo']}
+    return {'price_element': int(price_element), 'name': name, 'shop': 'randewoo'}
 
 
 
@@ -915,7 +915,7 @@ def get_product_babor(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'babor', 'category': shop_to_category['babor']}
+    return {'price_element': price_element, 'name': name, 'shop': 'babor'}
 
 
 
@@ -932,7 +932,7 @@ def get_product_mir_kubikov(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)( \- купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'mir-kubikov', 'category': shop_to_category['mir-kubikov']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mir-kubikov'}
 
 
 
@@ -945,7 +945,7 @@ def get_product_bombbar(product_url): #может отлетать - надо д
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bombbar', 'category': shop_to_category['bombbar']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bombbar'}
 
 
 
@@ -957,7 +957,7 @@ def get_product_iledebeaute(product_url):
     price_element = soup_engine.find('div', itemprop='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'iledebeaute', 'category': shop_to_category['iledebeaute']}
+    return {'price_element': price_element, 'name': name, 'shop': 'iledebeaute'}
 
 
 
@@ -969,7 +969,7 @@ def get_product_shop_polaris(product_url):
     price_element = soup_engine.find('div', class_='price d-flex').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'shop-polaris', 'category': shop_to_category['shop-polaris']}
+    return {'price_element': price_element, 'name': name, 'shop': 'shop-polaris'}
 
 
 
@@ -986,7 +986,7 @@ def get_product_patchandgo(product_url):
         price_element = price_element[0].strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'patchandgo', 'category': shop_to_category['patchandgo']}
+    return {'price_element': price_element, 'name': name, 'shop': 'patchandgo'}
 
 
 
@@ -1000,7 +1000,7 @@ def get_product_madwave(product_url):
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'((.+)\s\|\s(.+))\|', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'madwave', 'category': shop_to_category['madwave']}
+    return {'price_element': price_element, 'name': name, 'shop': 'madwave'}
 
 
 
@@ -1012,7 +1012,7 @@ def get_product_apple_avenue(product_url):
     price_element = soup_engine.find('div', class_='price font-price-large bold').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'apple-avenue', 'category': shop_to_category['apple-avenue']}
+    return {'price_element': price_element, 'name': name, 'shop': 'apple-avenue'}
 
 
 
@@ -1028,7 +1028,7 @@ def get_product_re_store(product_url):
     price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(Купить )(.+)( по цене)', string=full).group(2)
-    return {'price_element': price_element, 'name': name, 'shop': 're-store', 'category': shop_to_category['re-store']}
+    return {'price_element': price_element, 'name': name, 'shop': 're-store'}
 
 
 
@@ -1040,7 +1040,7 @@ def get_product_bestmebelshop(product_url):
     full = soup_engine.find('title').text.strip()
     price_element = int(re.search(pattern=r'\- (\d+) р', string=full).group(1))
     name = re.search(pattern=r'(.+) \- \d', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'bestmebelshop', 'category': shop_to_category['bestmebelshop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bestmebelshop'}
 
 
 
@@ -1060,7 +1060,7 @@ def get_product_garlyn(product_url):
     except: pass
     finally:
         name = soup_engine.find('h1', class_ = 'title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'garlyn', 'category': shop_to_category['garlyn']}
+    return {'price_element': price_element, 'name': name, 'shop': 'garlyn'}
 
 
 
@@ -1072,7 +1072,7 @@ def get_product_kuppersberg(product_url):
     price_element = soup_engine.find('div', class_='prodMain__price--new').text.strip()
     name = soup_engine.find('h1').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    return {'price_element': price_element, 'name': name, 'shop': 'kuppersberg', 'category': shop_to_category['kuppersberg']}
+    return {'price_element': price_element, 'name': name, 'shop': 'kuppersberg'}
 
 
 
@@ -1089,7 +1089,7 @@ def get_product_bosssleep(product_url):
         price_element = price_element[0]
     name = soup_engine.find('h1').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    return {'price_element': price_element, 'name': name, 'shop': 'bosssleep', 'category': shop_to_category['bosssleep']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bosssleep'}
 
 
 
@@ -1104,7 +1104,7 @@ def get_product_muztorg(product_url):
         price_element = soup_engine.find('div', class_='mt-product-price__discounted-value').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'muztorg', 'category': shop_to_category['muztorg']}
+    return {'price_element': price_element, 'name': name, 'shop': 'muztorg'}
 
 
 
@@ -1118,7 +1118,7 @@ def get_product_finn_flare(product_url):
     price_element = re.search(pattern=r'(цене от )(.+)( в)', string=full).group(2)
     name = re.search(pattern=r'(.+) \(', string=full).group(1)
     price_element = int(int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element)))) * 0.95) #пока у них стоит скидка при оплате онлайн
-    return {'price_element': price_element, 'name': name, 'shop': 'finn-flare', 'category': shop_to_category['finn-flare']}
+    return {'price_element': price_element, 'name': name, 'shop': 'finn-flare'}
 
 
 
@@ -1132,7 +1132,7 @@ def get_product_litres(product_url):
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)( \– )', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'litres', 'category': shop_to_category['litres']}
+    return {'price_element': price_element, 'name': name, 'shop': 'litres'}
 
 
 
@@ -1146,7 +1146,7 @@ def get_product_orteka(product_url):
     price_element = re.search(pattern=r'(по цене )(.+)( руб.)', string=full).group(2)
     name = re.search(pattern=r'(купить )(.+)( по цене)', string=full).group(2)
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
-    return {'price_element': price_element, 'name': name, 'shop': 'orteka', 'category': shop_to_category['orteka']}
+    return {'price_element': price_element, 'name': name, 'shop': 'orteka'}
 
 
 
@@ -1159,7 +1159,7 @@ def get_product_quke(product_url):
     price_element = soup_engine.find('span', class_='price__value').text
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'quke', 'category': shop_to_category['quke']}
+    return {'price_element': price_element, 'name': name, 'shop': 'quke'}
 
 
 
@@ -1174,7 +1174,7 @@ def get_product_leonardo(product_url):
     price_element = ''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element)))
     price_element = int(price_element.split(',')[0])
     name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'leonardo', 'category': shop_to_category['leonardo']}
+    return {'price_element': price_element, 'name': name, 'shop': 'leonardo'}
 
 
 
@@ -1189,7 +1189,7 @@ def get_product_beeline(product_url):
     price_element = re.search(pattern=r'(цена )(.+)( руб.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x==',' else False, price_element))))
     name = re.search(pattern=r'(купить )(.+)(\: цена)', string=full).group(2)
-    return {'price_element': price_element, 'name': name, 'shop': 'beeline', 'category': shop_to_category['beeline']}
+    return {'price_element': price_element, 'name': name, 'shop': 'beeline'}
 
 
 
@@ -1204,7 +1204,7 @@ def get_product_tvoydom(product_url):
     price_element = re.search(pattern=r'(цене )(.+)( руб.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(.+)( купить)', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'tvoydom', 'category': shop_to_category['tvoydom']}
+    return {'price_element': price_element, 'name': name, 'shop': 'tvoydom'}
 
 
 
@@ -1218,7 +1218,7 @@ def get_product_sela(product_url):
     price_element = re.search(pattern=r'(цене )(.+?)( руб\.)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'\"(.+)(, артикул)', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'sela', 'category': shop_to_category['sela']}
+    return {'price_element': price_element, 'name': name, 'shop': 'sela'}
 
 
 
@@ -1232,7 +1232,7 @@ def get_product_aquaphor(product_url):
     price_element=price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'aquaphor', 'category': shop_to_category['aquaphor']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aquaphor'}
 
 
 
@@ -1246,7 +1246,7 @@ def get_product_mnogomebeli(product_url):
     price_element = re.search(pattern=r'(ли )(\- )?(.+)( руб\.)', string=full).group(3)
     price_element = int(''.join(price_element.split('.')))
     name = re.search(pattern=r'(.+?)(\: )', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'mnogomebeli', 'category': shop_to_category['mnogomebeli']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mnogomebeli'}
 
 
 
@@ -1260,7 +1260,7 @@ def get_product_davines(product_url):
     price_element = re.search(pattern=r'(за\s)(.+)(\sруб)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'\"(.+)( за )', string=full).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'davines', 'category': shop_to_category['davines']}
+    return {'price_element': price_element, 'name': name, 'shop': 'davines'}
 
 
 
@@ -1273,7 +1273,7 @@ def get_product_vsesmart(product_url):
     price_element = soup_engine.find('div', class_='detail__price-cost').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'vsesmart', 'category': shop_to_category['vsesmart']}
+    return {'price_element': price_element, 'name': name, 'shop': 'vsesmart'}
 
 
 
@@ -1287,7 +1287,7 @@ def get_product_boobl_goom(product_url):
     price_element = re.search(pattern=r'(Цена )(.+)( рублей)', string=full).group(2)
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = re.search(pattern=r'(Купить )(.+)( в интернет)', string=full).group(2)
-    return {'price_element': price_element, 'name': name, 'shop': 'boobl-goom', 'category': shop_to_category['boobl-goom']}
+    return {'price_element': price_element, 'name': name, 'shop': 'boobl-goom'}
 
 
 
@@ -1302,7 +1302,7 @@ def get_product_ipiter(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'ipiter', 'category': shop_to_category['ipiter']}
+    return {'price_element': price_element, 'name': name, 'shop': 'ipiter'}
 
 
 
@@ -1315,7 +1315,7 @@ def get_product_mie(product_url):
     price_element = soup_engine.find('div', class_='current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'mie', 'category': shop_to_category['mie']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mie'}
 
 
 
@@ -1328,7 +1328,7 @@ def get_product_evitastore(product_url):
     price_element = soup_engine.find('div', class_='cd-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'evitastore', 'category': shop_to_category['evitastore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'evitastore'}
 
 
 
@@ -1347,7 +1347,7 @@ def get_product_chitai_gorod(product_url):
         name = f'{name} ({author})'
     except:
         name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'chitai-gorod', 'category': shop_to_category['chitai-gorod']}
+    return {'price_element': price_element, 'name': name, 'shop': 'chitai-gorod'}
 
 
 
@@ -1362,7 +1362,7 @@ def get_product_bestwatch(product_url):
     name1 = soup_engine.find('p', class_='card-model').text.strip()
     name2 = soup_engine.find('p', class_='card-name').text.strip()
     name = name2 + ' ' + name1
-    return {'price_element': price_element, 'name': name, 'shop': 'bestwatch', 'category': shop_to_category['bestwatch']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bestwatch'}
 
 
 
@@ -1375,7 +1375,7 @@ def get_product_koleso(product_url):
     price_element = soup_engine.find('div', class_=re.compile(r'(PriceBlock_Price__).+')).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'koleso', 'category': shop_to_category['koleso']}
+    return {'price_element': price_element, 'name': name, 'shop': 'koleso'}
 
 
 
@@ -1389,7 +1389,7 @@ def get_product_mann_ivanov_ferber(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)( — купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'mann-ivanov-ferber', 'category': shop_to_category['mann-ivanov-ferber']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mann-ivanov-ferber'}
 
 
 
@@ -1402,7 +1402,7 @@ def get_product_cozyhome(product_url):
     price_element = soup_engine.find('div', attrs={'data-role': 'price'}).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'cozyhome', 'category': shop_to_category['cozyhome']}
+    return {'price_element': price_element, 'name': name, 'shop': 'cozyhome'}
 
 
 
@@ -1415,7 +1415,7 @@ def get_product_christinacosmetics(product_url):
     price_element = soup_engine.find('div', class_='price-detale').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'christinacosmetics', 'category': shop_to_category['christinacosmetics']}
+    return {'price_element': price_element, 'name': name, 'shop': 'christinacosmetics'}
 
 
 
@@ -1428,7 +1428,7 @@ def get_product_velosklad(product_url):
     name = soup_engine.find('h1').text.strip()
     price_element = str(soup_engine.find('meta', itemprop='price'))
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    return {'price_element': price_element, 'name': name, 'shop': 'velosklad', 'category': shop_to_category['velosklad']}
+    return {'price_element': price_element, 'name': name, 'shop': 'velosklad'}
 
 
 
@@ -1445,7 +1445,7 @@ def get_product_multivarka(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'multivarka', 'category': shop_to_category['multivarka']}
+    return {'price_element': price_element, 'name': name, 'shop': 'multivarka'}
 
 
 
@@ -1458,7 +1458,7 @@ def get_product_iboxstore(product_url):
     price_element = soup_engine.find('div', class_='product-card__price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'iboxstore', 'category': shop_to_category['iboxstore']}
+    return {'price_element': price_element, 'name': name, 'shop': 'iboxstore'}
 
 
 
@@ -1471,7 +1471,7 @@ def get_product_market_sveta(product_url):
     price_element = soup_engine.find('div', class_='productfull-block-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'market-sveta', 'category': shop_to_category['market-sveta']}
+    return {'price_element': price_element, 'name': name, 'shop': 'market-sveta'}
 
 
 
@@ -1489,7 +1489,7 @@ def get_product_aravia(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'aravia', 'category': shop_to_category['aravia']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aravia'}
 
 
 
@@ -1502,7 +1502,7 @@ def get_product_krona(product_url):
     price_element = soup_engine.find('div', class_='card__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'krona', 'category': shop_to_category['krona']}
+    return {'price_element': price_element, 'name': name, 'shop': 'krona'}
 
 
 
@@ -1515,7 +1515,7 @@ def get_product_tddomovoy(product_url):
     price_element = soup_engine.find('span', class_='base-product-price__main').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'tddomovoy', 'category': shop_to_category['tddomovoy']}
+    return {'price_element': price_element, 'name': name, 'shop': 'tddomovoy'}
 
 
 
@@ -1528,7 +1528,7 @@ def get_product_ansaligy(product_url):
     price_element = soup_engine.find('div', class_='product__price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'ansaligy', 'category': shop_to_category['ansaligy']}
+    return {'price_element': price_element, 'name': name, 'shop': 'ansaligy'}
 
 
 
@@ -1542,7 +1542,7 @@ def get_product_hyperauto(product_url):
     price_element = price_element.split(',')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'hyperauto', 'category': shop_to_category['hyperauto']}
+    return {'price_element': price_element, 'name': name, 'shop': 'hyperauto'}
 
 
 
@@ -1556,7 +1556,7 @@ def get_product_kubaninstrument(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'kubaninstrument', 'category': shop_to_category['kubaninstrument']}
+    return {'price_element': price_element, 'name': name, 'shop': 'kubaninstrument'}
 
 
 
@@ -1573,7 +1573,7 @@ def get_product_nespresso(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'nespresso', 'category': shop_to_category['nespresso']}
+    return {'price_element': price_element, 'name': name, 'shop': 'nespresso'}
 
 
 
@@ -1587,7 +1587,7 @@ def get_product_aofb(product_url):
     price_element = re.search(pattern=r'\"(.+)₽', string=price_element).group(1).strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'aofb', 'category': shop_to_category['aofb']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aofb'}
 
 
 
@@ -1605,7 +1605,7 @@ def get_product_yamanshop(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'yamanshop', 'category': shop_to_category['yamanshop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'yamanshop'}
 
 
 
@@ -1620,7 +1620,7 @@ def get_product_dvamyacha(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)\sв\sИ', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'dvamyacha', 'category': shop_to_category['dvamyacha']}
+    return {'price_element': price_element, 'name': name, 'shop': 'dvamyacha'}
 
 
 
@@ -1633,7 +1633,7 @@ def get_product_ochkarik(product_url):
     price_element = re.search(r'(price":")(.+?)\"', response.text).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'ochkarik', 'category': shop_to_category['ochkarik']}
+    return {'price_element': price_element, 'name': name, 'shop': 'ochkarik'}
 
 
 
@@ -1647,7 +1647,7 @@ def get_product_hi_stores(product_url):
     price_element = re.search(pattern=r'(наличными\:)(.+)\n', string=price_element).group(2)
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'hi-stores', 'category': shop_to_category['hi-stores']}
+    return {'price_element': price_element, 'name': name, 'shop': 'hi-stores'}
 
 
 
@@ -1660,7 +1660,7 @@ def get_product_fkniga(product_url):
     price_element = soup_engine.find('div', class_='price price--ruble price--md').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'fkniga', 'category': shop_to_category['fkniga']}
+    return {'price_element': price_element, 'name': name, 'shop': 'fkniga'}
 
 
 
@@ -1676,7 +1676,7 @@ def get_product_santehnika_tut(product_url):
         price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut', 'category': shop_to_category['santehnika-tut']}
+    return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut'}
 
 
 
@@ -1690,7 +1690,7 @@ def get_product_wau(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'wau', 'category': shop_to_category['wau']}
+    return {'price_element': price_element, 'name': name, 'shop': 'wau'}
 
 
 
@@ -1703,7 +1703,7 @@ def get_product_skinjestique(product_url):
     price_element = soup_engine.find_all('div', class_='product-item-price price-actual')[1].text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'skinjestique', 'category': shop_to_category['skinjestique']}
+    return {'price_element': price_element, 'name': name, 'shop': 'skinjestique'}
 
 
 
@@ -1716,7 +1716,7 @@ def get_product_igroray(product_url):
     price_element = soup_engine.find('span', class_='product-info-main__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'igroray', 'category': shop_to_category['igroray']}
+    return {'price_element': price_element, 'name': name, 'shop': 'igroray'}
 
 
 
@@ -1730,7 +1730,7 @@ def get_product_hansa(product_url):
     price_element = re.search(pattern=r'\"price\"\: \"(.+)\.', string=full).group(1)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'hansa', 'category': shop_to_category['hansa']}
+    return {'price_element': price_element, 'name': name, 'shop': 'hansa'}
 
 
 
@@ -1743,7 +1743,7 @@ def get_product_zvet(product_url):
     price_element = soup_engine.find('span', class_='detail-price__item current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'zvet', 'category': shop_to_category['zvet']}
+    return {'price_element': price_element, 'name': name, 'shop': 'zvet'}
 
 
 
@@ -1756,7 +1756,7 @@ def get_product_x_moda(product_url):
     price_element = soup_engine.find('div', class_='product-b__price-new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'x-moda', 'category': shop_to_category['x-moda']}
+    return {'price_element': price_element, 'name': name, 'shop': 'x-moda'}
 
 
 
@@ -1769,7 +1769,7 @@ def get_product_playtoday(product_url):
     price_element = soup_engine.find('span', class_='item-price__club-value').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'playtoday', 'category': shop_to_category['playtoday']}
+    return {'price_element': price_element, 'name': name, 'shop': 'playtoday'}
 
 
 
@@ -1782,7 +1782,7 @@ def get_product_santehmoll(product_url):
     price_element = soup_engine.find('div', class_='pcard-info__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'santehmoll', 'category': shop_to_category['santehmoll']}
+    return {'price_element': price_element, 'name': name, 'shop': 'santehmoll'}
 
 
 
@@ -1795,7 +1795,7 @@ def get_product_golden_line(product_url):
     price_element = soup_engine.find('span', itemprop='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'golden-line', 'category': shop_to_category['golden-line']}
+    return {'price_element': price_element, 'name': name, 'shop': 'golden-line'}
 
 
 
@@ -1808,7 +1808,7 @@ def get_product_tmktools(product_url):
     price_element = re.search(pattern=r'(\<meta itemprop\=\"price\")\s(content\=\"(.+))\"\>', string=response.text).group(3)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'tmktools', 'category': shop_to_category['tmktools']}
+    return {'price_element': price_element, 'name': name, 'shop': 'tmktools'}
 
 
 
@@ -1826,7 +1826,7 @@ def get_product_ochkov(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'ochkov', 'category': shop_to_category['ochkov']}
+    return {'price_element': price_element, 'name': name, 'shop': 'ochkov'}
 
 
 
@@ -1839,7 +1839,7 @@ def get_product_svetlux(product_url):
     price_element = soup_engine.find('div', class_='catalog-item-price-cur').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'svetlux', 'category': shop_to_category['svetlux']}
+    return {'price_element': price_element, 'name': name, 'shop': 'svetlux'}
 
 
 
@@ -1857,7 +1857,7 @@ def get_product_divanboss(product_url):
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'divanboss', 'category': shop_to_category['divanboss']}
+    return {'price_element': price_element, 'name': name, 'shop': 'divanboss'}
 
 
 
@@ -1872,7 +1872,7 @@ def get_product_postel_deluxe(product_url):
         price_element = soup_engine.find('p', class_='special-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'postel-deluxe', 'category': shop_to_category['postel-deluxe']}
+    return {'price_element': price_element, 'name': name, 'shop': 'postel-deluxe'}
 
 
 
@@ -1885,7 +1885,7 @@ def get_product_dushevoi(product_url):
     price_element = str(soup_engine.find('meta', itemprop='price'))
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'dushevoi', 'category': shop_to_category['dushevoi']}
+    return {'price_element': price_element, 'name': name, 'shop': 'dushevoi'}
 
 
 
@@ -1899,7 +1899,7 @@ def get_product_tastycoffee(product_url):
     price_element = re.search(pattern=r'(content)(.+?)\s', string=price_element).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'tastycoffee', 'category': shop_to_category['tastycoffee']}
+    return {'price_element': price_element, 'name': name, 'shop': 'tastycoffee'}
 
 
 
@@ -1912,7 +1912,7 @@ def get_product_eurodom(product_url):
     price_element = soup_engine.find('div', class_='product-detail__main-info-prices-actual font-weight-bold').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'eurodom', 'category': shop_to_category['eurodom']}
+    return {'price_element': price_element, 'name': name, 'shop': 'eurodom'}
 
 
 
@@ -1928,7 +1928,7 @@ def get_product_happylook(product_url):
         price_element = soup_engine.find('div', class_='actual-price product-detail__price js-price-id').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'happylook', 'category': shop_to_category['happylook']}
+    return {'price_element': price_element, 'name': name, 'shop': 'happylook'}
 
 
 
@@ -1947,7 +1947,7 @@ def get_product_consul_coton(product_url):
             price_element = soup_engine.find('div', class_='detail-price detail-price_type_compact detail-price_bottom_close').text
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'consul-coton', 'category': shop_to_category['consul-coton']}
+    return {'price_element': price_element, 'name': name, 'shop': 'consul-coton'}
 
 
 
@@ -1964,7 +1964,7 @@ def get_product_audiomania(product_url):
         price_element = soup_engine.find('span', class_='price-v3').text
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
-    return {'price_element': price_element, 'name': name, 'shop': 'audiomania', 'category': shop_to_category['audiomania']}
+    return {'price_element': price_element, 'name': name, 'shop': 'audiomania'}
 
 
 
@@ -1978,7 +1978,7 @@ def get_product_planeta_sport(product_url):
     price_element = soup_engine.find('span', class_='price_value').text.split()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text
-    return {'price_element': price_element, 'name': name, 'shop': 'planeta-sport', 'category': shop_to_category['planeta-sport']}
+    return {'price_element': price_element, 'name': name, 'shop': 'planeta-sport'}
 
 
 
@@ -1993,7 +1993,7 @@ def get_product_krups(product_url):
     price_element = re.search(pattern=r'\"price\"(.+)', string=response.text).group(1)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'krups', 'category': shop_to_category['krups']}
+    return {'price_element': price_element, 'name': name, 'shop': 'krups'}
 
 
 
@@ -2007,7 +2007,7 @@ def get_product_rocky_shop(product_url):
     price_element = re.search(pattern=r'\<meta\sitemprop\=\"price\" content\=\"(\d+)', string=response.text).group(1)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'rocky-shop', 'category': shop_to_category['rocky-shop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'rocky-shop'}
 
 
 
@@ -2025,7 +2025,7 @@ def get_product_aromacode(product_url):
     dict_prices = dict(zip(name, price_element))
     name = tuple(dict_prices.keys())[-1]
     price_element = tuple(dict_prices.values())[-1]
-    return {'price_element': price_element, 'name': name, 'shop': 'aromacode', 'category': shop_to_category['aromacode']}
+    return {'price_element': price_element, 'name': name, 'shop': 'aromacode'}
 
 
 
@@ -2039,7 +2039,7 @@ def get_product_kosmetika_proff(product_url):
     price_element = soup_engine.find('span', class_='svg-currency').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'kosmetika-proff', 'category': shop_to_category['kosmetika-proff']}
+    return {'price_element': price_element, 'name': name, 'shop': 'kosmetika-proff'}
 
 
 
@@ -2054,7 +2054,7 @@ def get_product_clever_media(product_url):
     price_element = re.findall(pattern=r'(\"price\"\:)(.+)', string=response.text)[0][1]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'clever-media', 'category': shop_to_category['clever-media']}
+    return {'price_element': price_element, 'name': name, 'shop': 'clever-media'}
 
 
 
@@ -2068,7 +2068,7 @@ def get_product_elemis(product_url):
     price_element = soup_engine.find('span', class_='new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'elemis', 'category': shop_to_category['elemis']}
+    return {'price_element': price_element, 'name': name, 'shop': 'elemis'}
 
 
 
@@ -2083,7 +2083,7 @@ def get_product_mdm_complect(product_url):
     price_element = price_element.split('.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'mdm-complect', 'category': shop_to_category['mdm-complect']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mdm-complect'}
 
 
 
@@ -2097,7 +2097,7 @@ def get_product_lu(product_url):
     price_element = soup_engine.find('div', class_='card2-price__current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lu', 'category': shop_to_category['lu']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lu'}
 
 
 
@@ -2112,7 +2112,7 @@ def get_product_litnet(product_url):
     price_element = re.search(pattern=r'\s([\d\.]+)\s(RUB)', string=price_element).group(1)
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x == '.' else False, price_element)))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'litnet', 'category': shop_to_category['litnet']}
+    return {'price_element': price_element, 'name': name, 'shop': 'litnet'}
 
 
 
@@ -2126,7 +2126,7 @@ def get_product_mi_shop(product_url):
     price_element = soup_engine.find('div', class_='b-product-info__price-new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'mi-shop', 'category': shop_to_category['mi-shop']}
+    return {'price_element': price_element, 'name': name, 'shop': 'mi-shop'}
 
 
 
@@ -2151,7 +2151,7 @@ def get_product_parfums(product_url):
     price_element = list(filter(lambda x: True if isinstance(x[1], int) else False, price_element))
     price_element = price_element[-1][1]
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'parfums', 'category': shop_to_category['parfums']}
+    return {'price_element': price_element, 'name': name, 'shop': 'parfums'}
 
 
 
@@ -2168,7 +2168,7 @@ def get_product_lex1(product_url):
         price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lex1', 'category': shop_to_category['lex1']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lex1'}
 
 
 
@@ -2182,7 +2182,7 @@ def get_product_r_ulybka(product_url):
     price_element = re.search(pattern=r'(\"price\"\:)([\d ]+)\,', string=price_element).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'r-ulybka', 'category': shop_to_category['r-ulybka']}
+    return {'price_element': price_element, 'name': name, 'shop': 'r-ulybka'}
 
 
 
@@ -2198,7 +2198,7 @@ def get_product_top_santehnika(product_url):
         price_element = soup_engine.find('div', class_='product-cart__price measure-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika', 'category': shop_to_category['top-santehnika']}
+    return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika'}
 
 
 
@@ -2211,7 +2211,7 @@ def get_product_rossko(product_url):
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'rossko', 'category': shop_to_category['rossko']}
+    return {'price_element': price_element, 'name': name, 'shop': 'rossko'}
 
 
 
@@ -2224,7 +2224,7 @@ def get_product_z51(product_url):
     price_element = soup_engine.find('div', class_='zone__product__price__value').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'z51', 'category': shop_to_category['z51']}
+    return {'price_element': price_element, 'name': name, 'shop': 'z51'}
 
 
 
@@ -2238,7 +2238,7 @@ def get_product_moulinex(product_url):
     price_element = re.search(pattern=r'(цене\s)(.+)₽', string=price_element).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'moulinex', 'category': shop_to_category['moulinex']}
+    return {'price_element': price_element, 'name': name, 'shop': 'moulinex'}
 
 
 
@@ -2252,7 +2252,7 @@ def get_product_krutizmi(product_url):
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'krutizmi', 'category': shop_to_category['krutizmi']}
+    return {'price_element': price_element, 'name': name, 'shop': 'krutizmi'}
 
 
 
@@ -2290,7 +2290,7 @@ def get_product_pharmacosmetica(product_url):
             if i not in list_to_delete:
                 final_full.append(full[i])
         price_element, name = final_full[0]
-    return {'price_element': price_element, 'name': name, 'shop': 'pharmacosmetica', 'category': shop_to_category['pharmacosmetica']}
+    return {'price_element': price_element, 'name': name, 'shop': 'pharmacosmetica'}
 
 
 
@@ -2312,7 +2312,7 @@ def get_product_gamepark(product_url):
         name = f'{soup_engine.find('h1').text.strip()} (Б/У)'
     else:
         name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'gamepark', 'category': shop_to_category['gamepark']}
+    return {'price_element': price_element, 'name': name, 'shop': 'gamepark'}
 
 
 
@@ -2325,7 +2325,7 @@ def get_product_domsporta(product_url):
     price_element = soup_engine.find('div', class_='b-detail__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'domsporta', 'category': shop_to_category['domsporta']}
+    return {'price_element': price_element, 'name': name, 'shop': 'domsporta'}
 
 
 
@@ -2338,7 +2338,7 @@ def get_product_lustrof(product_url):
     price_element = soup_engine.find('div', class_='price product__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lustrof', 'category': shop_to_category['lustrof']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lustrof'}
 
 
 
@@ -2352,7 +2352,7 @@ def get_product_lakestone(product_url):
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'lakestone', 'category': shop_to_category['lakestone']}
+    return {'price_element': price_element, 'name': name, 'shop': 'lakestone'}
 
 
 
@@ -2367,7 +2367,7 @@ def get_product_bookvoed(product_url):
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)\s\-\s(купить)', string=name).group(1)
-    return {'price_element': price_element, 'name': name, 'shop': 'bookvoed', 'category': shop_to_category['bookvoed']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bookvoed'}
 
 
 
@@ -2380,7 +2380,7 @@ def get_product_proficosmetics(product_url):
     price_element = soup_engine.find('p', class_='new_price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'proficosmetics', 'category': shop_to_category['proficosmetics']}
+    return {'price_element': price_element, 'name': name, 'shop': 'proficosmetics'}
 
 
 
@@ -2397,7 +2397,7 @@ def get_product_vamvelosiped(product_url):
         price_element = soup_engine.find('span', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'vamvelosiped', 'category': shop_to_category['vamvelosiped']}
+    return {'price_element': price_element, 'name': name, 'shop': 'vamvelosiped'}
 
 
 
@@ -2410,7 +2410,7 @@ def get_product_book24(product_url):
     price_element = soup_engine.find('span', class_='app-price product-sidebar-price__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'book24', 'category': shop_to_category['book24']}
+    return {'price_element': price_element, 'name': name, 'shop': 'book24'}
 
 
 
@@ -2424,7 +2424,7 @@ def get_product_birota(product_url):
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'birota', 'category': shop_to_category['birota']}
+    return {'price_element': price_element, 'name': name, 'shop': 'birota'}
 
 
 
@@ -2438,7 +2438,7 @@ def get_product_bebakids(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'bebakids', 'category': shop_to_category['bebakids']}
+    return {'price_element': price_element, 'name': name, 'shop': 'bebakids'}
 
 
 
@@ -2452,7 +2452,7 @@ def get_product_med_magazin(product_url):
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'med-magazin', 'category': shop_to_category['med-magazin']}
+    return {'price_element': price_element, 'name': name, 'shop': 'med-magazin'}
 
 
 
@@ -2465,7 +2465,7 @@ def get_product_iherbgroup(product_url):
     price_element = soup_engine.find('span', class_='product__price price nowrap').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'iherbgroup', 'category': shop_to_category['iherbgroup']}
+    return {'price_element': price_element, 'name': name, 'shop': 'iherbgroup'}
 
 
 
