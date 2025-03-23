@@ -2621,7 +2621,7 @@ def get_product_askona(product_url): #блокает ip после 5-10 запр
         price_element = re.search(pattern=r'(цена от )(.+)', string=full).group(2)
         name = re.search(pattern=r'(Купить )(.+)( цена)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    return {'price_element': price_element, 'name': name, 'shop': 'askona', 'category': shop_to_category['askona']}
+    return {'price_element': price_element, 'name': name, 'shop': 'askona'}
 
 
 shop_to_func = {'brandshop': get_product_brandshop, 
@@ -2799,16 +2799,16 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'lgcity': get_product_lgcity,
                 'ozon': get_product_ozon,
                 '2moodstore': get_product_2moodstore,
-                'ostin': get_product_ostin,
+                'ostin': get_product_ostin, #qrator
                 'demix': get_product_demix,
                 'thomas-muenz': get_product_thomas_muenz,
                 'postmeridiem-brand': get_product_postmeridiem_brand,
-                'ekonika':get_product_ekonika,
+                'ekonika':get_product_ekonika, #qrator
                 'studio-29': get_product_studio_29,
                 'baon': get_product_baon,
                 'presentandsimple': get_product_presentandsimple,
-                'henderson': get_product_henderson,
-                'sokolov': get_product_sokolov,
+                'henderson': get_product_henderson, #работает с куками
+                'sokolov': get_product_sokolov, #qrator
                 'vseinstrumenti': get_product_vseinstrumenti,
                 'holodilnik': get_product_holodilnik,
                 'letu': get_product_letu,
@@ -2817,8 +2817,8 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'shoppinglive': get_product_shoppinglive,
                 'ormatek': get_product_ormatek,
                 'oldi': get_product_oldi,
-                'gulliver': get_product_gulliver,
-                'imperiatechno': get_product_imperiatechno,
+                'gulliver': get_product_gulliver, #работает с куками
+                'imperiatechno': get_product_imperiatechno, #работает с куками
                 'kikocosmetics': get_product_kikocosmetics,
                 'huawei': get_product_huawei,
                 'ansaligy': get_product_ansaligy,
