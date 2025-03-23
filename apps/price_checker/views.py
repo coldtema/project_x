@@ -28,11 +28,11 @@ def all_price_list(request):
         if product_form.is_valid():
             product_data = get_shop_of_product(request.POST.get('url'))
             new_product = Product.objects.create(name=product_data['name'], 
-                                                 shop=Shop.objects.get(regex_name=product_data['shop']), 
+                                                 author=Author.objects.get(id=2),
+                                                 url=request.POST.get('url'),
                                                  latest_price=product_data['price_element'], 
-                                                 url=request.POST.get('url'), 
-                                                 author=Author.objects.get(id=2), 
-                                                 category=product_data['category'])
+                                                 shop=Shop.objects.get(regex_name=product_data['shop']),  
+                                                 ref_url=request.POST.get('url'))
             Price.objects.create(product=new_product, price=product_data['price_element'])
             return HttpResponseRedirect('/price_checker')
         else:
