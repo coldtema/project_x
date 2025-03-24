@@ -2,6 +2,9 @@ from django.db import models
 from apps.blog.models import Author
 from django.utils import timezone
 
+class EnabledManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(enabled=True)
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя тега')
@@ -45,6 +48,8 @@ class Product(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='products', verbose_name='Никнейм автора')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
+    objects = models.Manager()
+    enabled_products = EnabledManager()
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'

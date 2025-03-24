@@ -76,7 +76,7 @@ def delete_price(request, id):
 
 @time_count
 def update_prices(request):
-    all_prod = Product.objects.filter(enabled=True)
+    all_prod = Product.enabled_products.all()
     exception_elems = []
     for elem in all_prod:
         try:
