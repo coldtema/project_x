@@ -16,8 +16,8 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(Author)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['nickname', 'age']
-    list_filter = ['nickname', 'age']
+    list_display = ['nickname', 'age', 'subscription']
+    list_filter = ['nickname', 'age', 'subscription']
     search_fields = ['nickname']
     ordering = ['-age']
     # raw_id_fields = ['author'] - круче встроенный
