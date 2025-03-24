@@ -7,9 +7,12 @@ __pycache__/
 *.pyc
 *.pyo
 *.log
-
+balvanka.py
 # Игнорируем конфиденциальные данные
 .env
 *.sqlite3
 *png
 *session
+
+#Игнорируем полутестировочные файлы (для отладки чего-то)
+balvanka.py
