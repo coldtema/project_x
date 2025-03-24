@@ -9,6 +9,9 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        indexes = [
+            models.Index(fields=['name']),
+            ]
 
     def __str__(self):
         return self.name
@@ -24,6 +27,9 @@ class Shop(models.Model):
     class Meta:
         verbose_name = 'Магазин'
         verbose_name_plural = 'Магазины'
+        indexes = [
+            models.Index(fields=['name']),
+            ]
 
     def __str__(self):
         return self.name
@@ -43,6 +49,9 @@ class Product(models.Model):
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
         ordering = ['-updated']
+        indexes = [
+            models.Index(fields=['shop', 'author']),
+            ]
     
     def __str__(self):
         return self.name
@@ -66,3 +75,6 @@ class Price(models.Model):
         ordering = ['added_time']
         verbose_name = 'Цена'
         verbose_name_plural = 'Цены'
+        indexes = [
+            models.Index(fields=['product'])
+        ]
