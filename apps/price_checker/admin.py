@@ -17,7 +17,7 @@ class PriceAdmin(admin.ModelAdmin):
 
 
 @admin.register(Tag)
-class PriceAdmin(admin.ModelAdmin):
+class TagAdmin(admin.ModelAdmin):
     list_display = ['name']
     list_filter = ['name']
     search_fields = ['name']
@@ -25,7 +25,7 @@ class PriceAdmin(admin.ModelAdmin):
 
 
 @admin.register(Shop)
-class PriceAdmin(admin.ModelAdmin):
+class ShopAdmin(admin.ModelAdmin):
     list_display = ['name', 'main_url', 'display_tags']
     list_filter = ['tags']
     search_fields = ['name', 'tags']

@@ -13,7 +13,7 @@ class TestAdmin(admin.ModelAdmin):
 
 
 @admin.register(Question)
-class TestAdmin(admin.ModelAdmin):
+class QuestionAdmin(admin.ModelAdmin):
     list_display = ['text', 'answer1', 'answer2', 'answer3', 'right_answer', 'test__name'] 
     list_filter = ['test__name']
     search_fields = ['name', 'text', 'test__name']

@@ -15,7 +15,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Author)
-class PostAdmin(admin.ModelAdmin):
+class AuthorAdmin(admin.ModelAdmin):
     list_display = ['nickname', 'age', 'subscription']
     list_filter = ['nickname', 'age', 'subscription']
     search_fields = ['nickname']
