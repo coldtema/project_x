@@ -26,7 +26,10 @@ class PriceAdmin(admin.ModelAdmin):
 
 @admin.register(Shop)
 class PriceAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'main_url', 'display_tags']
     list_filter = ['tags']
     search_fields = ['name', 'tags']
     ordering = ['name']
+
+    def display_tags(self, obj):
+        return ', '.join(tag.name for tag in obj.tags.all())
