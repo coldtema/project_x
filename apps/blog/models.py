@@ -1,9 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Author(models.Model):
+    class Subscription(models.TextChoices):
+        GOLD = 'GOLD', 'Golden Status'
+        SILVER = 'SILVER', 'Silver Status'
+        BRONZE = 'BRONZE', 'Bronze Status'
+        FREE = 'FREE', 'Free Status'
     nickname = models.CharField(max_length=20, verbose_name='Никнейм')
     age = models.IntegerField(default=0, verbose_name='Возраст')
+    subscription = models.CharField(max_length=100, default=Subscription.FREE, choices=Subscription.choices)
 
     class Meta:
         verbose_name = 'Автор'
