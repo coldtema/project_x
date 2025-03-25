@@ -8,7 +8,7 @@ import time
 from functools import wraps
 from .chart_builder import plot_price_history
 # from .async_shit import process_sites
-import asyncio
+from django.urls import reverse
 
 def time_count(func):
     @wraps(func)
@@ -34,7 +34,7 @@ def all_price_list(request):
                                                  shop=Shop.objects.get(regex_name=product_data['shop']),  
                                                  ref_url=request.POST.get('url'))
             Price.objects.create(product=new_product, price=product_data['price_element'])
-            return HttpResponseRedirect('/price_checker')
+            return HttpResponseRedirect(reverse('all_price_list'))
         else:
             return HttpResponseBadRequest('Так себе ссылка')
     else:
@@ -55,13 +55,12 @@ def price_history(request, id):
         prices.append(elem.price)
     plot_price_history(dates, prices)
     return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
-                                                                        'prices_of_product': prices_of_product, 
-                                                                        'chart_url': 'apps/price_checker/static/price_checker/chart.png'})
+                                                                        'prices_of_product': prices_of_product})
 
 
 def delete_product(request, id):
     Product.objects.get(id=id).delete()
-    return HttpResponseRedirect('/price_checker')
+    return HttpResponseRedirect(reverse('all_price_list'))
 
 
 
@@ -69,7 +68,7 @@ def delete_price(request, id):
     product_to_redirect = Price.objects.get(id=id).product
     id_of_product = product_to_redirect.id
     Price.objects.get(id=id).delete()
-    return HttpResponseRedirect(f'/price_checker/price_history/{id_of_product}')
+    return HttpResponseRedirect(reverse('price_history', args=[id_of_product]))
 
 # def update_prices(request):
 #     asyncio.create_task(process_sites())
@@ -126,4 +125,4 @@ def update_prices(request):
                     elem.save()
                 else:
                     continue
-    return HttpResponseRedirect('/price_checker')
+    return HttpResponseRedirect(reverse('all_price_list'))
