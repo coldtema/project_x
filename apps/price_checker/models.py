@@ -101,3 +101,20 @@ class WBSeller(models.Model):
     def __str__(self):
         return self.name
     
+
+class WBBrand(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя бренда WB')
+    wb_id = models.CharField(max_length=100, verbose_name='ID бренда WB') 
+    main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
+    catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
+
+    class Meta:
+        verbose_name = 'Магазин'
+        verbose_name_plural = 'Магазины'
+        indexes = [
+            models.Index(fields=['name']),
+            ]
+
+    def __str__(self):
+        return self.name
+    
