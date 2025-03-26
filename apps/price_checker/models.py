@@ -155,3 +155,18 @@ class WBProduct(models.Model):
             else:
                 self.updated = original.updated
         super().save(*args, **kwargs)
+
+
+
+class WBPrice(models.Model):
+    price = models.IntegerField(verbose_name='Цена продукта WB')
+    added_time = models.DateTimeField(auto_now_add=True, verbose_name='Добавлено')
+    product = models.ForeignKey(WBProduct, on_delete=models.CASCADE, verbose_name='Продукт WB')
+
+    class Meta:
+        ordering = ['added_time']
+        verbose_name = 'Цена'
+        verbose_name_plural = 'Цены'
+        indexes = [
+            models.Index(fields=['product'])
+        ]
