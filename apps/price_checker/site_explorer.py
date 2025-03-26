@@ -2793,27 +2793,27 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'iherbgroup': get_product_iherbgroup,
 
                 #не работают с requests
-                'goldapple': get_product_goldapple,
-                'lamoda': get_product_lamoda,
-                'sportmaster': get_product_sportmaster,
-                'lgcity': get_product_lgcity,
-                'ozon': get_product_ozon,
-                '2moodstore': get_product_2moodstore,
+                'goldapple': get_product_goldapple, #вообще нет
+                'lamoda': get_product_lamoda, #нашел только рекомендации
+                'sportmaster': get_product_sportmaster, #нашел апи, но банит даже с куками
+                'lgcity': get_product_lgcity, #нашел только рекомендации
+                'ozon': get_product_ozon, #нашел только персональные рекомендации, но даже там банит
+                '2moodstore': get_product_2moodstore, #не дает пройти из за токена
                 'ostin': get_product_ostin, #qrator
                 'demix': get_product_demix,
                 'thomas-muenz': get_product_thomas_muenz,
                 'postmeridiem-brand': get_product_postmeridiem_brand,
                 'ekonika':get_product_ekonika, #qrator
                 'studio-29': get_product_studio_29,
-                'baon': get_product_baon,
+                'baon': get_product_baon,#работает
                 'presentandsimple': get_product_presentandsimple,
                 'henderson': get_product_henderson, #работает с куками
                 'sokolov': get_product_sokolov, #qrator
-                'vseinstrumenti': get_product_vseinstrumenti,
+                'vseinstrumenti': get_product_vseinstrumenti,#блокает прайсы даже на клиенте
                 'holodilnik': get_product_holodilnik,
-                'letu': get_product_letu,
-                'askona': get_product_askona,
-                'petrovich': get_product_petrovich,
+                'letu': get_product_letu, #вроде получилось
+                'askona': get_product_askona,#есть джсон прайса, но банит аксесс даже с клиента
+                'petrovich': get_product_petrovich,#не нашел прайс, нашел апи, но там прайс 0
                 'shoppinglive': get_product_shoppinglive,
                 'ormatek': get_product_ormatek,
                 'oldi': get_product_oldi,
