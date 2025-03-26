@@ -84,7 +84,7 @@ class WBProduct(models.Model):
 
 class WBPrice(models.Model):
     price = models.IntegerField(verbose_name='Цена продукта WB')
-    added_time = models.DateTimeField(auto_now_add=True, verbose_name='Добавлено')
+    added_time = models.DateTimeField(verbose_name='Добавлено')
     product = models.ForeignKey(WBProduct, on_delete=models.CASCADE, verbose_name='Продукт WB')
 
     class Meta:
