@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'apps.blog.apps.BlogConfig',
     'django_extensions',
     'apps.price_checker.apps.PriceCheckerConfig',
-    'apps.test_generator.apps.TestGeneratorConfig'
+    'apps.test_generator.apps.TestGeneratorConfig',
     'apps.wb_checker.apps.WbCheckerConfig'
 ]
 
