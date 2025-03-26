@@ -1,0 +1,14 @@
+{%extends 'base.html'%}
+
+{%block title%}wb_checker{%endblock title%}
+
+{%block content%}
+<h1>wb_checker</h1>
+<form method="POST">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit", value="чпоньк">
+</form>
+{%endblock content%}
