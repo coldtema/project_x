@@ -83,3 +83,21 @@ class Price(models.Model):
         indexes = [
             models.Index(fields=['product'])
         ]
+
+
+class WBSeller(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
+    wb_id = models.CharField(max_length=100, verbose_name='ID продавца WB') 
+    main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
+    catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
+
+    class Meta:
+        verbose_name = 'Продавец WB'
+        verbose_name_plural = 'Продавцы WB'
+        indexes = [
+            models.Index(fields=['name']),
+            ]
+
+    def __str__(self):
+        return self.name
+    
