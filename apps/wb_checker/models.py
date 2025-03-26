@@ -11,7 +11,7 @@ class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
     wb_id = models.CharField(max_length=100, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
+    # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
     full_control = models.BooleanField(default=False)
 
     class Meta:
@@ -29,7 +29,7 @@ class WBBrand(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя бренда WB')
     wb_id = models.CharField(max_length=100, verbose_name='ID бренда WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
+    # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
     full_control = models.BooleanField(default=False)
 
     class Meta:
@@ -59,7 +59,7 @@ class WBProduct(models.Model):
 
     objects = models.Manager()
     enabled_products = EnabledManager()
-    
+
     class Meta:
         verbose_name = 'Продукт WB'
         verbose_name_plural = 'Продукты WB'
