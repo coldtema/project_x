@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'apps.price_checker.apps.PriceCheckerConfig',
     'apps.test_generator.apps.TestGeneratorConfig'
+    'apps.wb_checker.apps.WbCheckerConfig'
 ]
 
 MIDDLEWARE = [
@@ -130,6 +131,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "apps/price_checker/static/price_checker"),
+    os.path.join(BASE_DIR, "apps/wb_checker/static/wb_checker")
 ]
 
 # Default primary key field type
