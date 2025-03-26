@@ -6,7 +6,7 @@ class EnabledManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(enabled=True)
     
-    
+
 class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
     wb_id = models.CharField(max_length=100, verbose_name='ID продавца WB') 
@@ -47,9 +47,7 @@ class WBProduct(models.Model):
     artikul = models.CharField(max_length=100, verbose_name='Артикул продукта WB')
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     wb_cosh = models.BooleanField(default=True)
-    # shop_name = models.ForeignKey(max_length=100, verbose_name='Продавец продукта WB') - будет в другой таблице
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
-    # brand_name = models.CharField(max_length=100, verbose_name='Бренд продукта WB') - будет в другой таблице
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     url = models.URLField(verbose_name='URL')
     enabled = models.BooleanField(default=True)
@@ -71,7 +69,7 @@ class WBProduct(models.Model):
     
     def save(self, *args, **kwargs):
         if self.pk:  # Проверяем, что объект уже существует (не новый)
-            original = Product.objects.get(pk=self.pk)
+            original = WBProduct.objects.get(pk=self.pk)
             if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
                 self.updated = timezone.now()  # Обновляем вручную
             else:
