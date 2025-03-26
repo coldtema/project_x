@@ -56,8 +56,10 @@ class WBProduct(models.Model):
     authors = models.ManyToManyField(Author, verbose_name='Никнеймы авторов')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта WB')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта WB')
+
     objects = models.Manager()
     enabled_products = EnabledManager()
+    
     class Meta:
         verbose_name = 'Продукт WB'
         verbose_name_plural = 'Продукты WB'
