@@ -18,7 +18,7 @@ class WBSeller(models.Model):
         verbose_name = 'Продавец WB'
         verbose_name_plural = 'Продавцы WB'
         indexes = [
-            models.Index(fields=['name']),
+            models.Index(fields=['wb_id']),
             ]
 
     def __str__(self):
@@ -36,7 +36,7 @@ class WBBrand(models.Model):
         verbose_name = 'Магазин'
         verbose_name_plural = 'Магазины'
         indexes = [
-            models.Index(fields=['name']),
+            models.Index(fields=['wb_id']),
             ]
 
     def __str__(self):
