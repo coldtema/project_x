@@ -3,13 +3,26 @@ from django.urls import reverse
 from .forms import WBProductForm
 from django.http import HttpResponseRedirect, HttpResponse
 import apps.wb_checker.backend_explorer as backend_explorer
+import time
+from functools import wraps
 
-
+def time_count(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+        return result
+    return wrapper
 
 action_type_dict = {'product': backend_explorer.check_repetitions_product, 
              'brand': backend_explorer.check_repetitions_brand, 
              'seller': backend_explorer.check_repetitions_seller,
 }
+
+
+
 def all_price_list(request):
     form = WBProductForm()
     if request.method == 'POST':
