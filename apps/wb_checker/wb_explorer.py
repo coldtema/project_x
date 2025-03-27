@@ -58,8 +58,8 @@ def get_product_info(product_url, author_id):
             enabled=True,
             seller=WBSeller.objects.get(wb_id=seller_id),
             brand=WBBrand.objects.get(wb_id=brand_id))
-    #добавляем many-to-many связь
-    new_product.authors.add(Author.objects.get(id=author_id))
+    #добавляем many-to-many связь (почему то через автора всегда быстрее)
+    Author.objects.get(id=author_id).wbproduct_set.add(new_product)
     #добавляем все прайсы
     price_history = list(map(lambda x: WBPrice(price=x[1], added_time=x[0], product=new_product), price_history))
     WBPrice.objects.bulk_create(price_history)
