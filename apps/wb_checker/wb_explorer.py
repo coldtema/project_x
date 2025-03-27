@@ -12,7 +12,18 @@ from django.utils import timezone
 #https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&hide_dtype=10&spp=30&ab_testing=false&lang=ru&nm=
 #https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm=
 
+def time_count(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+        return result
+    return wrapper
 
+
+@time_count
 def get_product_info(product_url, author_id):
     #полностью собирает элемент
     artikul = re.search(r'\/(\d+)\/', product_url).group(1)
