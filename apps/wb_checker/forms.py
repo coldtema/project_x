@@ -5,5 +5,5 @@ ACTION_TYPE=(('product', 'product'),
              ('seller', 'seller'))
 
 class WBProductForm(forms.Form):
-    url = forms.CharField(max_length=100, required=True)
+    url = forms.CharField(max_length=1000, required=True)
     action_type = forms.ChoiceField(choices=ACTION_TYPE)
