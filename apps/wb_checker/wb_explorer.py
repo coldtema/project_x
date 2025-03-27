@@ -7,6 +7,9 @@ import apps.wb_checker.backend_explorer as backend_explorer
 from .models import WBProduct, WBSeller, WBBrand, WBPrice
 from apps.blog.models import Author
 from django.utils import timezone
+import math
+import time
+from functools import wraps
 
 #отслеживание цены
 #https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&hide_dtype=10&spp=30&ab_testing=false&lang=ru&nm=
@@ -72,7 +75,7 @@ def get_product_info(product_url, author_id):
 
 
 #js скрипт на wb для определения сервера
-def get_basket_num(artikul: int) -> int:
+def get_basket_num(artikul: int):
     s = artikul // 100000  # Разделение артикулов на группы
     if s <= 143:
         return 1
@@ -131,7 +134,6 @@ def get_basket_num(artikul: int) -> int:
 def get_price_history(product_url):
     artikul = (re.search(r'\/(\d+)\/', product_url).group(1))
     basket_num = get_basket_num(int(artikul))
-    print(basket_num)
     if basket_num < 10:
         basket_num = f'0{basket_num}'
     if len(artikul) == 9:
