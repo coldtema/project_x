@@ -19,23 +19,33 @@ def check_repetitions_product(product_url, author_id):
     else:
         wb_explorer.get_product_info(product_url, author_id)
 
+
+
 #проверяю на наличие бренда и продавца в БД
-def check_existence_of_brand_and_seller(seller_dict, brand_dict):
+def check_existence_of_brand(brand_dict):
     brand_existence = WBBrand.objects.filter(wb_id=brand_dict['brand_id'])
-    seller_existence = WBSeller.objects.filter(wb_id=seller_dict['seller_id'])
     if not brand_existence:
         WBBrand.objects.create(name=brand_dict['brand_name'],
                                wb_id=brand_dict['brand_id'],
                                main_url=f'https://www.wildberries.ru/brands/{brand_dict['brand_id']}',
                                full_control = False)
+
+
+def check_existence_of_seller(seller_dict):
+    seller_existence = WBSeller.objects.filter(wb_id=seller_dict['seller_id'])
     if not seller_existence:
         WBSeller.objects.create(name=seller_dict['seller_name'],
                                wb_id=seller_dict['seller_id'],
                                main_url=f'https://www.wildberries.ru/seller/{seller_dict['seller_id']}',
                                full_control = False)
 
-def check_repetitions_seller(product_url, author_id):
-    ...
+
+
+def check_repetitions_seller(seller_url, author_id):
+    wb_explorer.get_catalog_of_seller(seller_url, author_id)
+
+
+
 
 def check_repetitions_brand(product_url, author_id):
     ...
