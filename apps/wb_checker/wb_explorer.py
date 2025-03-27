@@ -61,10 +61,8 @@ def get_product_info(product_url, author_id):
     #добавляем many-to-many связь
     new_product.authors.add(Author.objects.get(id=author_id))
     #добавляем все прайсы
-    for elem in price_history:
-        WBPrice.objects.create(price=elem[1],
-                               added_time=elem[0],
-                               product_id=new_product.id)
+    price_history = list(map(lambda x: WBPrice(price=x[1], added_time=x[0], product=new_product), price_history))
+    WBPrice.objects.bulk_create(price_history)
 
 
 
