@@ -47,7 +47,8 @@ def get_product_info(product_url, author_id):
     #проверяет наличие этого бренда и продавца в БД (если нет, то создает их, если есть - не трогает)
     seller_dict = {'seller_name': seller_name, 'seller_id': seller_id}
     brand_dict = {'brand_name': brand_name, 'brand_id': brand_id}
-    backend_explorer.check_existence_of_brand_and_seller(seller_dict=seller_dict, brand_dict=brand_dict)
+    backend_explorer.check_existence_of_brand(brand_dict=brand_dict)
+    backend_explorer.check_existence_of_seller(seller_dict=seller_dict)
     #добавляем элемент
     new_product = WBProduct.objects.create(name=name,
             artikul=artikul,
