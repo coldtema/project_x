@@ -71,13 +71,54 @@ def check_existence_of_seller(seller_dict):
                                main_url=f'https://www.wildberries.ru/seller/{seller_dict['seller_id']}',
                                full_control = False)
 
+#https://www.wildberries.ru/seller/simaland-exclusive
+#https://www.wildberries.ru/seller/simaland-exclusive?page=1&sort=priceup&fbrand=28172
+def get_seller_artikul(seller_url):
+    seller_artikul = re.search(r'(seller)\/([a-z]+?\-)?(\d+)(\?)?', seller_url)
+    if seller_artikul:
+        seller_artikul = seller_artikul.group(3)
+    else:
+        seller_slug_name = re.search(r'(seller\/)([a-z\-]+)(\?)?', seller_url).group(2)
+        final_url = f'https://static-basket-01.wbbasket.ru/vol0/constructor-api/shops/{seller_slug_name}.json'
+        headers = {"User-Agent": "Mozilla/5.0"}
+        scraper = cloudscraper.create_scraper()
+        response = scraper.get(final_url, headers=headers)
+        json_data = json.loads(response.text)
+        seller_artikul = json_data['supplierID']
+    return seller_artikul
 
 
-def check_repetitions_seller(seller_url, author_id):
-    wb_explorer.get_catalog_of_seller(seller_url, author_id)
 
+#изменить имя функции во views
+def get_repetitions_catalog_brand(brand_url, author_id):
+    brand_artikul = get_brand_artikul(brand_url)
+    if WBSeller.objects.filter(wb_id=brand_artikul).first():
+        potential_repetitions = WBProduct.enabled_products.filter(brand=WBSeller.objects.get(wb_id=brand_artikul))
+        potential_repetitions = list(map(lambda x: {x.id: x}, potential_repetitions))
+    return wb_explorer.get_catalog_of_brand(brand_url, author_id, potential_repetitions)
 
+#Варианты урлов:
+#https://www.wildberries.ru/brands/joonies
+#https://www.wildberries.ru/brands/311409788-cotton-care
+#https://static-basket-01.wbbasket.ru/vol0/data/brands/joonies.json
+def get_brand_artikul(brand_url):
+    brand_artikul = re.search(r'(brands)\/([a-z]+?\-)?(\d+)(\?)?', brand_url)
+    if brand_artikul:
+        brand_artikul = brand_artikul.group(3)
+    else:
+        brand_slug_name = re.search(r'(brands\/)([a-z\-]+)(\?)?', brand_url).group(2)
+        final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
+        headers = {"User-Agent": "Mozilla/5.0"}
+        scraper = cloudscraper.create_scraper()
+        response = scraper.get(final_url, headers=headers)
+        json_data = json.loads(response.text)
+        brand_artikul = json_data['id']
+    return brand_artikul
 
-
-def check_repetitions_brand(product_url, author_id):
-    ...
+#изменения:
+#1. добавил функцию для взятия всех потенциальных повторюшек по селлеру
+#2. добавил функуию на проверку повторюшек внутри листа, который отдают функции на получение повторюшек от бренда и листа
+#3. перенес функцию получения артикула селлера из урла + изменил ее для разных вариантов
+#4. добавил функцию на получение потенциальных повторюшек у бренда
+#5. добавил функцию получения артикула бренда из урла для разных вариантов
+#6. потестить урл селлера и бренда с разными фильтрами еще
