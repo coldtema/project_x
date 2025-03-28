@@ -17,8 +17,8 @@ def time_count(func):
     return wrapper
 
 action_type_dict = {'product': backend_explorer.check_repetitions_product, 
-             'brand': backend_explorer.check_repetitions_brand, 
-             'seller': backend_explorer.check_repetitions_seller,
+             'brand': backend_explorer.get_repetitions_catalog_brand, 
+             'seller': backend_explorer.get_repetitions_catalog_seller,
 }
 
 
