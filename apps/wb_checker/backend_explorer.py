@@ -2,8 +2,28 @@ import re
 from .models import WBProduct, WBBrand, WBSeller
 from apps.blog.models import Author
 from django.http import HttpResponse
-import apps.wb_checker.wb_explorer as wb_explorer 
+import apps.wb_checker.wb_explorer as wb_explorer
+import cloudscraper
+import json
+import time
+from functools import wraps
 
+
+def time_count(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+        return result
+    return wrapper
+
+
+
+
+
+@time_count
 def check_repetitions_product(product_url, author_id):
     artikul = re.search(r'\/(\d+)\/', product_url).group(1)
     repeated_product = WBProduct.enabled_products.filter(artikul=artikul) #посмотреть, как сделать так, чтобы get - функция не выдавала исключения
