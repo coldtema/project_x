@@ -39,6 +39,18 @@ def check_repetitions_product(product_url, author_id):
     else:
         wb_explorer.get_product_info(product_url, author_id)
 
+#изменить имя функции во views
+def get_repetitions_catalog_seller(seller_url, author_id):
+    potential_repetitions = []
+    seller_artikul = get_seller_artikul(seller_url)
+    if WBSeller.objects.filter(wb_id=seller_artikul).first():
+        potential_repetitions = WBProduct.enabled_products.filter(seller=WBSeller.objects.get(wb_id=seller_artikul))
+        potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
+    return wb_explorer.get_catalog_of_seller(seller_url, author_id, potential_repetitions)
+
+def check_repetitions_catalog(product_artikul, potential_repetitions):
+    if str(product_artikul) in potential_repetitions.keys():
+        return potential_repetitions[str(product_artikul)]
 
 
 #проверяю на наличие бренда и продавца в БД
