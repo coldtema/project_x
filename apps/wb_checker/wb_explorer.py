@@ -1,3 +1,5 @@
+import os
+import psutil
 from requests import request
 import re
 import json
@@ -26,7 +28,7 @@ def time_count(func):
     return wrapper
 
 
-@time_count
+
 def get_product_info(product_url, author_id):
     #полностью собирает элемент
     artikul = re.search(r'\/(\d+)\/', product_url).group(1)
@@ -176,6 +178,8 @@ def get_product_info_seller_catalog(author_id, product_in_catalog, brand_object,
 #https://www.wildberries.ru/seller/simaland-35167
 @time_count
 def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
+    process = psutil.Process(os.getpid())
+    print(f"Используется памяти: {process.memory_info().rss / 1024 ** 2:.2f} MB")
     #кэш на проверку брендов в виде wb_id брендов
     brands_to_add = []
     brands_wb_ids_to_add = []
@@ -198,6 +202,8 @@ def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
     json_data = json.loads(response.text)
     total_products = json_data['data']['total']
     number_of_pages = math.ceil(total_products/100)
+    if number_of_pages > 100:
+        number_of_pages = 100
     #проверяет наличие продавца в БД
     seller_name = json_data['data']['products'][0]['supplier']
     backend_explorer.check_existence_of_seller(seller_dict={'seller_id':seller_artikul, 'seller_name':seller_name})
@@ -211,10 +217,8 @@ def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
         try:
             json_data = json.loads(response.text)
         except:
-            print(elem)
             continue
         products_on_page = json_data['data']['products']
-        print(elem)
         for i in range(len(products_on_page)):
             #специально получаю артикул для того, чтобы передать в функцию проверки на повторки
             if potential_repetitions:
@@ -242,11 +246,72 @@ def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
             new_product, new_product_price = get_product_info_seller_catalog(author_id=author_id, product_in_catalog=products_on_page[i], brand_object=brand_object, seller_object=seller_object)
             all_products.append(new_product)
             all_prices.append(new_product_price)
+    process = psutil.Process(os.getpid())
+    print(f"Используется памяти: {process.memory_info().rss / 1024 ** 2:.2f} MB")
     WBBrand.objects.bulk_create(brands_to_add)
     WBProduct.objects.bulk_create(all_products) #добавляю элементы одной командой
     WBPrice.objects.bulk_create(all_prices) #добавляю элементы одной командой
     all_products.extend(repetitions_list)
     Author.objects.get(id=author_id).wbproduct_set.set(all_products) #many-to-many связь через автора (вставляется сразу все)
 
-def get_catalog_of_brand():
+
+
+
+#https://www.wildberries.ru/seller/simaland-35167
+def get_catalog_of_brand(brand_url, author_id, potential_repetitions):
     ...
+#     #конструирует url
+#     brand_artikul = backend_explorer.get_brand_artikul()
+#     addons = re.search(r'(page\=1)(\&.+)', brand_url)
+#     sorting = re.search(r'\&(sort)\=(.+?)\&', brand_url)
+#     if not addons: addons = ''
+#     else: addons = addons.group(2)
+#     if not sorting: sorting = 'popular'
+#     else: sorting = sorting.group(2)
+#     final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={1}&sort={sorting}&spp=30&supplier={seller_artikul}&uclusters=0{addons}'
+#     #делает первый запрос для определения количества продуктов (total) + определение количества страниц для полного отображения каталога (продуктов на странице - 100!!)
+#     print(final_url)
+#     headers = {"User-Agent": "Mozilla/5.0"}
+#     scraper = cloudscraper.create_scraper()
+#     response = scraper.get(final_url, headers=headers)
+#     json_data = json.loads(response.text)
+#     total_products = json_data['data']['total']
+#     number_of_pages = math.ceil(total_products/100)
+#     #проверяет наличие продавца в БД
+#     seller_name = json_data['data']['products'][0]['supplier']
+#     backend_explorer.check_existence_of_seller(seller_dict={'seller_id':seller_id, 'seller_name':seller_name})
+#     all_products = []
+#     all_prices = []
+#     repetitions_list = []
+#     for elem in range(1, number_of_pages + 1):
+#         final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={elem}&sort={sorting}&spp=30&supplier={seller_id}&uclusters=0{addons}'
+#         response = scraper.get(final_url, headers=headers)
+#         json_data = json.loads(response.text)
+#         products_on_page = json_data['data']['products']
+#         for i in range(len(products_on_page)):
+#             #специально получаю артикул для того, чтобы передать в функцию проверки на повторки
+#             if potential_repetitions:
+#                 product_artikul = products_on_page[i]['id']
+#                 potential_repetition = backend_explorer.check_repetitions_catalog(product_artikul, potential_repetitions)
+#                 if potential_repetition:
+#                     repetitions_list.append(potential_repetition)
+#                     continue
+#             new_product, new_product_price = get_product_info_seller_catalog(author_id=author_id, product_in_catalog=products_on_page[i])
+#             all_products.append(new_product)
+#             all_prices.append(new_product_price)
+#     WBProduct.objects.bulk_create(all_products) #добавляю элементы одной командой
+#     WBPrice.objects.bulk_create(all_prices) #добавляю элементы одной командой
+#     all_products.extend(repetitions_list)
+#     Author.objects.get(id=author_id).wbproduct_set.set(all_products) #many-to-many связь через автора (вставляется сразу все)
+
+
+
+#изменения:
+#1. перенес функцию получения артикула селлера в backend explorer
+#2. теперь еще передаю potential repetitions в get catalog of seller
+#3. проверяю внутри цикла на потенциальную повторюшку
+#4. прибавляю повторюшки, если они есть к добавлению many-to-many связи
+#5. думаю разнести все по папкам по типу wb_explorer_seller/product/brand (еще подумать, как разнести грамотно)
+#6. изменил немного regex для addonov
+#7. перенес получение артикула селлера в отдельную функцию (полный процесс)
+#8. вынести функцию конструкции url в отдельную
