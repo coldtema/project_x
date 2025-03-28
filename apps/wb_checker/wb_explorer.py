@@ -172,18 +172,26 @@ def get_product_info_seller_catalog(author_id, product_in_catalog, brand_object,
 
 
 
-def get_catalog_of_seller(seller_url, author_id):
+#!!!максимальное количество товаров - 10к, дальше вб сам не отдает их
+#https://www.wildberries.ru/seller/simaland-35167
+@time_count
+def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
+    #кэш на проверку брендов в виде wb_id брендов
+    brands_to_add = []
+    brands_wb_ids_to_add = []
+    brand_object = ''
+    brands_in_db = list(WBBrand.objects.all())
+    brand_wb_id_in_db = list(map(lambda x: x.wb_id, brands_in_db))
     #конструирует url
-    seller_id = re.search(r'(seller)\/(\d+)(\?)?', seller_url).group(2)
-    addons = re.search(r'(page\=1)(\&.+)', seller_url)
+    addons = re.search(r'(page\=\d+?)(\&.+)', seller_url) #посмотреть немного на измененный regex
     sorting = re.search(r'\&(sort)\=(.+?)\&', seller_url)
-    if not addons: addons = '' 
+    seller_artikul = backend_explorer.get_seller_artikul(seller_url) #еще понаблюдать
+    if not addons: addons = ''
     else: addons = addons.group(2)
     if not sorting: sorting = 'popular'
     else: sorting = sorting.group(2)
-    final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={1}&sort={sorting}&spp=30&supplier={seller_id}&uclusters=0{addons}'
+    final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={1}&sort={sorting}&spp=30&supplier={seller_artikul}&uclusters=0{addons}'
     #делает первый запрос для определения количества продуктов (total) + определение количества страниц для полного отображения каталога (продуктов на странице - 100!!)
-    print(final_url)
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
     response = scraper.get(final_url, headers=headers)
@@ -192,20 +200,52 @@ def get_catalog_of_seller(seller_url, author_id):
     number_of_pages = math.ceil(total_products/100)
     #проверяет наличие продавца в БД
     seller_name = json_data['data']['products'][0]['supplier']
-    backend_explorer.check_existence_of_seller(seller_dict={'seller_id':seller_id, 'seller_name':seller_name})
+    backend_explorer.check_existence_of_seller(seller_dict={'seller_id':seller_artikul, 'seller_name':seller_name})
+    seller_object = WBSeller.objects.get(wb_id=seller_artikul)
     all_products = []
     all_prices = []
+    repetitions_list = []
     for elem in range(1, number_of_pages + 1):
-        final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={elem}&sort={sorting}&spp=30&supplier={seller_id}&uclusters=0{addons}'
+        final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={elem}&sort={sorting}&spp=30&supplier={seller_artikul   }&uclusters=0{addons}'
         response = scraper.get(final_url, headers=headers)
-        json_data = json.loads(response.text)
+        try:
+            json_data = json.loads(response.text)
+        except:
+            print(elem)
+            continue
         products_on_page = json_data['data']['products']
+        print(elem)
         for i in range(len(products_on_page)):
-            new_product, new_product_price = get_product_info_seller_catalog(author_id=author_id, product_in_catalog=products_on_page[i])
+            #специально получаю артикул для того, чтобы передать в функцию проверки на повторки
+            if potential_repetitions:
+                product_artikul = products_on_page[i]['id']
+                potential_repetition = backend_explorer.check_repetitions_catalog(product_artikul, potential_repetitions)
+                if potential_repetition:
+                    repetitions_list.append(potential_repetition)
+                    continue
+            #проверка бренда на наличие в БД плюс откладывание его в кэш (только бренд, тк селлер уже в базе)
+            brand_id = products_on_page[i]['brandId']
+            if brand_id not in brand_wb_id_in_db:
+                brand_dict = {'brand_name': products_on_page[i]['brand'], 'brand_id': brand_id}
+                brand_object = WBBrand(name=products_on_page[i]['brand'],
+                               wb_id=products_on_page[i]['brandId'],
+                               main_url=f'https://www.wildberries.ru/brands/{brand_dict['brand_id']}',
+                               full_control = False)
+                brands_to_add.append(brand_object)
+                brands_in_db.append(brand_object)
+                brand_wb_id_in_db.append(brand_id)
+            else:
+                # print(brand_id)
+                # print(brand_wb_id_in_db)
+                # print(brand_wb_id_in_db.index(brand_id))
+                brand_object = brands_in_db[brand_wb_id_in_db.index(brand_id)]
+            new_product, new_product_price = get_product_info_seller_catalog(author_id=author_id, product_in_catalog=products_on_page[i], brand_object=brand_object, seller_object=seller_object)
             all_products.append(new_product)
             all_prices.append(new_product_price)
+    WBBrand.objects.bulk_create(brands_to_add)
     WBProduct.objects.bulk_create(all_products) #добавляю элементы одной командой
     WBPrice.objects.bulk_create(all_prices) #добавляю элементы одной командой
+    all_products.extend(repetitions_list)
     Author.objects.get(id=author_id).wbproduct_set.set(all_products) #many-to-many связь через автора (вставляется сразу все)
 
 def get_catalog_of_brand():
