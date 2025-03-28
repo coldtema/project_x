@@ -148,21 +148,13 @@ def get_price_history(product_url):
 
 
 
-#надо проверить повторюшки еще потом перед этим
-def get_product_info_seller_catalog(author_id, product_in_catalog):
+
+def get_product_info_seller_catalog(author_id, product_in_catalog, brand_object, seller_object):
     #полностью собирает элемент
     artikul = product_in_catalog['id']
     product_url = f'https://www.wildberries.ru/catalog/{artikul}/detail.aspx'
     name = product_in_catalog['name'] #имя продукта в каталоге
     price_element = product_in_catalog['sizes'][0]['price']['product'] // 100
-    # price_history = [(timezone.now(), price_element)] #не берем историю цены - слишком долго (1.5 сек)
-    seller_id = product_in_catalog['supplierId'] #id продавца
-    brand_name = product_in_catalog['brand'] #имя бренда
-    brand_id = product_in_catalog['brandId'] #id бренда
-    #проверяет наличие в БД только по бренду, потому что seller один и тот же (если нет, то создает его, если есть - не трогает)
-    brand_dict = {'brand_name': brand_name, 'brand_id': brand_id}
-    #проверяет наличие только по бренду, потому что seller один и тот же
-    backend_explorer.check_existence_of_brand(brand_dict=brand_dict)
     #добавляем объект продукта
     new_product = WBProduct(name=name,
             artikul=artikul,
@@ -170,8 +162,8 @@ def get_product_info_seller_catalog(author_id, product_in_catalog):
             wb_cosh=True,
             url=product_url,
             enabled=True,
-            seller=WBSeller.objects.get(wb_id=seller_id),
-            brand=WBBrand.objects.get(wb_id=brand_id))
+            seller=seller_object,
+            brand=brand_object)
     #добавляем объект прайса
     new_product_price = WBPrice(price=price_element,
                                added_time=timezone.now(),
