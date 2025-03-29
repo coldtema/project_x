@@ -7,22 +7,13 @@ import time
 from functools import wraps
 from .models import WBBrand, WBPrice, WBProduct, WBSeller
 from apps.blog.models import Author
-
-def time_count(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(end - start)
-        return result
-    return wrapper
+from .utils import time_count
+from apps.wb_checker import wb_products, wb_brands, wb_sellers
 
 action_type_dict = {'product': backend_explorer.check_repetitions_product, 
              'brand': backend_explorer.get_repetitions_catalog_brand, 
              'seller': backend_explorer.get_repetitions_catalog_seller,
 }
-
 
 
 def all_price_list(request):
