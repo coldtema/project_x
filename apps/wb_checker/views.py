@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect, HttpResponse
 import apps.wb_checker.backend_explorer as backend_explorer
 import time
 from functools import wraps
+from .models import WBBrand, WBPrice, WBProduct, WBSeller
+from apps.blog.models import Author
 
 def time_count(func):
     @wraps(func)
@@ -42,3 +44,14 @@ def all_price_list(request):
             #примерно то же самое с продавцом 
             return HttpResponseRedirect(reverse('all_price_list'))
     return render(request, 'index.html', context={'form': form})
+
+
+def clear_db(request):
+    authors = Author.objects.all()
+    for author in authors:
+        author.wbproduct_set.all().delete()
+    WBPrice.objects.all().delete()
+    WBProduct.objects.all().delete()
+    WBSeller.objects.all().delete()
+    WBBrand.objects.all().delete()
+    return HttpResponseRedirect(reverse('all_price_list'))
