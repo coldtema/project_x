@@ -230,11 +230,17 @@ def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
             #проверка бренда на наличие в БД плюс откладывание его в кэш (только бренд, тк селлер уже в базе)
             brand_id = products_on_page[i]['brandId']
             if brand_id not in brand_wb_id_in_db:
-                brand_dict = {'brand_name': products_on_page[i]['brand'], 'brand_id': brand_id}
-                brand_object = WBBrand(name=products_on_page[i]['brand'],
+                if brand_id == 0:
+                    brand_object = WBBrand(name='Без бренда',
                                wb_id=products_on_page[i]['brandId'],
-                               main_url=f'https://www.wildberries.ru/brands/{brand_dict['brand_id']}',
+                               main_url=f'https://www.wildberries.ru/',
                                full_control = False)
+                else:
+                    brand_dict = {'brand_name': products_on_page[i]['brand'], 'brand_id': brand_id}
+                    brand_object = WBBrand(name=products_on_page[i]['brand'],
+                                wb_id=products_on_page[i]['brandId'],
+                                main_url=f'https://www.wildberries.ru/brands/{brand_dict['brand_id']}',
+                                full_control = False)
                 brands_to_add.append(brand_object)
                 brands_in_db.append(brand_object)
                 brand_wb_id_in_db.append(brand_id)
