@@ -24,15 +24,14 @@ def all_price_list(request):
             author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
             action_type=request.POST['action_type']
-            action_type_dict[action_type](request.POST['url'], author_id)
-
-            #если бренд, то прежде всего проверяем, сколько всего товаров в total на api (если total > 1000, то пока выдаем ошибку (но будем выдавать варианты (все, первая 100, кастомное значение)))
-            #если все ок, то:
-            #идем в общую базу, вытаскиваем товары этого бренда, если они есть
-            #парсим товары и преобразуем их в удобный словарь (во время парсинга смотрим на повторюшки, и, если повторюшка, то меняем поле authors у уже созданной повторюшки, если нет, то добавляем новый товар + цена итд)
-            #если добавляем новый товар, но продавца такого нет, то нужно создать продавца
-
-            #примерно то же самое с продавцом 
+            if action_type == 'product':
+                product = wb_products.Product(request.POST['url'], author_id)
+                product.get_repetition_or_run()
+                del product
+            elif action_type == 'seller':
+                seller = wb_sellers.Seller(request.POST['url'], author_id)
+                seller.run()
+                del seller
             return HttpResponseRedirect(reverse('all_price_list'))
     return render(request, 'index.html', context={'form': form})
 
