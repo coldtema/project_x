@@ -258,7 +258,7 @@ def get_catalog_of_seller(seller_url, author_id, potential_repetitions):
     WBProduct.objects.bulk_create(all_products) #добавляю элементы одной командой
     WBPrice.objects.bulk_create(all_prices) #добавляю элементы одной командой
     all_products.extend(repetitions_list)
-    Author.objects.get(id=author_id).wbproduct_set.set(all_products) #many-to-many связь через автора (вставляется сразу все)
+    Author.objects.get(id=author_id).wbproduct_set.add(*all_products) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
 
 
 
