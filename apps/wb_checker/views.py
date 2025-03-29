@@ -10,11 +10,6 @@ from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers
 
-action_type_dict = {'product': backend_explorer.check_repetitions_product, 
-             'brand': backend_explorer.get_repetitions_catalog_brand, 
-             'seller': backend_explorer.get_repetitions_catalog_seller,
-}
-
 
 def all_price_list(request):
     form = WBProductForm()
