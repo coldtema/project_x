@@ -1,6 +1,8 @@
 import time
 from functools import wraps
 from .models import WBBrand, WBSeller
+import cloudscraper
+import json
 
 def time_count(func):
     @wraps(func)
@@ -42,3 +44,20 @@ def check_existence_of_seller(seller_name, seller_artikul):
     else:
         seller_object = (seller_existence[0], True)
     return seller_object
+
+def update_categories():
+    categories_list = []
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/subject-base.json'
+    response = scraper.get(final_url, headers=headers)
+    json_data = json.loads(response.text)
+    def wrapper(json_data):
+        for elem in json_data:
+            if type(elem) == dict and 'childs' not in elem.keys():
+                categories_list.append((elem['id'], elem['url']))
+            elif type(elem) == dict and 'childs' in elem.keys():
+                categories_list.append((elem['id'], elem['url']))
+                wrapper(elem['childs'])
+        return categories_list
+    return wrapper(json_data)
