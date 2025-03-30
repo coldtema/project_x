@@ -15,7 +15,7 @@ def all_price_list(request):
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
-            author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+            author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
             action_type=request.POST['action_type']
             if action_type == 'product':
@@ -26,6 +26,10 @@ def all_price_list(request):
                 seller = wb_sellers.Seller(request.POST['url'], author_id)
                 seller.run()
                 del seller
+            elif action_type == 'brand':
+                brand = wb_brands.Brand(request.POST['url'], author_id)
+                brand.run()
+                del brand
             return HttpResponseRedirect(reverse('all_price_list'))
     return render(request, 'index.html', context={'form': form})
 
