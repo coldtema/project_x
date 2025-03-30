@@ -94,3 +94,17 @@ class WBPrice(models.Model):
         indexes = [
             models.Index(fields=['product'])
         ]
+
+class WBCategory(models.Model):
+    wb_id = models.CharField(max_length=100, verbose_name='ID категории WB') 
+    url = models.URLField(blank=True, verbose_name='URL категории')
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        indexes = [
+            models.Index(fields=['wb_id']),
+            ]
+
+    def __str__(self):
+        return self.name
