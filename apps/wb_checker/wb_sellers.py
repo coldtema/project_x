@@ -12,7 +12,7 @@ from django.db import transaction
 
 class Seller:
     def __init__(self, seller_url, author_id):
-        self.seller_url = seller_url
+        self.seller_url = Seller.check_url_and_send_correct(seller_url)
         self.author_id = author_id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
@@ -186,4 +186,15 @@ class Seller:
                                 product=new_product)
         self.seller_products_to_add.append(new_product)
         self.seller_prices_to_add.append(new_product_price)
+
+    @staticmethod
+    def check_url_and_send_correct(url):
+        if 'seller' in url:
+            return url
+        else:
+            headers = {"User-Agent": "Mozilla/5.0"}
+            scraper = cloudscraper.create_scraper()
+            response = scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=headers)
+            json_data = json.loads(response.text)
+            return f'https://www.wildberries.ru/seller/{json_data['data']['products'][0]['supplierId']}'
         
