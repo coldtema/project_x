@@ -2,13 +2,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm
 from django.http import HttpResponseRedirect, HttpResponse
-import apps.wb_checker.backend_explorer as backend_explorer
-import time
-from functools import wraps
-from .models import WBBrand, WBPrice, WBProduct, WBSeller
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory
 from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers
+from django.db import transaction
+import apps.wb_checker.utils as utils
 
 
 def all_price_list(request):
@@ -40,3 +39,16 @@ def clear_db(request):
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
+
+
+@utils.time_count
+@transaction.atomic
+def update_brands_categories(request):
+    new_categories_list = []
+    WBCategory.objects.all().delete()
+    data = utils.update_categories()
+    for elem in data:
+        new_categories_list.append(WBCategory(wb_id=elem[0], url=elem[1]))
+    WBCategory.objects.bulk_create(new_categories_list)
+    return HttpResponseRedirect(reverse('all_price_list'))
+
