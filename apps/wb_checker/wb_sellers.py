@@ -2,7 +2,7 @@ import re
 import json
 import cloudscraper
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBBrand, WBPrice
+from .models import WBProduct, WBBrand, WBPrice, WBCategory
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -94,7 +94,7 @@ class Seller:
         if seller_artikul:
             seller_artikul = seller_artikul.group(3)
         else:
-            #если в url указано имя бренда в виде slug'a
+            #если в url указано имя селлера в виде slug'a
             seller_slug_name = re.search(r'(seller\/)([a-z\-]+)(\?)?', self.seller_url).group(2)
             final_url = f'https://static-basket-01.wbbasket.ru/vol0/constructor-api/shops/{seller_slug_name}.json'
             response = self.scraper.get(final_url, headers=self.headers)
@@ -104,13 +104,25 @@ class Seller:
     
 
     def construct_seller_api_url(self):
-        addons = re.search(r'(page\=\d+?)(\&.+)', self.seller_url) #посмотреть немного на измененный regex
-        sorting = re.search(r'\&(sort)\=(.+?)\&', self.seller_url)
-        if not addons: addons = ''
-        else: addons = addons.group(2)
-        if not sorting: sorting = 'popular'
-        else: sorting = sorting.group(2)
-        return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page={1}&sort={sorting}&spp=30&supplier={self.seller_artikul}&uclusters=0{addons}'
+        clear_seller_url = re.sub(pattern=r'\#.+', repl='', string=self.seller_url)
+        sorting = 'popular'
+        addons = []
+        if '?' in clear_seller_url:
+            addons = clear_seller_url.split('?')[1]
+            addons = addons.split('&')
+            for elem in addons:
+                if 'sort' in elem:
+                    sorting = elem.split('=')[1]
+        category = re.search(r'(seller\/)([a-z\-\d]+\/)([a-z\-]+)(\?)?(\#)?', clear_seller_url) #выцепляю категорию
+        if category: 
+            try:
+                category_wb_id = (WBCategory.objects.get(url=category.group(3))).wb_id
+                addons.append(f'subject={category_wb_id}')
+            except:
+                addons.append(self.get_custom_links_of_brand()[category.group(3)])
+        if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
+        else: addons = ''
+        return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&spp=30&uclusters=0&page=1&supplier={self.seller_artikul}&sort={sorting}{addons}'
 
 
     def get_total_products_and_name_seller_in_catalog(self):
