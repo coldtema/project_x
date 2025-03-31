@@ -12,6 +12,7 @@ from django.db import transaction
 
 class Seller:
     def __init__(self, seller_url, author_id):
+        '''Инициализация необходимых атрибутов'''
         self.seller_url = Seller.check_url_and_send_correct(seller_url)
         self.author_id = author_id
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -30,6 +31,8 @@ class Seller:
         self.seller_products_to_add = []
         self.seller_prices_to_add = []
 
+
+
     @utils.time_count
     def run(self):
         '''Функция запуска процесса парсинга'''
@@ -37,9 +40,11 @@ class Seller:
         self.add_all_to_db()
 
 
+
     @utils.time_count
     def get_repetitions_catalog_seller(self):
-        '''Функция проверки селлера в БД, и, если селлер есть - берет все его продукты (потенциальные повторки)'''
+        '''Функция проверки селлера в БД, и, если селлер есть - 
+        берет все его продукты (потенциальные повторки)'''
         potential_repetitions = []
         #если селлер уже есть в БД, берет все продукты этого селлера вместе с их артикулами
         if self.seller_was_in_db:
@@ -48,7 +53,7 @@ class Seller:
         return potential_repetitions
     
 
-    #https://www.wildberries.ru/seller/simaland-35167
+
     @utils.time_count
     def get_catalog_of_seller(self):
         '''Функция, которая:
@@ -56,23 +61,20 @@ class Seller:
         2. Проверяет его на повторку
         3. Проверяет наличие бренда (откладывает новые в кэш)
         4. Добавляет в кэш новые объекты цены и продукта, если они прошли проверку на повторки'''
-        #делает первый запрос для определения количества продуктов (total) + определение количества страниц для полного отображения каталога (продуктов на странице - 100!!)
-        #проверяет наличие продавца в БД
         for elem in range(1, self.number_of_pages + 1):
             self.seller_api_url = re.sub(pattern=r'page=\d+\&', repl=f'page={elem}&', string=self.seller_api_url)
             response = self.scraper.get(self.seller_api_url, headers=self.headers)
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
             for i in range(len(products_on_page)):
-                #специально получаю артикул продукта для того, чтобы передать в функцию проверки на повторки
-                product_artikul = products_on_page[i]['id']
+                product_artikul = products_on_page[i]['id'] #специально получаю артикул продукта для того, чтобы передать в функцию проверки на повторки
                 if self.potential_repetitions:
                     if self.check_repetition_in_catalog(product_artikul): continue
-                #проверка бренда на наличие в БД плюс откладывание его в кэш (только бренд, тк селлер уже в базе)
                 brand_artikul = products_on_page[i]['brandId']
-                brand_name = products_on_page[i]['brand']
+                brand_name = products_on_page[i]['brand'] #проверка бренда на наличие в БД плюс откладывание его в кэш (только бренд, тк селлер уже в базе)
                 brand_object = self.check_brand_existance(brand_artikul, brand_name) #отдает объект бренда без заходов в БД постоянных
                 self.add_new_product_and_price(product_in_catalog=products_on_page[i], brand_object=brand_object, product_artikul = product_artikul)
+
 
 
     @transaction.atomic
@@ -86,9 +88,9 @@ class Seller:
         Author.objects.get(id=self.author_id).wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
 
 
-    #https://www.wildberries.ru/seller/simaland-exclusive
-    #https://www.wildberries.ru/seller/simaland-exclusive?page=1&sort=priceup&fbrand=28172
+    
     def get_seller_artikul(self):
+        '''Получение арттикула (wb_id) селлера'''
         seller_artikul = re.search(r'(seller)\/([a-z]+?\-)?(\d+)(\?)?', self.seller_url)
         #если артикул селлера указан сразу в url
         if seller_artikul:
@@ -103,7 +105,10 @@ class Seller:
         return seller_artikul
     
 
+
     def construct_seller_api_url(self):
+        '''Построение url для доступа к api каталога селлера с 
+        использованием всех фильтров, сортировок, категорий (путей кастомных)'''
         clear_seller_url = re.sub(pattern=r'\#.+', repl='', string=self.seller_url)
         sorting = 'popular'
         addons = []
@@ -122,7 +127,10 @@ class Seller:
         return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&spp=30&uclusters=0&page=1&supplier={self.seller_artikul}&sort={sorting}{addons}'
 
 
+
     def get_total_products_and_name_seller_in_catalog(self):
+        '''Получение количества продуктов для парсинга + 
+        имя селлера (для создания объекта бренда при его отсутствии в БД)'''
         response = self.scraper.get(self.seller_api_url, headers=self.headers)
         json_data = json.loads(response.text)
         total_products = json_data['data']['total']
@@ -130,20 +138,28 @@ class Seller:
         return total_products, seller_name
 
 
+
     def get_number_of_pages_in_catalog(self):
+        '''Получение количества страниц для парсинга 
+        плюс настройка ограничения в 100 страниц'''
         number_of_pages = math.ceil(self.total_products/100)
-        if number_of_pages > 100: #так как максимально отдает вб 10к, а товаров на странице всегда <=100
+        if number_of_pages > 100:
             number_of_pages = 100
         return number_of_pages
 
 
+
     def check_repetition_in_catalog(self, product_artikul_to_check):
+        '''Проверка на дубликат продукта в получаемом каталоге'''
         potential_repetition = utils.check_repetitions_catalog(product_artikul_to_check, self.potential_repetitions)
         if potential_repetition:
             self.product_repetitions_list.append(potential_repetition)
             return True
         
+
+
     def check_brand_existance(self, brand_artikul, brand_name):
+        '''Проверка бренда на существование в БД + откладывание его в кэш при отсутствии'''
         if brand_artikul not in self.brand_wb_id_in_db:
             if brand_artikul == 0:
                 brand_object = WBBrand(name='Без бренда',
@@ -164,11 +180,10 @@ class Seller:
 
 
     def add_new_product_and_price(self, product_in_catalog, brand_object, product_artikul):
-        #полностью собирает элемент
+        '''Сборка объекта продукта и объекта цены + добавление их в кэш'''
         product_url = f'https://www.wildberries.ru/catalog/{product_artikul}/detail.aspx'
-        name = product_in_catalog['name'] #имя продукта в каталоге
+        name = product_in_catalog['name']
         price_element = product_in_catalog['sizes'][0]['price']['product'] // 100
-        #добавляем объект продукта
         new_product = WBProduct(name=name,
                 artikul=product_artikul,
                 latest_price=price_element,
@@ -177,7 +192,6 @@ class Seller:
                 enabled=True,
                 seller=self.seller_object,
                 brand=brand_object)
-        #добавляем объект прайса
         new_product_price = WBPrice(price=price_element,
                                 added_time=timezone.now(),
                                 product=new_product)
@@ -186,6 +200,8 @@ class Seller:
 
     @staticmethod
     def check_url_and_send_correct(url):
+        '''Проверка url, отправленного пользователем, на предмет 
+        парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
         if 'seller' in url:
             return url
         else:
