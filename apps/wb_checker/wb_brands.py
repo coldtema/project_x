@@ -62,7 +62,11 @@ class Brand:
 
     @utils.time_count
     def get_catalog_of_brand(self):
-        '''Основной парсинг каталога бренда'''
+        '''Функция, которая:
+        1. Парсит товар
+        2. Проверяет его на повторку
+        3. Проверяет наличие бренда (откладывает новые в кэш)
+        4. Добавляет в кэш новые объекты цены и продукта, если они прошли проверку на повторки'''
         for elem in range(1, self.number_of_pages + 1):
             self.brand_api_url = re.sub(pattern=r'page=\d+\&', repl=f'page={elem}&', string=self.brand_api_url)
             while True:
@@ -170,7 +174,7 @@ class Brand:
 
 
     def check_repetition_in_catalog(self, product_artikul_to_check):
-        '''Проверка на дубликат продукта в в получаемом каталоге'''
+        '''Проверка на дубликат продукта в получаемом каталоге'''
         potential_repetition = utils.check_repetitions_catalog(product_artikul_to_check, self.potential_repetitions)
         if potential_repetition:
             self.product_repetitions_list.append(potential_repetition)
