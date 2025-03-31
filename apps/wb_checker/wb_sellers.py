@@ -82,7 +82,7 @@ class Seller:
         WBBrand.objects.bulk_create(self.brands_to_add)
         WBProduct.objects.bulk_create(self.seller_products_to_add) #добавляю элементы одной командой
         WBPrice.objects.bulk_create(self.seller_prices_to_add) #добавляю элементы одной командой
-        self.seller_products_to_add.extend(self.product_repetitions_list)
+        self.seller_products_to_add.extend(self.product_repetitions_list) #возможно можно как то проверять повторки, были ли они уже в остлеживании или нет именно у этого автора
         Author.objects.get(id=self.author_id).wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
 
 
@@ -115,11 +115,8 @@ class Seller:
                     sorting = elem.split('=')[1]
         category = re.search(r'(seller\/)([a-z\-\d]+\/)([a-z\-]+)(\?)?(\#)?', clear_seller_url) #выцепляю категорию
         if category: 
-            try:
-                category_wb_id = (WBCategory.objects.get(url=category.group(3))).wb_id
-                addons.append(f'subject={category_wb_id}')
-            except:
-                addons.append(self.get_custom_links_of_brand()[category.group(3)])
+            category_wb_id = (WBCategory.objects.get(url=category.group(3))).wb_id
+            addons.append(f'subject={category_wb_id}')
         if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
         else: addons = ''
         return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&spp=30&uclusters=0&page=1&supplier={self.seller_artikul}&sort={sorting}{addons}'
