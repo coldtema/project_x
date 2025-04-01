@@ -7,7 +7,7 @@
 <form method="POST">
     {%csrf_token%}
     <table>
-        {{form.as_table}}
+        {{form_parse.as_table}}
     </table>
     <input type="submit", value="чпоньк">
 </form>
@@ -17,4 +17,16 @@
 <h1></h1>
 <h1></h1>
 <a href="/wb_checker/update_categories">Update Categories</a>
+<h1></h1>
+<h1></h1>
+<a href="/wb_checker/update_prices">Update Prices</a>
+<h1></h1>
+<h1></h1>
+<form method="POST">
+    {%csrf_token%}
+    <table>
+        {{form_get_dest.as_table}}
+    </table>
+    <input type="submit", value="чпоньк">
+</form>
 {%endblock content%}
