@@ -11,6 +11,9 @@ class Author(models.Model):
     nickname = models.CharField(max_length=20, verbose_name='Никнейм')
     age = models.IntegerField(default=0, verbose_name='Возраст')
     subscription = models.CharField(max_length=100, default=Subscription.FREE, choices=Subscription.choices)
+    dest_name = models.CharField(max_length=1000, null=True)
+    dest_id = models.CharField(max_length=100, null=True)
+
 
     class Meta:
         verbose_name = 'Автор'
