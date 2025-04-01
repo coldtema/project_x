@@ -17,10 +17,11 @@ from django.db import transaction
 
 
 class Promo:
-    def __init__(self, promo_url, author_id):
+    def __init__(self, promo_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.promo_url = promo_url
-        self.author_id = author_id
+        self.author_object = author_object,
+        self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.promo_slug_name = self.promo_url.split('?')[0].split('/')[-1]
@@ -164,7 +165,7 @@ class Promo:
                     sorting = elem.split('=')[1]
         if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
         else: addons = ''
-        return f'https://search.wb.ru/{self.promo_object.shard_key}/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&{self.promo_object.query}&spp=30&uclusters=3&page=1&sort={sorting}{addons}'
+        return f'https://search.wb.ru/{self.promo_object.shard_key}/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={self.author_object.dest_id}&hide_dtype=13&lang=ru&{self.promo_object.query}&spp=30&uclusters=3&page=1&sort={sorting}{addons}'
 
 
 
