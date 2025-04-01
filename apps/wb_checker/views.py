@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPromotion
 from apps.blog.models import Author
 from .utils import time_count
-from apps.wb_checker import wb_products, wb_brands, wb_sellers
+from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos
 from django.db import transaction
 import apps.wb_checker.utils as utils
 
@@ -15,7 +15,7 @@ def all_price_list(request):
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
-            author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+            author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
             action_type=request.POST['action_type']
             if action_type == 'product':
@@ -30,6 +30,10 @@ def all_price_list(request):
                 brand = wb_brands.Brand(request.POST['url'], author_id)
                 brand.run()
                 del brand
+            elif action_type == 'promo':
+                promo = wb_promos.Promo(request.POST['url'], author_id)
+                promo.run()
+                del promo
             return HttpResponseRedirect(reverse('all_price_list'))
     return render(request, 'index.html', context={'form': form})
 
@@ -42,6 +46,7 @@ def clear_db(request):
     WBProduct.objects.all().delete()
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
+    WBPromotion.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
