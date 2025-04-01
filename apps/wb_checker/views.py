@@ -11,7 +11,8 @@ import apps.wb_checker.utils as utils
 
 
 def all_price_list(request):
-    form = WBProductForm()
+    form_parse = WBProductForm()
+    form_get_dest = WBDestForm()
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
@@ -35,7 +36,12 @@ def all_price_list(request):
                 promo.run()
                 del promo
             return HttpResponseRedirect(reverse('all_price_list'))
-    return render(request, 'index.html', context={'form': form})
+        elif WBDestForm(request.POST).is_valid():
+                author_object = Author.objects.get(pk=2)
+                author_object.dest_id, author_object.dest_name = wb_pickpoints.get_dest(request.POST['address'])    
+                author_object.save()
+
+    return render(request, 'index.html', context={'form_parse': form_parse, 'form_get_dest':form_get_dest})
 
 
 def clear_db(request):
