@@ -62,6 +62,9 @@ class Promo:
 
     @utils.time_count
     def get_repetitions_catalog_promo(self):
+        '''Функция взятия всех продуктов + артикулов из БД тех селлеров, 
+        которые были в промоакции (если они уже были в БД), 
+        + редактирование кэшированных объектов для добавления/изменения в БД'''
         #находит повторки по фигурирующим продавцам из промоакции, которые лежали в БД до этого + берет их артикулы
         potential_repetitions_products = list(WBProduct.enabled_products.filter(seller__wb_id__in=self.sellers_wb_id_in_promo))
         potential_repetitions_products_artikul = list(map(lambda x: x.artikul, potential_repetitions_products))
@@ -131,6 +134,7 @@ class Promo:
 
 
     def get_object_of_promo(self):
+        '''Получение объекта промо + проверка на уникальность'''
         response = self.scraper.get(f'https://static-basket-01.wbbasket.ru/vol0/data/promotions/{self.promo_slug_name}-v3.json', headers=self.headers)
         json_data = json.loads(response.text)['promo']
         potential_promo_object = WBPromotion.objects.filter(wb_id=json_data['id']).first()
@@ -147,6 +151,8 @@ class Promo:
 
 
     def construct_promo_api_url(self):
+        '''Построение url для доступа к api каталога промо с 
+        использованием всех фильтров, сортировок, пресетов промо'''
         clear_promo_url = re.sub(pattern=r'\#.+', repl='', string=self.promo_url)
         sorting = 'popular'
         addons = []
@@ -163,6 +169,7 @@ class Promo:
 
 
     def get_total_products_in_catalog(self):
+        '''Получение количества продуктов для парсинга'''
         response = self.scraper.get(self.promo_api_url, headers=self.headers)
         json_data = json.loads(response.text)
         total_products = json_data['data']['total']
@@ -171,6 +178,8 @@ class Promo:
 
 
     def get_number_of_pages_in_catalog(self):
+        '''Получение количества страниц для парсинга 
+        плюс настройка ограничения в 100 страниц'''
         number_of_pages = math.ceil(self.total_products/100)
         if number_of_pages > 100:
             number_of_pages = 100
@@ -179,6 +188,7 @@ class Promo:
 
 
     def check_seller_existance(self, seller_artikul, seller_name):
+        '''Проверка продавца на существование в БД + откладывание его в кэш при отсутствии'''
         if seller_artikul not in self.sellers_wb_id_in_promo:
             self.sellers_wb_id_in_promo.append(seller_artikul)
         if seller_artikul not in self.seller_wb_id_in_db:
@@ -196,6 +206,7 @@ class Promo:
 
 
     def check_brand_existance(self, brand_artikul, brand_name):
+        '''Проверка бренда на существование в БД + откладывание его в кэш при отсутствии'''
         if brand_artikul not in self.brand_wb_id_in_db:
             brand_object = WBBrand(name=brand_name,
                         wb_id=brand_artikul,
@@ -211,6 +222,7 @@ class Promo:
 
 
     def add_new_product_and_price(self, product_in_catalog, seller_object, brand_object):
+        '''Сборка объекта продукта и объекта цены + добавление их в кэш'''
         product_artikul = product_in_catalog['id']
         product_url = f'https://www.wildberries.ru/catalog/{product_artikul}/detail.aspx'
         name = product_in_catalog['name']
