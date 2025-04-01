@@ -20,7 +20,7 @@ class Promo:
     def __init__(self, promo_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.promo_url = promo_url
-        self.author_object = author_object,
+        self.author_object = author_object
         self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
