@@ -2,7 +2,8 @@ from django import forms
 
 ACTION_TYPE=(('product', 'product'), 
              ('brand', 'brand'), 
-             ('seller', 'seller'))
+             ('seller', 'seller'),
+             ('promo', 'promo'))
 
 class WBProductForm(forms.Form):
     url = forms.CharField(max_length=1000, required=True)
