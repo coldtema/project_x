@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import WBProductForm
+from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
 from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPromotion
 from apps.blog.models import Author
 from .utils import time_count
-from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos
+from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
 from django.db import transaction
 import apps.wb_checker.utils as utils
 
@@ -16,23 +16,24 @@ def all_price_list(request):
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
-            author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+            author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
+            author_object = Author.objects.get(pk=author_id)
             action_type=request.POST['action_type']
             if action_type == 'product':
-                product = wb_products.Product(request.POST['url'], author_id)
+                product = wb_products.Product(request.POST['url'], author_object)
                 product.get_repetition_or_run()
                 del product
             elif action_type == 'seller':
-                seller = wb_sellers.Seller(request.POST['url'], author_id)
+                seller = wb_sellers.Seller(request.POST['url'], author_object)
                 seller.run()
                 del seller
             elif action_type == 'brand':
-                brand = wb_brands.Brand(request.POST['url'], author_id)
+                brand = wb_brands.Brand(request.POST['url'], author_object)
                 brand.run()
                 del brand
             elif action_type == 'promo':
-                promo = wb_promos.Promo(request.POST['url'], author_id)
+                promo = wb_promos.Promo(request.POST['url'], author_object)
                 promo.run()
                 del promo
             return HttpResponseRedirect(reverse('all_price_list'))
