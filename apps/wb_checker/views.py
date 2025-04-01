@@ -13,11 +13,11 @@ import apps.wb_checker.utils as utils
 def all_price_list(request):
     form_parse = WBProductForm()
     form_get_dest = WBDestForm()
+    author_id = 4 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+            #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
-            author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
-            #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
             author_object = Author.objects.get(pk=author_id)
             action_type=request.POST['action_type']
             if action_type == 'product':
@@ -38,7 +38,7 @@ def all_price_list(request):
                 del promo
             return HttpResponseRedirect(reverse('all_price_list'))
         elif WBDestForm(request.POST).is_valid():
-                author_object = Author.objects.get(pk=2)
+                author_object = Author.objects.get(pk=author_id)
                 author_object.dest_id, author_object.dest_name = wb_pickpoints.get_dest(request.POST['address'])    
                 author_object.save()
 
