@@ -67,3 +67,9 @@ def update_brands_categories(request):
     WBCategory.objects.bulk_create(new_categories_list)
     return HttpResponseRedirect(reverse('all_price_list'))
 
+
+@utils.time_count
+def update_prices(request):
+    utils.update_prices()
+    return HttpResponseRedirect(reverse('all_price_list'))
+
