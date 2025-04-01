@@ -37,3 +37,44 @@ from django.test import TestCase
 #https://www.wildberries.ru/promotions/sportivnye-tovary-kari?bid=c36ed5b6-8c4f-4a0c-952f-fd5e60463c20
 #https://www.wildberries.ru/promotions/geox-mezhsezonnaya-rasprodazha?sort=popular&page=1&erid=2VSb5xbDZEp&bid=fbc2e283-794c-4404-bf39-682a9fe4342a
 
+
+
+
+#SOLD OUT
+# https://www.wildberries.ru/catalog/333233762/detail.aspx?targetUrl=SP
+# https://www.wildberries.ru/catalog/187765685/detail.aspx?targetUrl=SP
+#    
+
+
+
+# "staticbasket_route_map": [
+#             {
+#                 "method": "range",
+#                 "hosts": [
+#                     {
+#                         "vol_range_from": 0,
+#                         "vol_range_to": 4,
+#                         "host": "static-basket-01.wbbasket.ru"
+#                     },
+#                     {
+#                         "vol_range_from": 20,
+#                         "vol_range_to": 35,
+#                         "host": "static-basket-02.wbbasket.ru"
+#                     },
+#                     {
+#                         "vol_range_from": 40,
+#                         "vol_range_to": 54,
+#                         "host": "static-basket-03.wbbasket.ru"
+#                     },
+#                     {
+#                         "vol_range_from": 114,
+#                         "vol_range_to": 125,
+#                         "host": "static-basket-05.wbbasket.ru"
+#                     },
+#                     {
+#                         "vol_range_from": 138,
+#                         "vol_range_to": 149,
+#                         "host": "static-basket-07.wbbasket.ru"
+#                     }
+#                 ]
+
