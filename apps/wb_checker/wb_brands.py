@@ -17,10 +17,11 @@ from django.db import transaction
 
 
 class Brand:
-    def __init__(self, brand_url, author_id):
+    def __init__(self, brand_url, author_object):
         '''Инициализация необходимых атрибутов'''
-        self.brand_url = Brand.check_url_and_send_correct(brand_url)
-        self.author_id = author_id
+        self.brand_url = self.check_url_and_send_correct(brand_url)
+        self.author_object = author_object
+        self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.brand_artikul, self.brand_siteId = self.get_brand_artikul_and_siteId()
@@ -148,7 +149,7 @@ class Brand:
                 addons.append(self.get_custom_links_of_brand()[category.group(3)])
         if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
         else: addons = ''
-        return f'https://catalog.wb.ru/brands/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&spp=30&uclusters=3&page=1&brand={self.brand_artikul}&sort={sorting}{addons}'
+        return f'https://catalog.wb.ru/brands/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={self.author_object.dest_id}&hide_dtype=13&lang=ru&spp=30&uclusters=3&page=1&brand={self.brand_artikul}&sort={sorting}{addons}'
 
 
 
@@ -219,18 +220,15 @@ class Brand:
         
 
 
-    @staticmethod
-    def check_url_and_send_correct(url):
+    def check_url_and_send_correct(self, url):
         '''Проверка url, отправленного пользователем, на предмет 
         парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
         if 'brands' in url:
             return url
         else:
-            headers = {"User-Agent": "Mozilla/5.0"}
-            scraper = cloudscraper.create_scraper()
-            response = scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=headers)
+            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=self.headers)
             json_data = json.loads(response.text)
-            response = scraper.get(f'https://static-basket-01.wbbasket.ru/vol0/data/brands-by-id/{json_data['data']['products'][0]['brandId']}.json', headers=headers)
+            response = self.scraper.get(f'https://static-basket-01.wbbasket.ru/vol0/data/brands-by-id/{json_data['data']['products'][0]['brandId']}.json', headers=self.headers)
             json_data = json.loads(response.text)
             return f'https://www.wildberries.ru/brands/{json_data['url']}'
 
