@@ -29,3 +29,11 @@ from django.test import TestCase
 # https://www.wildberries.ru/catalog/216972285/detail.aspx
 # https://www.wildberries.ru/catalog/241952387/detail.aspx
 # https://www.wildberries.ru/catalog/250909718/detail.aspx
+
+
+
+#URLS FOR PROMOS
+#https://www.wildberries.ru/promotions/oshade-novaya-kollektsiya-vesna-leto-2025?page=1&sort=popular&bid=0f2a85ca-745c-43d6-93a0-38ab7377fdfd
+#https://www.wildberries.ru/promotions/sportivnye-tovary-kari?bid=c36ed5b6-8c4f-4a0c-952f-fd5e60463c20
+#https://www.wildberries.ru/promotions/geox-mezhsezonnaya-rasprodazha?sort=popular&page=1&erid=2VSb5xbDZEp&bid=fbc2e283-794c-4404-bf39-682a9fe4342a
+
