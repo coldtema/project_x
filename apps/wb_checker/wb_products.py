@@ -17,6 +17,7 @@ from django.db import transaction
 
 class Product:
     def __init__(self, product_url, author_object):
+        '''Инициализация необходимых атрибутов'''
         self.product_url = product_url
         self.author_object = author_object
         self.author_id = author_object.id
@@ -43,6 +44,7 @@ class Product:
 
 
     def get_product_info(self):
+        '''Функция сборки нового продукта (если не обнаружен дубликат)'''
         #полностью собирает элемент
         response = self.scraper.get(self.product_url_api, headers=self.headers)
         json_data = json.loads(response.text)
@@ -75,6 +77,7 @@ class Product:
 
 
     def get_price_history(self):
+        '''Функция получения истории цены продукта'''
         basket_num = Product.get_basket_num(int(self.artikul))
         if basket_num < 10:
             basket_num = f'0{basket_num}'
@@ -89,6 +92,7 @@ class Product:
 
     @transaction.atomic
     def add_product_to_db(self, new_product, price_history):
+        '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
         new_product.save()
         #добавляем many-to-many связь (почему то через автора всегда быстрее)
@@ -99,6 +103,7 @@ class Product:
     #js скрипт на wb для определения сервера
     @staticmethod
     def get_basket_num(artikul: int):
+        '''Определение сервера, на котором находится история цены по js скрипту на wb'''
         s = artikul // 100000  # Разделение артикулов на группы
         if s <= 143:
             return 1
