@@ -82,7 +82,7 @@ def update_prices():
     updated_prices = []
     #максимум в листе 512 элементов
     for i in range(math.ceil(len(all_prods) / 512)):
-        temp_prods_from_db = list(map(lambda x: x.artikul, all_prods[512*i:512*(i+1)]))
+        temp_prods_from_db = list(map(lambda x: str(x.artikul), all_prods[512*i:512*(i+1)]))
         final_url = product_url_api + ';'.join(temp_prods_from_db)
         headers = {"User-Agent": "Mozilla/5.0"}
         scraper = cloudscraper.create_scraper()
