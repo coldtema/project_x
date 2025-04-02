@@ -9,6 +9,7 @@ from django.db import transaction
 
 
 def time_count(func):
+    '''Декоратор определения времени работы функции'''
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -20,6 +21,7 @@ def time_count(func):
 
 
 def check_repetitions_catalog(product_artikul_to_check, potential_repetitions):
+    '''Простая функция на проверку повторок в кэше процесса парсинга'''
     if product_artikul_to_check in potential_repetitions.keys():
         return potential_repetitions[product_artikul_to_check]
 
@@ -27,6 +29,8 @@ def check_repetitions_catalog(product_artikul_to_check, potential_repetitions):
 #проверяю на наличие бренда и продавца в БД (возможно можно как то засунуть в одну атомарную транзакцию, чтобы не обращаться к БД для создания несуществующего бренда/селлера)
 #Вторым параметром передаю, был ли бренд/селлер уже в бд или нет
 def check_existence_of_brand(brand_name, brand_artikul):
+    '''Проверка бренда на наличие в БД (аналог get or create, 
+    только еще отдается был ли бренд в бд до этого или нет)'''
     brand_existence = WBBrand.objects.filter(wb_id=brand_artikul)
     if not brand_existence:
         brand_object = (WBBrand.objects.create(name=brand_name,
@@ -39,6 +43,8 @@ def check_existence_of_brand(brand_name, brand_artikul):
 
 
 def check_existence_of_seller(seller_name, seller_artikul):
+    '''Проверка селлера на наличие в БД (аналог get or create, 
+    только еще отдается был ли бренд в бд до этого или нет)'''
     seller_existence = WBSeller.objects.filter(wb_id=seller_artikul)
     if not seller_existence:
         seller_object = (WBSeller.objects.create(name=seller_name,
@@ -50,6 +56,7 @@ def check_existence_of_seller(seller_name, seller_artikul):
     return seller_object
 
 def update_categories():
+    '''Обновление базы категорий от самого wb (не кастомные бренда, а именно база wb)'''
     categories_list = []
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
@@ -74,8 +81,9 @@ def save_update_prices(updated_prods, updated_prices):
 
 
 def update_prices():
+    '''Обновление цен всей БД'''
     product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm='
-    #получает все продукиы в виде артикул:продукт
+    #получает все продукты в виде артикул:продукт
     all_prods = list(WBProduct.enabled_products.all())
     all_prods_artikuls = list(map(lambda x: x.artikul, WBProduct.enabled_products.all()))
     updated_prods = []
@@ -107,5 +115,5 @@ def update_prices():
     save_update_prices(updated_prods, updated_prices)
 
 
-
+#добавить функцию, если dest не прошел на мск + если dest не прошел на list
 
