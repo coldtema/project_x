@@ -22,7 +22,7 @@ class Seller:
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.seller_object, self.seller_was_in_db = utils.check_existence_of_seller(self.seller_name, self.seller_artikul)
+        self.seller_object, self.seller_was_in_db = utils.check_existence_of_seller(self.seller_name, self.seller_artikul) #вот здесь сделать с редисом (в миро расписано)
         self.potential_repetitions = self.get_repetitions_catalog_seller()
         self.brands_in_db = list(WBBrand.objects.all())
         self.brand_wb_id_in_db = list(map(lambda x: x.wb_id, self.brands_in_db))
@@ -78,15 +78,24 @@ class Seller:
 
 
 
-    @transaction.atomic
+
     @utils.time_count
+    @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
-        WBBrand.objects.bulk_create(self.brands_to_add)
-        WBProduct.objects.bulk_create(self.seller_products_to_add) #добавляю элементы одной командой
-        WBPrice.objects.bulk_create(self.seller_prices_to_add) #добавляю элементы одной командой
-        self.seller_products_to_add.extend(self.product_repetitions_list) #возможно можно как то проверять повторки, были ли они уже в остлеживании или нет именно у этого автора
-        Author.objects.get(id=self.author_id).wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
+        WBBrand.objects.bulk_create(self.brands_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBProduct.objects.bulk_create(self.seller_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
+        artikuls_to_add_connection = (list(map(lambda x: x.artikul, self.seller_products_to_add)))
+        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_connection))
+        updated_prices = []
+        for elem in products_to_add_price:
+            if len(elem.wbprice_set.all()) == 0:
+                updated_prices.append(WBPrice(price=elem.latest_price,
+                            added_time=timezone.now(),
+                            product=elem))
+        WBPrice.objects.bulk_create(updated_prices) #добавляю элементы одной командой
+        self.seller_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + расширяем повторками, которые процесс смог забрать
+        self.author_object.wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
 
 
     
