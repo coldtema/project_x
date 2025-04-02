@@ -20,8 +20,8 @@ def time_count(func):
 
 
 def check_repetitions_catalog(product_artikul_to_check, potential_repetitions):
-    if str(product_artikul_to_check) in potential_repetitions.keys():
-        return potential_repetitions[str(product_artikul_to_check)]
+    if product_artikul_to_check in potential_repetitions.keys():
+        return potential_repetitions[product_artikul_to_check]
 
 
 #проверяю на наличие бренда и продавца в БД (возможно можно как то засунуть в одну атомарную транзакцию, чтобы не обращаться к БД для создания несуществующего бренда/селлера)
@@ -92,8 +92,8 @@ def update_prices():
         for j in range(len(products_on_page)):
             product_artikul = products_on_page[j]['id']
             product_price = products_on_page[j]['sizes'][0]['price']['product'] // 100
-            if str(product_artikul) in all_prods_artikuls:
-                product_to_check = all_prods[all_prods_artikuls.index(str(product_artikul))]
+            if product_artikul in all_prods_artikuls:
+                product_to_check = all_prods[all_prods_artikuls.index(product_artikul)]
                 if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
                     product_to_check.latest_price = product_price
                     updated_prods.append(product_to_check)

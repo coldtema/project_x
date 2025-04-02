@@ -75,9 +75,9 @@ class Promo:
             for i in range(len(self.products_to_add)):
                 #если артикул продукта уже лежит в БД, то добавляем индекс для удаления нового продукта в кэш + 
                 #добавляем продукт в кэш на добавление новой связи с автором и изменение графы промо в БД (продукта, который уже в ней лежал)
-                if str(self.products_to_add[i].artikul) in potential_repetitions_products_artikul:
+                if self.products_to_add[i].artikul in potential_repetitions_products_artikul:
                     new_products_to_delete_indexes.append(i)
-                    self.repetition_products_to_change.append(potential_repetitions_products[potential_repetitions_products_artikul.index(str(self.products_to_add[i].artikul))])
+                    self.repetition_products_to_change.append(potential_repetitions_products[potential_repetitions_products_artikul.index(self.products_to_add[i].artikul)])
         #если повторки нашлись, то удаляем их из изначального списка продуктов на добавление + удаляем сопряженную цену 
         #+добавляем связь с продуктов старых из БД, которые были дубликатами + обновляем у них поле промо
         if new_products_to_delete_indexes:
