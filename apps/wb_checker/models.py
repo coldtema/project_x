@@ -9,7 +9,7 @@ class EnabledManager(models.Manager):
 
 class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
-    wb_id = models.IntegerField(verbose_name='ID продавца WB') 
+    wb_id = models.IntegerField(unique=True, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
     # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
     full_control = models.BooleanField(default=False)
@@ -27,7 +27,7 @@ class WBSeller(models.Model):
 
 class WBBrand(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя бренда WB')
-    wb_id = models.IntegerField(verbose_name='ID бренда WB') 
+    wb_id = models.IntegerField(unique=True, verbose_name='ID бренда WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
     # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
     full_control = models.BooleanField(default=False)
@@ -45,7 +45,7 @@ class WBBrand(models.Model):
 
 class WBPromotion(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя промоакции WB')
-    wb_id = models.IntegerField(verbose_name='ID промоации WB') 
+    wb_id = models.IntegerField(unique=True, verbose_name='ID промоации WB') 
     main_url = models.URLField(blank=True, verbose_name='URL страницы промоакции')
     shard_key = models.CharField(max_length=200, verbose_name='Часть url для достука к api промоакции WB')
     query = models.CharField(max_length=200, verbose_name='Параметр для передачи в api промоакции WB')
@@ -75,6 +75,7 @@ class WBProduct(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта WB')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта WB')
     promotion = models.ForeignKey(WBPromotion, on_delete = models.CASCADE, verbose_name='Промоакция продукта WB', null=True)
+    # search = models.ForeignKey(WBSearch, on_delete = models.CASCADE, verbose_name='Поиск в каталоге продукта WB', null=True)
 
     objects = models.Manager()
     enabled_products = EnabledManager()
@@ -83,9 +84,9 @@ class WBProduct(models.Model):
         verbose_name = 'Продукт WB'
         verbose_name_plural = 'Продукты WB'
         ordering = ['-updated']
-        # indexes = [
-        #     models.Index(fields=['authors']),
-        #     ]
+        indexes = [
+            models.Index(fields=['artikul']),
+            ]
     
     def __str__(self):
         return self.name
