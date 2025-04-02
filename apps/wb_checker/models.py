@@ -64,7 +64,7 @@ class WBPromotion(models.Model):
 
 class WBProduct(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продукта WB')
-    artikul = models.CharField(max_length=100, verbose_name='Артикул продукта WB')
+    artikul = models.IntegerField(unique=True, verbose_name='Артикул продукта WB')
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     wb_cosh = models.BooleanField(default=True)
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
