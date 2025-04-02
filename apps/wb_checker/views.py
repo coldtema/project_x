@@ -46,6 +46,7 @@ def all_price_list(request):
 
 
 def clear_db(request):
+    '''Полная очистка таблиц, связанных с вб'''
     authors = Author.objects.all()
     for author in authors:
         author.wbproduct_set.all().delete()
@@ -60,6 +61,7 @@ def clear_db(request):
 @utils.time_count
 @transaction.atomic
 def update_brands_categories(request):
+    '''Обновление slug - категорий для брендов и селлеров из общей базы wb'''
     new_categories_list = []
     WBCategory.objects.all().delete()
     data = utils.update_categories()
@@ -71,6 +73,7 @@ def update_brands_categories(request):
 
 @utils.time_count
 def update_prices(request):
+    '''Обновление цен на продукты'''
     utils.update_prices()
     return HttpResponseRedirect(reverse('all_price_list'))
 
