@@ -1,4 +1,5 @@
 import os
+import time
 import psutil
 from requests import request
 import re
@@ -98,15 +99,22 @@ class Product:
     def add_product_to_db(self, new_product, price_history):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
-        WBProduct.enabled_products.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
-        already_added_product = WBProduct.enabled_products.get(artikul=new_product.artikul)
-        if len(already_added_product.wbprice_set.all()) <= 1:
-            already_added_product.wbprice_set.all().delete()
-            already_added_product.wbprice_set.set(WBPrice.objects.bulk_create(price_history))
-        Author.objects.get(id=self.author_id).wbproduct_set.add(new_product) #через wb_id все равно создаст связь (в except случае)
+        already_added_product = WBProduct.enabled_products.update_or_create(artikul=new_product.artikul, defaults={'name':new_product.name,
+                                                                                           'latest_price':new_product.latest_price,
+                                                                                           'wb_cosh':True,
+                                                                                           'url':self.product_url,
+                                                                                           'enabled':True,
+                                                                                           'seller':new_product.seller,
+                                                                                           'brand':new_product.brand})
+        if len(already_added_product[0].wbprice_set.all()) <= 1: #если добавилась при бренде отслеживании от другого процесса только одна цена (а у меня в price_history лежит история для одиночки)
+            already_added_product[0].wbprice_set.all().delete()
+            for elem in price_history:  
+                elem.product_id = already_added_product[0].id
+            WBPrice.objects.bulk_create(price_history)
+        Author.objects.get(id=self.author_id).wbproduct_set.add(already_added_product[0])
     
 
-    #js скрипт на wb для определения сервера
+
     @staticmethod
     def get_basket_num(artikul: int):
         '''Определение сервера, на котором находится история цены по js скрипту на wb'''
