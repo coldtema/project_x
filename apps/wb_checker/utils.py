@@ -103,6 +103,7 @@ class PriceUpdater:
     def update_prices(self):
         '''Обновление цен всей БД'''
         #максимум в листе 512 элементов
+        updated_info = []
         for i in range(math.ceil(len(self.all_prods) / 512)):
             print(i)
             temp_prods_artikuls_from_db = tuple(self.all_prods_artikuls[512*i:512*(i+1)])
@@ -117,11 +118,12 @@ class PriceUpdater:
                 product_to_check = self.dict_all_prods[str(product_artikul)]
                 enabled_products_artikuls.append(str(product_artikul))
                 if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
-                    print(f'''
-Цена изменилась!
+                    updated_info.append(f'''Цена изменилась!
 Продукт: {product_to_check.url}
 Было: {product_to_check.latest_price}
 Стало: {product_price}
+Время:{timezone.now()}
+
 ''')
                     product_to_check.latest_price = product_price
                     self.updated_prods.append(product_to_check)
@@ -132,6 +134,8 @@ class PriceUpdater:
             if len(enabled_products_artikuls) != len(temp_prods_artikuls_from_db):
                 self.potential_disabled_products_artikuls.extend(set(temp_prods_artikuls_from_db) - set(enabled_products_artikuls))        
         self.potential_disabled_products = list(map(lambda x: self.dict_all_prods[x], self.potential_disabled_products_artikuls))
+        with open('updated_info.txt', 'w', encoding='utf-8') as file:
+            file.write(''.join(updated_info))
 
 
     def check_disabled_prods(self):
