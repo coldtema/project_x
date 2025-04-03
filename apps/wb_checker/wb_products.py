@@ -51,7 +51,7 @@ class Product:
         name = json_data['data']['products'][0]['name']
         price_element = json_data['data']['products'][0]['sizes'][0]['price']['product'] // 100
         try: #если вдруг истории цены нет
-            price_history = self.get_price_history(self.product_url)
+            price_history = self.get_price_history()
             price_history = list(map(lambda x: (timezone.make_aware(datetime.fromtimestamp(x['dt'])), x['price']['RUB']//100), price_history))
             price_history.append((timezone.now(), price_element))
         except:
@@ -83,8 +83,12 @@ class Product:
             basket_num = f'0{basket_num}'
         if len(self.artikul) == 9:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:4]}/part{self.artikul[:6]}/{self.artikul}/info/price-history.json'
-        else:
+        elif len(self.artikul) == 9:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:3]}/part{self.artikul[:5]}/{self.artikul}/info/price-history.json'
+        elif len(self.artikul) == 7:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:2]}/part{self.artikul[:4]}/{self.artikul}/info/price-history.json'
+        elif len(self.artikul) == 6:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:1]}/part{self.artikul[:3]}/{self.artikul}/info/price-history.json'
         response = self.scraper.get(price_history_searcher_url, headers=self.headers)
         json_data = json.loads(response.text)
         return json_data
@@ -94,10 +98,12 @@ class Product:
     def add_product_to_db(self, new_product, price_history):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
-        new_product.save()
-        #добавляем many-to-many связь (почему то через автора всегда быстрее)
-        Author.objects.get(id=self.author_id).wbproduct_set.add(new_product)
-        WBPrice.objects.bulk_create(price_history)
+        WBProduct.enabled_products.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
+        already_added_product = WBProduct.enabled_products.get(artikul=new_product.artikul)
+        if len(already_added_product.wbprice_set.all()) <= 1:
+            already_added_product.wbprice_set.all().delete()
+            already_added_product.wbprice_set.set(WBPrice.objects.bulk_create(price_history))
+        Author.objects.get(id=self.author_id).wbproduct_set.add(new_product) #через wb_id все равно создаст связь (в except случае)
     
 
     #js скрипт на wb для определения сервера
