@@ -22,7 +22,7 @@ class Seller:
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.seller_object, self.seller_was_in_db = utils.check_existence_of_seller(self.seller_name, self.seller_artikul) #вот здесь сделать с редисом (в миро расписано)
+        self.seller_object, self.seller_was_not_in_db = utils.check_existence_of_seller(self.seller_name, self.seller_artikul) #вот здесь сделать с редисом (в миро расписано)
         self.potential_repetitions = self.get_repetitions_catalog_seller()
         self.brands_in_db = list(WBBrand.objects.all())
         self.brand_wb_id_in_db = list(map(lambda x: x.wb_id, self.brands_in_db))
@@ -47,8 +47,8 @@ class Seller:
         '''Функция проверки селлера в БД, и, если селлер есть - 
         берет все его продукты (потенциальные повторки)'''
         potential_repetitions = []
+        if not self.seller_was_not_in_db:
         #если селлер уже есть в БД, берет все продукты этого селлера вместе с их артикулами
-        if self.seller_was_in_db:
             potential_repetitions = WBProduct.enabled_products.filter(seller=self.seller_object)
             potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
         return potential_repetitions
