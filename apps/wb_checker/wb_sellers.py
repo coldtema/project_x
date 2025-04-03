@@ -1,5 +1,6 @@
 import re
 import json
+import time
 import cloudscraper
 import apps.wb_checker.utils as utils
 from .models import WBProduct, WBBrand, WBPrice, WBCategory
@@ -80,7 +81,6 @@ class Seller:
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
-        print(self.seller_was_not_in_db)
         WBBrand.objects.bulk_create(self.brands_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.seller_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         artikuls_to_add_connection = (list(map(lambda x: x.artikul, self.seller_products_to_add)))
