@@ -6,6 +6,7 @@ import cloudscraper
 import json
 from django.utils import timezone
 from django.db import transaction
+from collections import Counter
 
 
 def time_count(func):
@@ -73,46 +74,97 @@ def update_categories():
         return categories_list
     return wrapper(json_data)
 
-@transaction.atomic
-def save_update_prices(updated_prods, updated_prices):
-    WBProduct.objects.bulk_update(updated_prods, ['latest_price'])
-    WBPrice.objects.bulk_create(updated_prices)
 
 
 
-def update_prices():
-    '''Обновление цен всей БД'''
-    product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm='
-    #получает все продукты в виде артикул:продукт
-    all_prods = list(WBProduct.enabled_products.all())
-    all_prods_artikuls = list(map(lambda x: x.artikul, WBProduct.enabled_products.all()))
-    updated_prods = []
-    updated_prices = []
-    #максимум в листе 512 элементов
-    for i in range(math.ceil(len(all_prods) / 512)):
-        temp_prods_from_db = list(map(lambda x: str(x.artikul), all_prods[512*i:512*(i+1)]))
-        final_url = product_url_api + ';'.join(temp_prods_from_db)
-        headers = {"User-Agent": "Mozilla/5.0"}
-        scraper = cloudscraper.create_scraper()
-        response = scraper.get(final_url, headers=headers)
-        json_data = json.loads(response.text)
-        products_on_page = json_data['data']['products']
-        for j in range(len(products_on_page)):
-            product_artikul = products_on_page[j]['id']
-            product_price = products_on_page[j]['sizes'][0]['price']['product'] // 100
-            if product_artikul in all_prods_artikuls:
-                product_to_check = all_prods[all_prods_artikuls.index(product_artikul)]
+class PriceUpdater:
+    def __init__(self):
+        self.product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm='
+        self.detail_product_url_api = 'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=123589280&hide_dtype=13&spp=30&ab_testing=false&lang=ru&nm='
+        self.scraper = cloudscraper.create_scraper()
+        self.headers = {"User-Agent": "Mozilla/5.0"}
+        self.all_prods = tuple(WBProduct.enabled_products.all())
+        self.all_prods_artikuls = tuple(map(lambda x: str(x.artikul), self.all_prods))
+        self.dict_all_prods = dict(zip(self.all_prods_artikuls, self.all_prods))
+        self.potential_disabled_products = []
+        self.potential_disabled_products_artikuls = []
+        self.disabled_products = []
+        self.updated_prods = []
+        self.updated_prices = []
+
+
+    def run(self):
+        self.update_prices()     
+        self.check_disabled_prods()
+        self.save_update_prices()
+
+
+    @time_count
+    def update_prices(self):
+        '''Обновление цен всей БД'''
+        #максимум в листе 512 элементов
+        for i in range(math.ceil(len(self.all_prods) / 512)):
+            print(i)
+            temp_prods_artikuls_from_db = tuple(self.all_prods_artikuls[512*i:512*(i+1)])
+            final_url = self.product_url_api + ';'.join(temp_prods_artikuls_from_db)
+            response = self.scraper.get(final_url, headers=self.headers)
+            json_data = json.loads(response.text)
+            products_on_page = json_data['data']['products']
+            enabled_products_artikuls = []
+            for j in range(len(products_on_page)):
+                product_artikul = products_on_page[j]['id']
+                product_price = products_on_page[j]['sizes'][0]['price']['product'] // 100
+                product_to_check = self.dict_all_prods[str(product_artikul)]
+                enabled_products_artikuls.append(str(product_artikul))
                 if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
+                    print(f'''
+Цена изменилась!
+Продукт: {product_to_check.url}
+Было: {product_to_check.latest_price}
+Стало: {product_price}
+''')
                     product_to_check.latest_price = product_price
-                    updated_prods.append(product_to_check)
-                    updated_prices.append(WBPrice(price=product_price,
+                    self.updated_prods.append(product_to_check)
+                    self.updated_prices.append(WBPrice(price=product_price,
                             added_time=timezone.now(),
-                            product=product_to_check))
-        #сверяем количество полученных продуктов и переданных продуктов
-        if len(products_on_page) != len(temp_prods_from_db):
-            # check_disabled_prods()
-            ...
-    save_update_prices(updated_prods, updated_prices)
+                            product=product_to_check)) 
+                #сверяем количество полученных продуктов и переданных продуктов
+            if len(enabled_products_artikuls) != len(temp_prods_artikuls_from_db):
+                self.potential_disabled_products_artikuls.extend(set(temp_prods_artikuls_from_db) - set(enabled_products_artikuls))        
+        self.potential_disabled_products = list(map(lambda x: self.dict_all_prods[x], self.potential_disabled_products_artikuls))
+
+
+    def check_disabled_prods(self):
+        if len(self.potential_disabled_products_artikuls) != 0:
+            final_url = self.detail_product_url_api + ';'.join(self.potential_disabled_products_artikuls)
+            print(final_url)
+            response = self.scraper.get(final_url, headers=self.headers)
+            json_data = json.loads(response.text)
+            products_on_page = json_data['data']['products']
+            for i in range(len(products_on_page)):
+                try:
+                    product_artikul = products_on_page[i]['id']
+                    product_price = products_on_page[i]['sizes'][0]['price']['product'] // 100
+                    product_to_check = self.dict_all_prods[str(product_artikul)]
+                    if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
+                        product_to_check.latest_price = product_price
+                        self.updated_prods.append(product_to_check)
+                        self.updated_prices.append(WBPrice(price=product_price,
+                                added_time=timezone.now(),
+                                product=product_to_check)) 
+                except:
+                    self.potential_disabled_products[i].enabled = False
+                    self.disabled_products.append(self.potential_disabled_products[i])
+
+
+    @time_count
+    @transaction.atomic
+    def save_update_prices(self):
+        '''Занесение в БД обновления всех цен'''
+        WBProduct.objects.bulk_update(self.updated_prods, ['latest_price'])
+        WBPrice.objects.bulk_create(self.updated_prices)
+        WBProduct.objects.bulk_update(self.disabled_products, ['enabled'])
+
 
 
 #добавить функцию, если dest не прошел на мск + если dest не прошел на list
