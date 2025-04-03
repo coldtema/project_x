@@ -32,29 +32,21 @@ def check_repetitions_catalog(product_artikul_to_check, potential_repetitions):
 def check_existence_of_brand(brand_name, brand_artikul):
     '''Проверка бренда на наличие в БД (аналог get or create, 
     только еще отдается был ли бренд в бд до этого или нет)'''
-    brand_existence = WBBrand.objects.filter(wb_id=brand_artikul)
-    if not brand_existence:
-        brand_object = (WBBrand.objects.create(name=brand_name,
-                               wb_id=brand_artikul,
-                               main_url=f'https://www.wildberries.ru/brands/{brand_artikul}',
-                               full_control = False), False)
-    else:
-        brand_object = (brand_existence[0], True)
-    return brand_object
+    with transaction.atomic():
+        brand_object = WBBrand.objects.update_or_create(wb_id=brand_artikul, defaults={'name':brand_name,
+                                                                                    'main_url':f'https://www.wildberries.ru/brands/{brand_artikul}',
+                                                                                    'full_control':False}) #true - создан, false - обновлен
+    return brand_object[0], brand_object[1]
 
 
 def check_existence_of_seller(seller_name, seller_artikul):
     '''Проверка селлера на наличие в БД (аналог get or create, 
     только еще отдается был ли бренд в бд до этого или нет)'''
-    seller_existence = WBSeller.objects.filter(wb_id=seller_artikul)
-    if not seller_existence:
-        seller_object = (WBSeller.objects.create(name=seller_name,
-                               wb_id=seller_artikul,
-                               main_url=f'https://www.wildberries.ru/brands/{seller_artikul}',
-                               full_control = False), False)
-    else:
-        seller_object = (seller_existence[0], True)
-    return seller_object
+    with transaction.atomic():
+        seller_object = WBSeller.objects.update_or_create(wb_id=seller_artikul, defaults={'name':seller_name,
+                                                                                    'main_url':f'https://www.wildberries.ru/brands/{seller_artikul}',
+                                                                                    'full_control':False})
+    return seller_object[0], seller_object[1]
 
 def update_categories():
     '''Обновление базы категорий от самого wb (не кастомные бренда, а именно база wb)'''
