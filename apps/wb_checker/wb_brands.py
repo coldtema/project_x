@@ -29,7 +29,7 @@ class Brand:
         self.brand_api_url = self.construct_brand_api_url()
         self.total_products, self.brand_name = self.get_total_products_and_name_brand_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.brand_object, self.brand_was_in_db = utils.check_existence_of_brand(self.brand_name, self.brand_artikul)
+        self.brand_object, self.brand_was_not_in_db = utils.check_existence_of_brand(self.brand_name, self.brand_artikul)
         self.potential_repetitions = self.get_repetitions_catalog_brand()
         self.sellers_in_db = list(WBSeller.objects.all())
         self.seller_wb_id_in_db = list(map(lambda x: x.wb_id, self.sellers_in_db))
@@ -54,7 +54,7 @@ class Brand:
         '''Функция взятия всех продуктов + артикулов в БД бренда, 
         по которому будет производиться парсинг (при его наличии)'''
         potential_repetitions = []
-        if self.brand_was_in_db:
+        if not self.brand_was_not_in_db:
             potential_repetitions = WBProduct.enabled_products.filter(brand=self.brand_object)
             potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
         return potential_repetitions
@@ -93,11 +93,20 @@ class Brand:
     @utils.time_count
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
-        WBSeller.objects.bulk_create(self.sellers_to_add)
-        WBProduct.objects.bulk_create(self.brand_products_to_add) #добавляю элементы одной командой
-        WBPrice.objects.bulk_create(self.brand_prices_to_add) #добавляю элементы одной командой
-        self.brand_products_to_add.extend(self.product_repetitions_list)
-        Author.objects.get(id=self.author_id).wbproduct_set.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
+        WBSeller.objects.bulk_create(self.sellers_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBProduct.objects.bulk_create(self.brand_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
+        artikuls_to_add_price = (list(map(lambda x: x.artikul, self.brand_products_to_add))) #вытаскиваем артикулы, которые точно нужно добавить (независимо от процессов)
+        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price)) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
+        updated_prices = []
+        for elem in products_to_add_price:
+            if len(elem.wbprice_set.all()) == 0: #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
+                updated_prices.append(WBPrice(price=elem.latest_price,
+                            added_time=timezone.now(),
+                            product=elem))
+        WBPrice.objects.bulk_create(updated_prices) #добавляю элементы одной командой
+        self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
+        #ненужные связи, организованные другими процессами просто не добавятся + расширяем повторками, которые процесс смог забрать
+        self.author_object.wbproduct_set.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
 
 
 
