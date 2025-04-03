@@ -13,11 +13,11 @@ from django.db import transaction
 class Seller:
     def __init__(self, seller_url, author_object):
         '''Инициализация необходимых атрибутов'''
-        self.seller_url = self.check_url_and_send_correct(seller_url)
-        self.author_object = author_object
-        self.author_id = author_object.id #не стал везде в коде менять, оставил автор айди (просто взял из объекта)
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
+        self.author_object = author_object
+        self.author_id = author_object.id #не стал везде в коде менять, оставил автор айди (просто взял из объекта)
+        self.seller_url = self.check_url_and_send_correct(seller_url)
         self.seller_artikul = self.get_seller_artikul()
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
