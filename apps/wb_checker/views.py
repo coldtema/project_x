@@ -74,6 +74,6 @@ def update_brands_categories(request):
 @utils.time_count
 def update_prices(request):
     '''Обновление цен на продукты'''
-    utils.update_prices()
+    utils.PriceUpdater().run()
     return HttpResponseRedirect(reverse('all_price_list'))
 
