@@ -115,6 +115,9 @@ class WBPrice(models.Model):
             models.Index(fields=['product'])
         ]
 
+    def __str__(self):
+        return str(self.product_id)
+
 class WBCategory(models.Model):
     wb_id = models.CharField(max_length=100, verbose_name='ID категории WB') 
     url = models.URLField(blank=True, verbose_name='URL категории')
