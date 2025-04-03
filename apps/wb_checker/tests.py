@@ -7,6 +7,8 @@ from django.test import TestCase
 # https://www.wildberries.ru/brands/erichkrause/all?xsubject=745;1369&fsupplier=32693&bid=def0e247-7c66-4964-9eb5-ad3635244dc7
 # https://www.wildberries.ru/brands/erichkrause/all?sort=popular&page=1&priceU=12500%3B119000&xsubject=719%3B3920%3B3181%3B8334%3B1866%3B661&fsupplier=32693
 # https://www.wildberries.ru/brands/erichkrause/kalkulyatory?sort=popular
+
+
 # GOOD FOR CHANGING REGION 
 # https://www.wildberries.ru/brands/mixit/all 
 
@@ -48,6 +50,18 @@ from django.test import TestCase
 #    
 
 
+
+#A LOT OF PRODUCTS SELLERS
+# https://www.wildberries.ru/seller/17182
+# https://www.wildberries.ru/seller/simaland-exclusive
+# https://www.wildberries.ru/seller/e-cosmetic
+# https://www.wildberries.ru/seller/kari
+# https://www.wildberries.ru/seller/90633
+# https://www.wildberries.ru/seller/688746
+# https://www.wildberries.ru/seller/125043
+# https://www.wildberries.ru/seller/125043?sort=pricedown&page=1
+# https://www.wildberries.ru/seller/32693
+# https://www.wildberries.ru/seller/kraus
 
 # "staticbasket_route_map": [
 #             {
