@@ -19,11 +19,11 @@ from django.db import transaction
 class Brand:
     def __init__(self, brand_url, author_object):
         '''Инициализация необходимых атрибутов'''
-        self.brand_url = self.check_url_and_send_correct(brand_url)
-        self.author_object = author_object
-        self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
+        self.author_object = author_object
+        self.author_id = author_object.id
+        self.brand_url = self.check_url_and_send_correct(brand_url)
         self.brand_artikul, self.brand_siteId = self.get_brand_artikul_and_siteId()
         self.brandzone_url_api = self.get_brandzone_url_api()
         self.brand_api_url = self.construct_brand_api_url()
