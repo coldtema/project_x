@@ -62,8 +62,8 @@ class Product:
         brand_name = json_data['data']['products'][0]['brand'] #имя бренда
         brand_artikul = json_data['data']['products'][0]['brandId'] #id бренда
         #проверяет наличие этого бренда и продавца в БД (если нет, то создает их, если есть - не трогает)
-        brand_object = utils.check_existence_of_brand(seller_name, seller_artikul)[0]
-        seller_object = utils.check_existence_of_seller(brand_name, brand_artikul)[0]
+        brand_object = Product.build_raw_brand_object(seller_name, seller_artikul)
+        seller_object = Product.build_raw_seller_object(brand_name, brand_artikul)
         #добавляем элемент
         new_product = WBProduct(name=name,
                 artikul=self.artikul,
@@ -75,6 +75,21 @@ class Product:
                 brand=brand_object)
         price_history = list(map(lambda x: WBPrice(price=x[1], added_time=x[0], product=new_product), price_history))
         self.add_product_to_db(new_product, price_history)
+
+
+    @staticmethod
+    def build_raw_seller_object(seller_name, seller_artikul):
+        return WBSeller(wb_id=seller_artikul,
+                        name=seller_name,
+                        main_url=f'https://www.wildberries.ru/seller/{seller_artikul}')
+    
+
+    @staticmethod
+    def build_raw_brand_object(brand_name, brand_artikul):
+        return WBBrand(wb_id=brand_artikul,
+                    name=brand_name,
+                    main_url=f'https://www.wildberries.ru/seller/{brand_artikul}')
+    
 
 
     def get_price_history(self):
@@ -99,6 +114,8 @@ class Product:
     def add_product_to_db(self, new_product, price_history):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
+        WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         already_added_product = WBProduct.enabled_products.update_or_create(artikul=new_product.artikul, defaults={'name':new_product.name,
                                                                                            'latest_price':new_product.latest_price,
                                                                                            'wb_cosh':True,
