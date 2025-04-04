@@ -139,7 +139,27 @@ class Seller:
         json_data = json.loads(response.text)
         total_products = json_data['data']['total']
         seller_name = json_data['data']['products'][0]['supplier']
-        return total_products, seller_name
+        #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
+        print(f'Товары обнаружены! Продавец - {seller_name}. Количество - {total_products}')
+        print(f'Доступных слотов для отслеживания продуктов: {self.author_object.slots}')
+        if total_products > 10:
+            while True:
+                print('Введите количество продуктов, которые нужно сохранить (первые N)')
+                try:
+                    custom_total_products = int(input())
+                    if custom_total_products > total_products:
+                        print('Введено число, превышающее количество найденных продуктов, попробуйте снова')
+                        continue
+                    if custom_total_products > self.author_object.slots:
+                        print(f'Недостаточно слотов для отслеживания продуктов. Доступных слотов - {self.author_object.slots}')
+                        continue
+                    break
+                except:
+                    print('Введено некорректное число, попробуйте снова')
+        else:
+            custom_total_products = total_products
+        self.author_object.slots = self.author_object.slots-custom_total_products
+        return custom_total_products, seller_name
 
 
 
