@@ -61,6 +61,7 @@ class Seller:
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
             for i in range(len(products_on_page)):
+                self.total_products -= 1
                 product_artikul = products_on_page[i]['id'] #специально получаю артикул продукта для того, чтобы передать в функцию проверки на повторки
                 if self.potential_repetitions:
                     if self.check_repetition_in_catalog(product_artikul): continue
@@ -68,6 +69,10 @@ class Seller:
                 brand_name = products_on_page[i]['brand'] #проверка бренда на наличие в БД плюс откладывание его в кэш (только бренд, тк селлер уже в базе)
                 brand_object = self.check_brand_existance(brand_artikul, brand_name) #отдает объект бренда без заходов в БД постоянных
                 self.add_new_product(product_in_catalog=products_on_page[i], brand_object=brand_object, product_artikul = product_artikul)
+                if self.total_products == 0: return
+            if self.total_products == 0: return #как то получше написать надо
+
+
 
 
 
