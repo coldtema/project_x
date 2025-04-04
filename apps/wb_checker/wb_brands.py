@@ -6,7 +6,7 @@ import json
 import cloudscraper
 from datetime import datetime
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBSeller, WBPrice, WBCategory
+from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -29,15 +29,12 @@ class Brand:
         self.brand_api_url = self.construct_brand_api_url()
         self.total_products, self.brand_name = self.get_total_products_and_name_brand_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.brand_object, self.brand_was_not_in_db = utils.check_existence_of_brand(self.brand_name, self.brand_artikul)
+        self.brand_object = self.build_raw_brand_object()
         self.potential_repetitions = self.get_repetitions_catalog_brand()
-        self.sellers_in_db = list(WBSeller.objects.all())
-        self.seller_wb_id_in_db = list(map(lambda x: x.wb_id, self.sellers_in_db))
+        self.sellers_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBSeller.objects.all()))
         self.product_repetitions_list = []
         self.sellers_to_add = []
-        self.sellers_wb_ids_to_add = []
         self.brand_products_to_add = []
-        self.brand_prices_to_add = []
 
 
 
@@ -46,18 +43,6 @@ class Brand:
         '''Запуск процесса парсинга'''
         self.get_catalog_of_brand()
         self.add_all_to_db()
-
-
-
-    @utils.time_count
-    def get_repetitions_catalog_brand(self):
-        '''Функция взятия всех продуктов + артикулов в БД бренда, 
-        по которому будет производиться парсинг (при его наличии)'''
-        potential_repetitions = []
-        if not self.brand_was_not_in_db:
-            potential_repetitions = WBProduct.enabled_products.filter(brand=self.brand_object)
-            potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
-        return potential_repetitions
     
 
 
@@ -85,7 +70,7 @@ class Brand:
                 seller_artikul = products_on_page[i]['supplierId']
                 seller_name = products_on_page[i]['supplier']
                 seller_object = self.check_seller_existance(seller_artikul, seller_name) #проверка селлера на наличие в БД + откладывание его в кэш (только селлера, тк бренд уже в базе)
-                self.add_new_product_and_price(product_in_catalog=products_on_page[i], seller_object=seller_object, product_artikul = product_artikul)
+                self.add_new_product(product_in_catalog=products_on_page[i], seller_object=seller_object, product_artikul = product_artikul)
 
 
 
@@ -93,13 +78,14 @@ class Brand:
     @utils.time_count
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
+        WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.sellers_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.brand_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         artikuls_to_add_price = (list(map(lambda x: x.artikul, self.brand_products_to_add))) #вытаскиваем артикулы, которые точно нужно добавить (независимо от процессов)
-        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price)) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
+        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related()) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
         updated_prices = []
         for elem in products_to_add_price:
-            if len(elem.wbprice_set.all()) == 0: #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
+            if elem.wbprice_set.exists(): #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
                 updated_prices.append(WBPrice(price=elem.latest_price,
                             added_time=timezone.now(),
                             product=elem))
@@ -111,7 +97,7 @@ class Brand:
 
 
     def get_brand_artikul_and_siteId(self):
-        '''Получение арттикула (wb_id) бренда + id мини-сайта этого бренда'''
+        '''Получение артикула (wb_id) бренда + id мини-сайта этого бренда'''
         brand_slug_name = re.search(r'(brands\/)([a-z\-\d]+)(\?)?(\/)?(\#)?', self.brand_url).group(2)
         final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
         response = self.scraper.get(final_url, headers=self.headers)
@@ -180,12 +166,30 @@ class Brand:
         if number_of_pages > 100:
             number_of_pages = 100
         return number_of_pages
+    
+
+
+    def build_raw_brand_object(self):
+        return WBBrand(wb_id=self.brand_artikul,
+                    name=self.brand_name,
+                    main_url=f'https://www.wildberries.ru/seller/{self.brand_artikul}')
+    
+
+
+    @utils.time_count
+    def get_repetitions_catalog_brand(self):
+        '''Функция взятия всех продуктов + артикулов в БД бренда, 
+        по которому будет производиться парсинг (при его наличии)'''
+        potential_repetitions = []
+        potential_repetitions = WBProduct.enabled_products.filter(brand__wb_id=self.brand_object.wb_id)
+        potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
+        return potential_repetitions
 
 
 
     def check_repetition_in_catalog(self, product_artikul_to_check):
         '''Проверка на дубликат продукта в получаемом каталоге'''
-        potential_repetition = utils.check_repetitions_catalog(product_artikul_to_check, self.potential_repetitions)
+        potential_repetition = self.potential_repetitions.get(product_artikul_to_check)
         if potential_repetition:
             self.product_repetitions_list.append(potential_repetition)
             return True
@@ -194,21 +198,20 @@ class Brand:
 
     def check_seller_existance(self, seller_artikul, seller_name):
         '''Проверка продавца на существование в БД + откладывание его в кэш при отсутствии'''
-        if seller_artikul not in self.seller_wb_id_in_db:
+        if not self.sellers_in_db_dict.get(seller_artikul):
             seller_object = WBSeller(name=seller_name,
                         wb_id=seller_artikul,
-                        main_url=f'https://www.wildberries.ru/seller/{seller_artikul}',
+                        main_url=f'https://www.wildberries.ru/seller/{seller_artikul}', #баг только с самим вб
                         full_control = False)
             self.sellers_to_add.append(seller_object) #добавляем в список для добавления в БД
-            self.sellers_in_db.append(seller_object) #чтобы уже не повторялся
-            self.seller_wb_id_in_db.append(seller_artikul)
+            self.sellers_in_db_dict.update({seller_artikul:seller_object})
         else:
-            seller_object = self.sellers_in_db[self.seller_wb_id_in_db.index(seller_artikul)]
+            seller_object = self.sellers_in_db_dict[seller_artikul]
         return seller_object
 
 
 
-    def add_new_product_and_price(self, product_in_catalog, seller_object, product_artikul):
+    def add_new_product(self, product_in_catalog, seller_object, product_artikul):
         '''Сборка объекта продукта и объекта цены + добавление их в кэш'''
         product_url = f'https://www.wildberries.ru/catalog/{product_artikul}/detail.aspx'
         name = product_in_catalog['name']
@@ -221,11 +224,7 @@ class Brand:
                 enabled=True,
                 brand=self.brand_object,
                 seller=seller_object)
-        new_product_price = WBPrice(price=price_element,
-                                added_time=timezone.now(),
-                                product=new_product)
         self.brand_products_to_add.append(new_product)
-        self.brand_prices_to_add.append(new_product_price)
         
 
 
