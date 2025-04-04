@@ -12,13 +12,13 @@ from django.db import transaction
 
 
 class Seller:
-    def __init__(self, seller_url, author_object):
+    def __init__(self, raw_seller_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id #не стал везде в коде менять, оставил автор айди (просто взял из объекта)
-        self.seller_url = self.check_url_and_send_correct(seller_url)
+        self.seller_url = self.check_url_and_send_correct(raw_seller_url)
         self.seller_artikul = self.get_seller_artikul()
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
@@ -211,13 +211,13 @@ class Seller:
 
 
 
-    def check_url_and_send_correct(self, url):
+    def check_url_and_send_correct(self, raw_seller_url):
         '''Проверка url, отправленного пользователем, на предмет 
         парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
-        if 'seller' in url:
-            return url
+        if 'seller' in raw_seller_url:
+            return raw_seller_url
         else:
-            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=self.headers)
+            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_seller_url).group(1)}', headers=self.headers)
             json_data = json.loads(response.text)
             return f'https://www.wildberries.ru/seller/{json_data['data']['products'][0]['supplierId']}'
         
