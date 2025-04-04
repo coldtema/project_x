@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPromotion
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPromotion, WBPreset
 from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
@@ -55,6 +55,7 @@ def clear_db(request):
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
     WBPromotion.objects.all().delete()
+    WBPreset.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
