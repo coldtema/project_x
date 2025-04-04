@@ -5,6 +5,7 @@ from django.utils import timezone
 class EnabledManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(enabled=True)
+
     
 
 class WBSeller(models.Model):
@@ -131,3 +132,12 @@ class WBCategory(models.Model):
         indexes = [
             models.Index(fields=['wb_id']),
             ]
+        
+
+
+class WBPreset(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя пресета')
+    main_url = models.URLField(unique=True, verbose_name='URL пресета')
+    max_elems=models.IntegerField(default=0, verbose_name='Количество продуктов, добавленных из пресета')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Никнеймы авторов')
+    products = models.ManyToManyField(WBProduct, verbose_name='Продукты пресета')
