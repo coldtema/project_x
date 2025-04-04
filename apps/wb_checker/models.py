@@ -137,7 +137,7 @@ class WBCategory(models.Model):
 
 class WBPreset(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя пресета')
-    main_url = models.URLField(unique=True, verbose_name='URL пресета')
+    main_url = models.URLField(verbose_name='URL пресета')
     max_elems=models.IntegerField(default=0, verbose_name='Количество продуктов, добавленных из пресета')
     author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Никнеймы авторов')
     products = models.ManyToManyField(WBProduct, verbose_name='Продукты пресета')
