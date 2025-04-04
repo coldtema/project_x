@@ -24,12 +24,20 @@ class Seller:
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
         self.seller_object = self.build_raw_seller_object()
+        self.preset_object = self.build_raw_preset_object(raw_seller_url)
         self.potential_repetitions = self.get_repetitions_catalog_seller()
         self.brand_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBBrand.objects.all()))
         self.product_repetitions_list = []
         self.brands_to_add = []
         self.seller_products_to_add = []
 
+
+
+    def build_raw_preset_object(self, raw_seller_url): #в атомарке засейвить плюс добавить связь
+        return WBPreset(name=f'Товары продавца {self.seller_object.name} ({self.total_products} шт.)',
+                        main_url = raw_seller_url,
+                        max_elems = self.total_products,
+                        author_id=self.author_id)
 
 
     @utils.time_count
