@@ -3,7 +3,7 @@ import json
 import time
 import cloudscraper
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller
+from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller, WBPreset
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -45,7 +45,6 @@ class Seller:
         '''Функция запуска процесса парсинга'''
         self.get_catalog_of_seller()
         self.add_all_to_db()
-    
 
 
     @utils.time_count
@@ -81,9 +80,11 @@ class Seller:
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
+        #добавляю селлеров, брендов и продукты
         WBSeller.objects.bulk_create([self.seller_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBBrand.objects.bulk_create(self.brands_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.seller_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
+        #добавляю цены
         artikuls_to_add_price = (list(map(lambda x: x.artikul, self.seller_products_to_add)))
         products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set'))
         updated_prices = []
@@ -93,9 +94,12 @@ class Seller:
                             added_time=timezone.now(),
                             product=elem))
         WBPrice.objects.bulk_create(updated_prices) #добавляю элементы одной командой
+        #объединяю повторки с новыми продуктами для добавлеия many-to-many связи с автором и пресетом
         self.seller_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + расширяем повторками, которые процесс смог забрать
+        self.preset_object.save()
+        self.preset_object.products.set(self.seller_products_to_add)
         self.author_object.wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
-
+        self.author_object.save() #для обновления слотов
 
     
     def get_seller_artikul(self):
