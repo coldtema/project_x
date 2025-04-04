@@ -3,7 +3,7 @@ import json
 import time
 import cloudscraper
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBBrand, WBPrice, WBCategory
+from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -23,12 +23,21 @@ class Seller:
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
         self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.seller_object, self.seller_was_not_in_db = utils.check_existence_of_seller(self.seller_name, self.seller_artikul) #вот здесь сделать с редисом (в миро расписано)
+        self.seller_object = self.build_raw_seller_object()
         self.potential_repetitions = self.get_repetitions_catalog_seller()
         self.brand_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBBrand.objects.all()))
         self.product_repetitions_list = []
         self.brands_to_add = []
         self.seller_products_to_add = []
+        self.aaa = True
+
+
+
+    def build_raw_seller_object(self):
+        return WBSeller(wb_id=self.seller_artikul,
+                        name=self.seller_name,
+                        main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
+
 
 
 
@@ -45,10 +54,9 @@ class Seller:
         '''Функция проверки селлера в БД, и, если селлер есть - 
         берет все его продукты (потенциальные повторки)'''
         potential_repetitions = []
-        if not self.seller_was_not_in_db:
-        #если селлер уже есть в БД, берет все продукты этого селлера вместе с их артикулами
-            potential_repetitions = WBProduct.enabled_products.filter(seller=self.seller_object)
-            potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
+        #поиск по индексируемому полю wb_id такой же быстрый как и по id
+        potential_repetitions = WBProduct.enabled_products.filter(seller__wb_id=self.seller_object.wb_id)
+        potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
         return potential_repetitions
     
 
@@ -81,6 +89,9 @@ class Seller:
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
+        if self.aaa == False:
+            time.sleep(5)
+        WBSeller.objects.bulk_create([self.seller_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBBrand.objects.bulk_create(self.brands_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.seller_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         artikuls_to_add_connection = (list(map(lambda x: x.artikul, self.seller_products_to_add)))
@@ -205,6 +216,7 @@ class Seller:
         '''Проверка url, отправленного пользователем, на предмет 
         парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
         if 'seller' in url:
+            self.aaa = False
             return url
         else:
             response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=self.headers)
