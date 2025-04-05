@@ -7,7 +7,7 @@ ACTION_TYPE=(('product', 'product'),
 
 class WBProductForm(forms.Form):
     url = forms.CharField(max_length=1000, required=True)
-    action_type = forms.ChoiceField(choices=ACTION_TYPE)
+    # action_type = forms.ChoiceField(choices=ACTION_TYPE)
 
 
 class WBDestForm(forms.Form):
