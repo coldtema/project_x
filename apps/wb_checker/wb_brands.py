@@ -91,18 +91,19 @@ class Brand:
         WBSeller.objects.bulk_create(self.sellers_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.brand_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         artikuls_to_add_price = (list(map(lambda x: x.artikul, self.brand_products_to_add))) #вытаскиваем артикулы, которые точно нужно добавить (независимо от процессов)
-        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related()) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
+        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set')) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
         updated_prices = []
         for elem in products_to_add_price:
-            if elem.wbprice_set.exists(): #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
+            if not elem.wbprice_set.exists(): #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
                 updated_prices.append(WBPrice(price=elem.latest_price,
                             added_time=timezone.now(),
                             product=elem))
         WBPrice.objects.bulk_create(updated_prices) #добавляю элементы одной командой
         self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
-        #ненужные связи, организованные другими процессами просто не добавятся + расширяем повторками, которые процесс смог забрать
+        self.preset_object.save()
+        self.preset_object.products.set(self.brand_products_to_add)
         self.author_object.wbproduct_set.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
-
+        self.author_object.save()
 
 
     def get_brand_artikul_and_siteId(self):
