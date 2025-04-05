@@ -73,6 +73,7 @@ class Brand:
                 except:
                     print(elem)
             for i in range(len(products_on_page)):
+                self.total_products -= 1
                 product_artikul = products_on_page[i]['id'] #специально получаю артикул продукта здесь для того, чтобы передать в функцию проверки на повторки
                 if self.potential_repetitions:
                     if self.check_repetition_in_catalog(product_artikul): continue
@@ -80,6 +81,8 @@ class Brand:
                 seller_name = products_on_page[i]['supplier']
                 seller_object = self.check_seller_existance(seller_artikul, seller_name) #проверка селлера на наличие в БД + откладывание его в кэш (только селлера, тк бренд уже в базе)
                 self.add_new_product(product_in_catalog=products_on_page[i], seller_object=seller_object, product_artikul = product_artikul)
+                if self.total_products == 0: return
+            if self.total_products == 0: return
 
 
 
