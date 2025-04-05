@@ -8,6 +8,7 @@ from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
 from django.db import transaction
 import apps.wb_checker.utils as utils
+import re
 
 
 def all_price_list(request):
@@ -19,23 +20,7 @@ def all_price_list(request):
         form = WBProductForm(request.POST)
         if form.is_valid():
             author_object = Author.objects.get(pk=author_id)
-            action_type=request.POST['action_type']
-            if action_type == 'product':
-                product = wb_products.Product(request.POST['url'], author_object)
-                product.get_repetition_or_run()
-                del product
-            elif action_type == 'seller':
-                seller = wb_sellers.Seller(request.POST['url'], author_object)
-                seller.run()
-                del seller
-            elif action_type == 'brand':
-                brand = wb_brands.Brand(request.POST['url'], author_object)
-                brand.run()
-                del brand
-            elif action_type == 'promo':
-                promo = wb_promos.Promo(request.POST['url'], author_object)
-                promo.run()
-                del promo
+            url_dispatcher(request.POST['url'], author_object)
             return HttpResponseRedirect(reverse('all_price_list'))
         elif WBDestForm(request.POST).is_valid():
                 author_object = Author.objects.get(pk=author_id)
@@ -77,4 +62,24 @@ def update_prices(request):
     '''Обновление цен на продукты'''
     utils.PriceUpdater().run()
     return HttpResponseRedirect(reverse('all_price_list'))
+
+
+
+def url_dispatcher(url, author_object):
+    if re.search(pattern=r'catalog\/\d+\/detail', string=url):
+        product = wb_products.Product(url, author_object)
+        product.get_repetition_or_run()
+        del product
+    elif re.search(pattern=r'\/(seller)\/', string=url):
+        seller = wb_sellers.Seller(url, author_object)
+        seller.run()
+        del seller
+    elif re.search(pattern=r'\/(brands)\/', string=url):
+        brand = wb_brands.Brand(url, author_object)
+        brand.run()
+        del brand
+    elif re.search(pattern=r'\/(promotions)\/', string=url):
+        promo = wb_promos.Promo(url, author_object)
+        promo.run()
+        del promo
 
