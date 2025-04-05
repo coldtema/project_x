@@ -6,7 +6,7 @@ import json
 import cloudscraper
 from datetime import datetime
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand
+from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, WBPreset
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -17,13 +17,13 @@ from django.db import transaction
 
 
 class Brand:
-    def __init__(self, brand_url, author_object):
+    def __init__(self, raw_brand_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id
-        self.brand_url = self.check_url_and_send_correct(brand_url)
+        self.brand_url = self.check_url_and_send_correct(raw_brand_url)
         self.brand_artikul, self.brand_siteId = self.get_brand_artikul_and_siteId()
         self.brandzone_url_api = self.get_brandzone_url_api()
         self.brand_api_url = self.construct_brand_api_url()
@@ -228,13 +228,13 @@ class Brand:
         
 
 
-    def check_url_and_send_correct(self, url):
+    def check_url_and_send_correct(self, raw_url):
         '''Проверка url, отправленного пользователем, на предмет 
         парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
-        if 'brands' in url:
-            return url
+        if 'brands' in raw_url:
+            return raw_url
         else:
-            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', url).group(1)}', headers=self.headers)
+            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_url).group(1)}', headers=self.headers)
             json_data = json.loads(response.text)
             response = self.scraper.get(f'https://static-basket-01.wbbasket.ru/vol0/data/brands-by-id/{json_data['data']['products'][0]['brandId']}.json', headers=self.headers)
             json_data = json.loads(response.text)
