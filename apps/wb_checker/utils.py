@@ -1,7 +1,7 @@
 import math
 import time
 from functools import wraps
-from .models import WBBrand, WBSeller, WBProduct, WBPrice
+from .models import WBBrand, WBSeller, WBProduct, WBPrice, WBPromotion
 import cloudscraper
 import json
 from django.utils import timezone
@@ -21,32 +21,6 @@ def time_count(func):
     return wrapper
 
 
-def check_repetitions_catalog(product_artikul_to_check, potential_repetitions):
-    '''Простая функция на проверку повторок в кэше процесса парсинга'''
-    if product_artikul_to_check in potential_repetitions.keys():
-        return potential_repetitions[product_artikul_to_check]
-
-
-#проверяю на наличие бренда и продавца в БД (возможно можно как то засунуть в одну атомарную транзакцию, чтобы не обращаться к БД для создания несуществующего бренда/селлера)
-#Вторым параметром передаю, был ли бренд/селлер уже в бд или нет
-def check_existence_of_brand(brand_name, brand_artikul):
-    '''Проверка бренда на наличие в БД (аналог get or create, 
-    только еще отдается был ли бренд в бд до этого или нет)'''
-    with transaction.atomic():
-        brand_object = WBBrand.objects.update_or_create(wb_id=brand_artikul, defaults={'name':brand_name,
-                                                                                    'main_url':f'https://www.wildberries.ru/brands/{brand_artikul}',
-                                                                                    'full_control':False}) #true - создан, false - обновлен
-    return brand_object[0], brand_object[1]
-
-
-def check_existence_of_seller(seller_name, seller_artikul):
-    '''Проверка селлера на наличие в БД (аналог get or create, 
-    только еще отдается был ли бренд в бд до этого или нет)'''
-    with transaction.atomic():
-        seller_object = WBSeller.objects.update_or_create(wb_id=seller_artikul, defaults={'name':seller_name,
-                                                                                    'main_url':f'https://www.wildberries.ru/brands/{seller_artikul}',
-                                                                                    'full_control':False})
-    return seller_object[0], seller_object[1]
 
 def update_categories():
     '''Обновление базы категорий от самого wb (не кастомные бренда, а именно база wb)'''
@@ -65,7 +39,6 @@ def update_categories():
                 wrapper(elem['childs'])
         return categories_list
     return wrapper(json_data)
-
 
 
 
@@ -163,5 +136,5 @@ class PriceUpdater:
 
 
 
-#добавить функцию, если dest не прошел на мск + если dest не прошел на list
+#добавить функцию, если dest не прошел на мск
 
