@@ -39,14 +39,6 @@ class Brand:
 
 
 
-    def build_raw_preset_object(self, raw_brand_url): #в атомарке засейвить плюс добавить связь
-        return WBPreset(name=f'Товары бренда {self.brand_object.name} ({self.total_products} шт.)',
-                        main_url = raw_brand_url,
-                        max_elems = self.total_products,
-                        author_id=self.author_id)
-
-
-
     @utils.time_count
     def run(self):
         '''Запуск процесса парсинга'''
@@ -203,9 +195,21 @@ class Brand:
 
 
     def build_raw_brand_object(self):
+        '''Создание объекта бренда без занесения в БД и знания,
+          есть ли уже такой объект в базе (если есть и будет конфликт => 
+          все пройдет правильно из-за уникального wb_id)'''
         return WBBrand(wb_id=self.brand_artikul,
                     name=self.brand_name,
                     main_url=f'https://www.wildberries.ru/seller/{self.brand_artikul}')
+    
+
+
+    def build_raw_preset_object(self, raw_brand_url):
+        '''Создание объекта пресета без лишнего обращения в БД (конфликтов нет - заносится в любом случае)'''
+        return WBPreset(name=f'Товары бренда {self.brand_object.name} ({self.total_products} шт.)',
+                        main_url = raw_brand_url,
+                        max_elems = self.total_products,
+                        author_id=self.author_id)
     
 
 
