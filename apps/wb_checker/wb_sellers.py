@@ -33,13 +33,6 @@ class Seller:
 
 
 
-    def build_raw_preset_object(self, raw_seller_url): #в атомарке засейвить плюс добавить связь
-        return WBPreset(name=f'Товары продавца {self.seller_object.name} ({self.total_products} шт.)',
-                        main_url = raw_seller_url,
-                        max_elems = self.total_products,
-                        author_id=self.author_id)
-
-
     @utils.time_count
     def run(self):
         '''Функция запуска процесса парсинга'''
@@ -183,9 +176,21 @@ class Seller:
 
 
     def build_raw_seller_object(self):
+        '''Создание объекта селлера без занесения в БД и знания,
+          есть ли уже такой объект в базе (если есть и будет конфликт => 
+          все пройдет правильно из-за уникального wb_id)'''
         return WBSeller(wb_id=self.seller_artikul,
                         name=self.seller_name,
                         main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
+    
+
+
+    def build_raw_preset_object(self, raw_seller_url): #в атомарке засейвить плюс добавить связь
+        '''Создание объекта пресета без лишнего обращения в БД (конфликтов нет - заносится в любом случае)'''
+        return WBPreset(name=f'Товары продавца {self.seller_object.name} ({self.total_products} шт.)',
+                        main_url = raw_seller_url,
+                        max_elems = self.total_products,
+                        author_id=self.author_id)
 
 
 
