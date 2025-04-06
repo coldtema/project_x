@@ -44,6 +44,7 @@ def update_categories():
 
 class PriceUpdater:
     def __init__(self):
+        '''Инициализация необходимых атрибутов'''
         self.product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm='
         self.detail_product_url_api = 'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=123589280&hide_dtype=13&spp=30&ab_testing=false&lang=ru&nm='
         self.scraper = cloudscraper.create_scraper()
@@ -59,6 +60,7 @@ class PriceUpdater:
 
 
     def run(self):
+        '''Запуск скрипта обновления'''
         self.update_prices()     
         self.check_disabled_prods()
         self.save_update_prices()
@@ -104,6 +106,7 @@ class PriceUpdater:
 
 
     def check_disabled_prods(self):
+        '''Проверка на "нет в наличии", если не прошло в list-api'''
         if len(self.potential_disabled_products_artikuls) != 0:
             final_url = self.detail_product_url_api + ';'.join(self.potential_disabled_products_artikuls)
             print(final_url)
