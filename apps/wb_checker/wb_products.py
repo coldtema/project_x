@@ -79,6 +79,7 @@ class Product:
 
     @staticmethod
     def build_raw_seller_object(seller_name, seller_artikul):
+        '''Создание объекта селлера без лишнего обращения в БД'''
         return WBSeller(wb_id=seller_artikul,
                         name=seller_name,
                         main_url=f'https://www.wildberries.ru/seller/{seller_artikul}')
@@ -86,6 +87,7 @@ class Product:
 
     @staticmethod
     def build_raw_brand_object(brand_name, brand_artikul):
+        '''Создание объекта бренда без лишнего обращения в БД'''
         return WBBrand(wb_id=brand_artikul,
                     name=brand_name,
                     main_url=f'https://www.wildberries.ru/seller/{brand_artikul}')
