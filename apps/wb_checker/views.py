@@ -12,6 +12,7 @@ import re
 
 
 def all_price_list(request):
+    '''Temp view-функция для представления начальной страницы wb_checker'a'''
     form_parse = WBProductForm()
     form_get_dest = WBDestForm()
     author_id = 4 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
@@ -66,6 +67,7 @@ def update_prices(request):
 
 
 def url_dispatcher(url, author_object):
+    '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
     if re.search(pattern=r'catalog\/\d+\/detail', string=url):
         product = wb_products.Product(url, author_object)
         product.get_repetition_or_run()
