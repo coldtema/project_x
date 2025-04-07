@@ -66,8 +66,8 @@ class Product:
         brand_name = json_data['data']['products'][0]['brand'] #имя бренда
         brand_artikul = json_data['data']['products'][0]['brandId'] #id бренда
         #проверяет наличие этого бренда и продавца в БД (если нет, то создает их, если есть - не трогает)
-        brand_object = Product.build_raw_brand_object(seller_name, seller_artikul)
-        seller_object = Product.build_raw_seller_object(brand_name, brand_artikul)
+        brand_object = Product.build_raw_brand_object(brand_name, brand_artikul)
+        seller_object = Product.build_raw_seller_object(seller_name, seller_artikul)  
         #добавляем элемент
         new_product = WBProduct(name=name,
                 artikul=self.artikul,
