@@ -2,9 +2,9 @@ from django.db import models
 from apps.blog.models import Author
 from django.utils import timezone
 
-class EnabledManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(enabled=True)
+# class EnabledManager(models.Manager):
+#     def get_queryset(self):
+#         return super().get_queryset().filter(enabled=True)
 
     
 
@@ -79,7 +79,7 @@ class WBProduct(models.Model):
     # search = models.ForeignKey(WBSearch, on_delete = models.CASCADE, verbose_name='Поиск в каталоге продукта WB', null=True)
 
     objects = models.Manager()
-    enabled_products = EnabledManager()
+    # enabled_products = EnabledManager()
 
     class Meta:
         verbose_name = 'Продукт WB'
