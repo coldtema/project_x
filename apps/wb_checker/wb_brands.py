@@ -23,27 +23,30 @@ class Brand:
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id
+        self.dest_avaliable = True
         self.brand_url = self.check_url_and_send_correct(raw_brand_url)
         self.brand_artikul, self.brand_siteId = self.get_brand_artikul_and_siteId()
         self.brandzone_url_api = self.get_brandzone_url_api()
         self.brand_api_url = self.construct_brand_api_url()
         self.total_products, self.brand_name = self.get_total_products_and_name_brand_in_catalog()
-        self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.brand_object = self.build_raw_brand_object()
-        self.preset_object = self.build_raw_preset_object(raw_brand_url)
-        self.potential_repetitions = self.get_repetitions_catalog_brand()
-        self.sellers_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBSeller.objects.all()))
-        self.product_repetitions_list = []
-        self.sellers_to_add = []
-        self.brand_products_to_add = []
+        if self.dest_avaliable:
+            self.number_of_pages = self.get_number_of_pages_in_catalog()
+            self.brand_object = self.build_raw_brand_object()
+            self.preset_object = self.build_raw_preset_object(raw_brand_url)
+            self.potential_repetitions = self.get_repetitions_catalog_brand()
+            self.sellers_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBSeller.objects.all()))
+            self.product_repetitions_list = []
+            self.sellers_to_add = []
+            self.brand_products_to_add = []
 
 
 
     @utils.time_count
     def run(self):
         '''Запуск процесса парсинга'''
-        self.get_catalog_of_brand()
-        self.add_all_to_db()
+        if self.dest_avaliable:
+            self.get_catalog_of_brand()
+            self.add_all_to_db()
     
 
 
@@ -158,8 +161,13 @@ class Brand:
         имя бренда (для создания объекта бренда при его отсутствии в БД)'''
         response = self.scraper.get(self.brand_api_url, headers=self.headers)
         json_data = json.loads(response.text)
-        total_products = json_data['data']['total']
-        brand_name = json_data['data']['products'][0]['brand']
+        try:
+            total_products = json_data['data']['total']
+            brand_name = json_data['data']['products'][0]['brand']
+        except:
+            print('Не найдено ни одного товара (скорее всего они недоступны в вашем регионе)')
+            self.dest_avaliable = False
+            return 0, None
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
         print(f'Товары обнаружены! Бренд - {brand_name}. Количество - {total_products}')
         print(f'Доступных слотов для отслеживания продуктов: {self.author_object.slots}')
