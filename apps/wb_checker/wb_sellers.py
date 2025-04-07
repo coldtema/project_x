@@ -18,26 +18,29 @@ class Seller:
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id #не стал везде в коде менять, оставил автор айди (просто взял из объекта)
+        self.dest_avaliable = True
         self.seller_url = self.check_url_and_send_correct(raw_seller_url)
         self.seller_artikul = self.get_seller_artikul()
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
-        self.number_of_pages = self.get_number_of_pages_in_catalog()
-        self.seller_object = self.build_raw_seller_object()
-        self.preset_object = self.build_raw_preset_object(raw_seller_url)
-        self.potential_repetitions = self.get_repetitions_catalog_seller()
-        self.brand_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBBrand.objects.all()))
-        self.product_repetitions_list = []
-        self.brands_to_add = []
-        self.seller_products_to_add = []
+        if self.dest_avaliable:
+            self.number_of_pages = self.get_number_of_pages_in_catalog()
+            self.seller_object = self.build_raw_seller_object()
+            self.preset_object = self.build_raw_preset_object(raw_seller_url)
+            self.potential_repetitions = self.get_repetitions_catalog_seller()
+            self.brand_in_db_dict = dict(map(lambda x: (x.wb_id, x), WBBrand.objects.all()))
+            self.product_repetitions_list = []
+            self.brands_to_add = []
+            self.seller_products_to_add = []
 
 
 
     @utils.time_count
     def run(self):
         '''Функция запуска процесса парсинга'''
-        self.get_catalog_of_seller()
-        self.add_all_to_db()
+        if self.dest_avaliable:
+            self.get_catalog_of_seller()
+            self.add_all_to_db()
 
 
     @utils.time_count
@@ -147,8 +150,13 @@ class Seller:
         имя селлера (для создания объекта бренда при его отсутствии в БД)'''
         response = self.scraper.get(self.seller_api_url, headers=self.headers)
         json_data = json.loads(response.text)
-        total_products = json_data['data']['total']
-        seller_name = json_data['data']['products'][0]['supplier']
+        try:
+            total_products = json_data['data']['total']
+            seller_name = json_data['data']['products'][0]['supplier']
+        except:
+            print('Не найдено ни одного товара продавца (скорее всего они недоступны в вашем регионе)')
+            self.dest_avaliable = False
+            return 0, None
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
         print(f'Товары обнаружены! Продавец - {seller_name}. Количество - {total_products}')
         print(f'Доступных слотов для отслеживания продуктов: {self.author_object.slots}')
@@ -260,13 +268,13 @@ class Seller:
 
 
 
-    def check_url_and_send_correct(self, raw_seller_url):
+    def check_url_and_send_correct(self, raw_url):
         '''Проверка url, отправленного пользователем, на предмет 
         парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
-        if 'seller' in raw_seller_url:
-            return raw_seller_url
+        if 'seller' in raw_url:
+            return raw_url
         else:
-            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_seller_url).group(1)}', headers=self.headers)
+            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_url).group(1)}', headers=self.headers)
             json_data = json.loads(response.text)
             return f'https://www.wildberries.ru/seller/{json_data['data']['products'][0]['supplierId']}'
         
