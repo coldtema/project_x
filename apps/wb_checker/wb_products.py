@@ -49,7 +49,11 @@ class Product:
         #полностью собирает элемент
         response = self.scraper.get(self.product_url_api, headers=self.headers)
         json_data = json.loads(response.text)
-        name = json_data['data']['products'][0]['name']
+        try:
+            name = json_data['data']['products'][0]['name']
+        except:
+            print('Похоже, что товар не доступен в вашем регионе')
+            return
         price_element = json_data['data']['products'][0]['sizes'][0]['price']['product'] // 100
         try: #если вдруг истории цены нет
             price_history = self.get_price_history()
