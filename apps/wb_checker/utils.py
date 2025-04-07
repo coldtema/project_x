@@ -7,6 +7,7 @@ import json
 from django.utils import timezone
 from django.db import transaction
 from collections import Counter
+from apps.blog.models import Author
 
 
 def time_count(func):
@@ -109,38 +110,91 @@ class PriceUpdater:
         with open('updated_info.txt', 'w', encoding='utf-8') as file:
             file.write(''.join(updated_info))
 
-
-    def check_disabled_prods(self):
-        '''Проверка на "нет в наличии", если не прошло в list-api'''
-        if len(self.potential_disabled_products_artikuls) != 0:
-            final_url = self.detail_product_url_api + ';'.join(self.potential_disabled_products_artikuls)
-            print(final_url)
-            response = self.scraper.get(final_url, headers=self.headers)
-            json_data = json.loads(response.text)
-            products_on_page = json_data['data']['products']
-            for i in range(len(products_on_page)):
-                try:
-                    product_artikul = products_on_page[i]['id']
-                    product_price = products_on_page[i]['sizes'][0]['price']['product'] // 100
-                    product_to_check = self.dict_all_prods[str(product_artikul)]
-                    if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
-                        product_to_check.latest_price = product_price
-                        self.updated_prods.append(product_to_check)
-                        self.updated_prices.append(WBPrice(price=product_price,
-                                added_time=timezone.now(),
-                                product=product_to_check)) 
-                except:
-                    self.potential_disabled_products[i].enabled = False
-                    self.disabled_products.append(self.potential_disabled_products[i])
-
-
     @time_count
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД обновления всех цен'''
         WBProduct.objects.bulk_update(self.updated_prods, ['latest_price'])
         WBPrice.objects.bulk_create(self.updated_prices)
-        WBProduct.objects.bulk_update(self.disabled_products, ['enabled'])
+        for author_object, disabled_prods in self.dict_update_avaliability.items():
+            author_object.enabled_connection.remove(*disabled_prods)
+            author_object.disabled_connection.add(*disabled_prods)
+
+
+
+
+
+
+
+
+
+
+class AvaliabilityUpdater:
+    def __init__(self):
+        '''Инициализация необходимых атрибутов'''
+        self.all_authors_list = Author.objects.all().prefetch_related('enabled_connection', 'disabled_connection')
+        self.scraper = cloudscraper.create_scraper()
+        self.headers = {"User-Agent": "Mozilla/5.0"}
+        self.updated_prods = []
+        self.updated_enabled_prods = dict()
+        self.updated_prices = []
+
+
+    def run(self):
+        '''Запуск скрипта обновления'''
+        self.update_prices()     
+        self.save_update_prices()
+
+
+    @time_count
+    def update_prices(self):
+        '''Обновление наличия прподуктов, которых нет в наличии'''
+        #максимум в листе 512 элементов
+        updated_info = []
+        for i in range(len(self.all_authors_list)):
+            author_object = self.all_authors_list[i]
+            detail_product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
+            author_prods_to_check = self.all_authors_list[i].disabled_connection.all()
+            dict_author_prods_to_check = dict(map(lambda x: (str(x.artikul), x), author_prods_to_check))
+            self.updated_prods = []
+            for i in range(math.ceil(len(author_prods_to_check) / 512)):
+                print(i)
+                temp_prods_artikuls_from_db = tuple(tuple(dict_author_prods_to_check.keys())[512*i:512*(i+1)])
+                final_url = detail_product_url_api + ';'.join(temp_prods_artikuls_from_db)
+                response = self.scraper.get(final_url, headers=self.headers)
+                json_data = json.loads(response.text)
+                products_on_page = json_data['data']['products']
+                enabled_products_artikuls = []
+                for j in range(len(products_on_page)):
+                    product_artikul = products_on_page[j]['id']
+                    product_price = products_on_page[j]['sizes'][0]['price']['total'] // 100
+                    product_to_check = dict_author_prods_to_check[str(product_artikul)]
+                    enabled_products_artikuls.append(str(product_artikul))
+                    updated_info.append(f'''Продукт снова в наличии!
+Автор: {author_object}
+Продукт: {product_to_check.url}
+Время:{timezone.now()}
+
+''')
+                    self.updated_prods.append(product_to_check)
+                    if product_to_check.latest_price != product_price:
+                        self.updated_prices.append(WBPrice(price=product_price,
+                                added_time=timezone.now(),
+                                product=product_to_check))                        
+            self.updated_enabled_prods.update({author_object: self.updated_prods})
+        with open('updated_enabled.txt', 'w', encoding='utf-8') as file:
+            file.write(''.join(updated_info))
+
+    @time_count
+    @transaction.atomic
+    def save_update_prices(self):
+        '''Занесение в БД обновления наличия'''
+        WBProduct.objects.bulk_update(self.updated_prods, ['latest_price'])
+        WBPrice.objects.bulk_create(self.updated_prices)
+        for author_object, enabled_prods in self.updated_enabled_prods.items():
+            author_object.enabled_connection.add(*enabled_prods)
+            author_object.disabled_connection.remove(*enabled_prods)
+        
 
 
 
