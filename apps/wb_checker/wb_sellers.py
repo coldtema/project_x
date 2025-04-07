@@ -79,7 +79,7 @@ class Seller:
         WBProduct.objects.bulk_create(self.seller_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         #добавляю цены
         artikuls_to_add_price = (list(map(lambda x: x.artikul, self.seller_products_to_add)))
-        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set'))
+        products_to_add_price = list(WBProduct.objects.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set'))
         updated_prices = []
         for elem in products_to_add_price:
             if not elem.wbprice_set.exists():
@@ -91,7 +91,7 @@ class Seller:
         self.seller_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + расширяем повторками, которые процесс смог забрать
         self.preset_object.save()
         self.preset_object.products.set(self.seller_products_to_add)
-        self.author_object.wbproduct_set.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
+        self.author_object.enabled_authors.add(*self.seller_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
         self.author_object.save() #для обновления слотов
 
     
@@ -200,7 +200,7 @@ class Seller:
         берет все его продукты (потенциальные повторки)'''
         potential_repetitions = []
         #поиск по индексируемому полю wb_id такой же быстрый как и по id
-        potential_repetitions = WBProduct.enabled_products.filter(seller__wb_id=self.seller_object.wb_id)
+        potential_repetitions = WBProduct.objects.filter(seller__wb_id=self.seller_object.wb_id)
         potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
         return potential_repetitions
     
@@ -246,7 +246,6 @@ class Seller:
                 latest_price=price_element,
                 wb_cosh=True,
                 url=product_url,
-                enabled=True,
                 seller=self.seller_object,
                 brand=brand_object)
         self.seller_products_to_add.append(new_product)
