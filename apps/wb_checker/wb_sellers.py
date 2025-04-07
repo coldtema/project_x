@@ -130,6 +130,14 @@ class Seller:
             addons.append(f'subject={category_wb_id}')
         if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
         else: addons = ''
+
+        def repl_plus_4(match_obj):
+            number = match_obj.group(1)
+            number_in_str = str((int(number) + 4))
+            return f'fdlvr={number_in_str}'
+        
+        if 'fdlvr' in addons:
+            addons = re.sub(pattern=r'fdlvr\=(?P<number>\d+?)\&', repl=repl_plus_4, string=addons)
         return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={self.author_object.dest_id}&hide_dtype=13&lang=ru&spp=30&uclusters=0&page=1&supplier={self.seller_artikul}&sort={sorting}{addons}'
 
 

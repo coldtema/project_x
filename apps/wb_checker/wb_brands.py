@@ -173,7 +173,7 @@ class Brand:
             total_products = json_data['data']['total']
             brand_name = json_data['data']['products'][0]['brand']
         except:
-            print('Не найдено ни одного товара (скорее всего они недоступны в вашем регионе)')
+            print('Не найдено ни одного товара бренда (скорее всего они недоступны в вашем регионе)')
             self.dest_avaliable = False
             return 0, None
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
