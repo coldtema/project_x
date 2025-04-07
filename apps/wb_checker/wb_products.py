@@ -34,14 +34,14 @@ class Product:
         if repeated_product and len(repeated_product) == 1: #если нашел повторюшку
             repeated_product = repeated_product[0]
             authors_list = repeated_product.enabled_authors.all() #проверяет, нет ли уже того же автора у этой повторюшки
-            authors_list = map(lambda x: x.id, authors_list)
             for elem in authors_list: #выводит ворнинг, если такой же автор
-                if elem == self.author_id:
+                if elem.id == self.author_id:
                     print('Товар уже есть в отслеживании')
                     return
-            repeated_product.enabled_authors.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
-        else:
-            self.get_product_info()
+                if elem.dest_id == self.author_object.dest_id:
+                    repeated_product.enabled_authors.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
+                    return
+        self.get_product_info()
 
 
     def get_product_info(self):
