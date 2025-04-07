@@ -34,9 +34,6 @@ def all_price_list(request):
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
     authors = Author.objects.all()
-    for author in authors:
-        author.disabled_authors.all().delete()
-        author.enabled_authors.all().delete()
     WBPrice.objects.all().delete()
     WBProduct.objects.all().delete()
     WBSeller.objects.all().delete()
@@ -61,7 +58,7 @@ def update_brands_categories(request):
 
 @utils.time_count
 def update_prices(request):
-    '''Обновление цен на продукты'''
+    '''Обновление цен на продукты и их наличия'''
     utils.PriceUpdater().run()
     return HttpResponseRedirect(reverse('all_price_list'))
 
@@ -85,4 +82,12 @@ def url_dispatcher(url, author_object):
         promo = wb_promos.Promo(url, author_object)
         promo.run()
         del promo
+
+
+
+@utils.time_count
+def update_avaliability(request):
+    '''Проверка наличия продуктов, которых не было в наличии'''
+    utils.AvaliabilityUpdater().run()
+    return HttpResponseRedirect(reverse('all_price_list'))
 

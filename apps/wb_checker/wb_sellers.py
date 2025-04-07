@@ -160,7 +160,7 @@ class Seller:
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
         print(f'Товары обнаружены! Продавец - {seller_name}. Количество - {total_products}')
         print(f'Доступных слотов для отслеживания продуктов: {self.author_object.slots}')
-        if total_products > 10:
+        if total_products > 100000:
             while True:
                 print('Введите количество продуктов, которые нужно сохранить (первые N)')
                 try:
