@@ -30,16 +30,16 @@ class Product:
     @time_count
     def get_repetition_or_run(self):
         '''Проверка на повторки среди считываемых продуктов и продуктов бренда, которые уже существуют в БД'''
-        repeated_product = WBProduct.enabled_products.filter(artikul=self.artikul) #посмотреть, как сделать так, чтобы get - функция не выдавала исключения
+        repeated_product = WBProduct.objects.filter(artikul=self.artikul) #посмотреть, как сделать так, чтобы get - функция не выдавала исключения
         if repeated_product and len(repeated_product) == 1: #если нашел повторюшку
             repeated_product = repeated_product[0]
-            authors_list = repeated_product.authors.all() #проверяет, нет ли уже того же автора у этой повторюшки
+            authors_list = repeated_product.enabled_authors.all() #проверяет, нет ли уже того же автора у этой повторюшки
             authors_list = map(lambda x: x.id, authors_list)
             for elem in authors_list: #выводит ворнинг, если такой же автор
                 if elem == self.author_id:
                     print('Товар уже есть в отслеживании')
                     return
-            repeated_product.authors.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
+            repeated_product.enabled_authors.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
         else:
             self.get_product_info()
 
@@ -70,7 +70,6 @@ class Product:
                 latest_price=price_element,
                 wb_cosh=True,
                 url=self.product_url,
-                enabled=True,
                 seller=seller_object,
                 brand=brand_object)
         price_history = list(map(lambda x: WBPrice(price=x[1], added_time=x[0], product=new_product), price_history))
@@ -118,11 +117,10 @@ class Product:
         #сохраняем элемент
         WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
-        already_added_product = WBProduct.enabled_products.update_or_create(artikul=new_product.artikul, defaults={'name':new_product.name,
+        already_added_product = WBProduct.objects.update_or_create(artikul=new_product.artikul, defaults={'name':new_product.name,
                                                                                            'latest_price':new_product.latest_price,
                                                                                            'wb_cosh':True,
                                                                                            'url':self.product_url,
-                                                                                           'enabled':True,
                                                                                            'seller':new_product.seller,
                                                                                            'brand':new_product.brand})
         if len(already_added_product[0].wbprice_set.all()) <= 1: #если добавилась при бренде отслеживании от другого процесса только одна цена (а у меня в price_history лежит история для одиночки)
@@ -130,7 +128,7 @@ class Product:
             for elem in price_history:  
                 elem.product_id = already_added_product[0].id
             WBPrice.objects.bulk_create(price_history)
-        Author.objects.get(id=self.author_id).wbproduct_set.add(already_added_product[0])
+        Author.objects.get(id=self.author_id).enabled_authors.add(already_added_product[0])
     
 
 
