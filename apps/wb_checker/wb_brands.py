@@ -86,7 +86,7 @@ class Brand:
         WBSeller.objects.bulk_create(self.sellers_to_add, update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create(self.brand_products_to_add, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         artikuls_to_add_price = (list(map(lambda x: x.artikul, self.brand_products_to_add))) #вытаскиваем артикулы, которые точно нужно добавить (независимо от процессов)
-        products_to_add_price = list(WBProduct.enabled_products.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set')) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
+        products_to_add_price = list(WBProduct.objects.filter(artikul__in=artikuls_to_add_price).prefetch_related('wbprice_set')) #вытаскиваем из бд продукты, которые несуществуют для этого процесса
         updated_prices = []
         for elem in products_to_add_price:
             if not elem.wbprice_set.exists(): #проверяем, не проставили ли другие процессы цену у этого продукта => продукт уже полностью добавлен другим процессом, и цена не нужна
@@ -97,7 +97,7 @@ class Brand:
         self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
         self.preset_object.save()
         self.preset_object.products.set(self.brand_products_to_add)
-        self.author_object.wbproduct_set.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
+        self.author_object.enabled_authors.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
         self.author_object.save()
 
 
@@ -218,7 +218,7 @@ class Brand:
         '''Функция взятия всех продуктов + артикулов в БД бренда, 
         по которому будет производиться парсинг (при его наличии)'''
         potential_repetitions = []
-        potential_repetitions = WBProduct.enabled_products.filter(brand__wb_id=self.brand_object.wb_id)
+        potential_repetitions = WBProduct.objects.filter(brand__wb_id=self.brand_object.wb_id)
         potential_repetitions = dict(map(lambda x: (x.artikul, x), potential_repetitions))
         return potential_repetitions
 
@@ -258,7 +258,6 @@ class Brand:
                 latest_price=price_element,
                 wb_cosh=True,
                 url=product_url,
-                enabled=True,
                 brand=self.brand_object,
                 seller=seller_object)
         self.brand_products_to_add.append(new_product)
