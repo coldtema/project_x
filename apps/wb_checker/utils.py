@@ -45,24 +45,19 @@ def update_categories():
 class PriceUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm='
-        self.detail_product_url_api = 'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=123589280&hide_dtype=13&spp=30&ab_testing=false&lang=ru&nm='
+        self.all_authors_list = Author.objects.all().prefetch_related('enabled_connection', 'disabled_connection')
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
-        self.all_prods = tuple(WBProduct.enabled_products.all())
-        self.all_prods_artikuls = tuple(map(lambda x: str(x.artikul), self.all_prods))
-        self.dict_all_prods = dict(zip(self.all_prods_artikuls, self.all_prods))
-        self.potential_disabled_products = []
-        self.potential_disabled_products_artikuls = []
+        self.disabled_products_artikuls = []
         self.disabled_products = []
         self.updated_prods = []
+        self.dict_update_avaliability = dict()
         self.updated_prices = []
 
 
     def run(self):
         '''Запуск скрипта обновления'''
         self.update_prices()     
-        self.check_disabled_prods()
         self.save_update_prices()
 
 
@@ -71,36 +66,46 @@ class PriceUpdater:
         '''Обновление цен всей БД'''
         #максимум в листе 512 элементов
         updated_info = []
-        for i in range(math.ceil(len(self.all_prods) / 512)):
-            print(i)
-            temp_prods_artikuls_from_db = tuple(self.all_prods_artikuls[512*i:512*(i+1)])
-            final_url = self.product_url_api + ';'.join(temp_prods_artikuls_from_db)
-            response = self.scraper.get(final_url, headers=self.headers)
-            json_data = json.loads(response.text)
-            products_on_page = json_data['data']['products']
-            enabled_products_artikuls = []
-            for j in range(len(products_on_page)):
-                product_artikul = products_on_page[j]['id']
-                product_price = products_on_page[j]['sizes'][0]['price']['product'] // 100
-                product_to_check = self.dict_all_prods[str(product_artikul)]
-                enabled_products_artikuls.append(str(product_artikul))
-                if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
-                    updated_info.append(f'''Цена изменилась!
+        for i in range(len(self.all_authors_list)):
+            author_object = self.all_authors_list[i]
+            detail_product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
+            author_prods_to_check = self.all_authors_list[i].enabled_connection.all()
+            dict_author_prods_to_check = dict(map(lambda x: (str(x.artikul), x), author_prods_to_check))
+            for i in range(math.ceil(len(author_prods_to_check) / 512)):
+                print(i)
+                temp_prods_artikuls_from_db = tuple(tuple(dict_author_prods_to_check.keys())[512*i:512*(i+1)])
+                final_url = detail_product_url_api + ';'.join(temp_prods_artikuls_from_db)
+                response = self.scraper.get(final_url, headers=self.headers)
+                json_data = json.loads(response.text)
+                products_on_page = json_data['data']['products']
+                enabled_products_artikuls = []
+                for j in range(len(products_on_page)):
+                    product_artikul = products_on_page[j]['id']
+                    product_price = products_on_page[j]['sizes'][0]['price']['product'] // 100
+                    product_to_check = dict_author_prods_to_check[str(product_artikul)]
+                    enabled_products_artikuls.append(str(product_artikul))
+                    if product_to_check.latest_price != product_price: #проверить на всякий случай на типы здесь
+                        updated_info.append(f'''Цена изменилась!
+Автор: {author_object}
 Продукт: {product_to_check.url}
 Было: {product_to_check.latest_price}
 Стало: {product_price}
 Время:{timezone.now()}
 
 ''')
-                    product_to_check.latest_price = product_price
-                    self.updated_prods.append(product_to_check)
-                    self.updated_prices.append(WBPrice(price=product_price,
-                            added_time=timezone.now(),
-                            product=product_to_check)) 
-                #сверяем количество полученных продуктов и переданных продуктов
-            if len(enabled_products_artikuls) != len(temp_prods_artikuls_from_db):
-                self.potential_disabled_products_artikuls.extend(set(temp_prods_artikuls_from_db) - set(enabled_products_artikuls))        
-        self.potential_disabled_products = list(map(lambda x: self.dict_all_prods[x], self.potential_disabled_products_artikuls))
+                        product_to_check.latest_price = product_price
+                        self.updated_prods.append(product_to_check)
+                        self.updated_prices.append(WBPrice(price=product_price,
+                                added_time=timezone.now(),
+                                product=product_to_check)) 
+                        
+
+
+                if len(enabled_products_artikuls) != len(temp_prods_artikuls_from_db):
+                    self.disabled_products_artikuls.extend(set(temp_prods_artikuls_from_db) - set(enabled_products_artikuls))
+                    self.disabled_products = list(map(lambda x: dict_author_prods_to_check[x], self.disabled_products_artikuls)) #получил продукты для автора, которых нет в наличии        
+                    self.dict_update_avaliability.update({author_object: self.disabled_products})   
+
         with open('updated_info.txt', 'w', encoding='utf-8') as file:
             file.write(''.join(updated_info))
 
