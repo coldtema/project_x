@@ -100,7 +100,7 @@ class Brand:
         self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
         self.preset_object.save()
         self.preset_object.products.set(self.brand_products_to_add)
-        self.author_object.enabled_authors.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
+        self.author_object.enabled_connection.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
         self.author_object.save()
 
 

@@ -33,13 +33,13 @@ class Product:
         repeated_product = WBProduct.objects.filter(artikul=self.artikul) #посмотреть, как сделать так, чтобы get - функция не выдавала исключения
         if repeated_product and len(repeated_product) == 1: #если нашел повторюшку
             repeated_product = repeated_product[0]
-            authors_list = repeated_product.enabled_authors.all() #проверяет, нет ли уже того же автора у этой повторюшки
+            authors_list = repeated_product.enabled_connection.all() #проверяет, нет ли уже того же автора у этой повторюшки
             for elem in authors_list: #выводит ворнинг, если такой же автор
                 if elem.id == self.author_id:
                     print('Товар уже есть в отслеживании')
                     return
                 if elem.dest_id == self.author_object.dest_id:
-                    repeated_product.enabled_authors.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
+                    repeated_product.enabled_connection.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
                     return
         self.get_product_info()
 
@@ -132,7 +132,7 @@ class Product:
             for elem in price_history:  
                 elem.product_id = already_added_product[0].id
             WBPrice.objects.bulk_create(price_history)
-        Author.objects.get(id=self.author_id).enabled_authors.add(already_added_product[0])
+        Author.objects.get(id=self.author_id).enabled_connection.add(already_added_product[0])
     
 
 
