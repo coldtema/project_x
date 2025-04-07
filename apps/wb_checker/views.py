@@ -35,7 +35,8 @@ def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
     authors = Author.objects.all()
     for author in authors:
-        author.wbproduct_set.all().delete()
+        author.disabled_authors.all().delete()
+        author.enabled_authors.all().delete()
     WBPrice.objects.all().delete()
     WBProduct.objects.all().delete()
     WBSeller.objects.all().delete()
