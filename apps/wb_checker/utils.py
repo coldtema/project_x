@@ -1,7 +1,7 @@
 import math
 import time
 from functools import wraps
-from .models import WBBrand, WBSeller, WBProduct, WBPrice, WBPromotion
+from .models import WBBrand, WBSeller, WBProduct, WBPrice
 import cloudscraper
 import json
 from django.utils import timezone
@@ -178,6 +178,7 @@ class AvaliabilityUpdater:
 ''')
                     self.updated_prods.append(product_to_check)
                     if product_to_check.latest_price != product_price:
+                        product_to_check.latest_price = product_price
                         self.updated_prices.append(WBPrice(price=product_price,
                                 added_time=timezone.now(),
                                 product=product_to_check))                        

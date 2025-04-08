@@ -44,22 +44,22 @@ class WBBrand(models.Model):
         return self.name
     
 
-class WBPromotion(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Имя промоакции WB')
-    wb_id = models.IntegerField(unique=True, verbose_name='ID промоации WB') 
-    main_url = models.URLField(blank=True, verbose_name='URL страницы промоакции')
-    shard_key = models.CharField(max_length=200, verbose_name='Часть url для достука к api промоакции WB')
-    query = models.CharField(max_length=200, verbose_name='Параметр для передачи в api промоакции WB')
+# class WBPromotion(models.Model):
+#     name = models.CharField(max_length=100, verbose_name='Имя промоакции WB')
+#     wb_id = models.IntegerField(unique=True, verbose_name='ID промоации WB') 
+#     main_url = models.URLField(blank=True, verbose_name='URL страницы промоакции')
+#     shard_key = models.CharField(max_length=200, verbose_name='Часть url для достука к api промоакции WB')
+#     query = models.CharField(max_length=200, verbose_name='Параметр для передачи в api промоакции WB')
 
-    class Meta:
-        verbose_name = 'Промоакция'
-        verbose_name_plural = 'Промоакции'
-        indexes = [
-            models.Index(fields=['wb_id']),
-            ]
+#     class Meta:
+#         verbose_name = 'Промоакция'
+#         verbose_name_plural = 'Промоакции'
+#         indexes = [
+#             models.Index(fields=['wb_id']),
+#             ]
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
     
 
 
@@ -75,7 +75,7 @@ class WBProduct(models.Model):
     disabled_connection = models.ManyToManyField(Author, verbose_name='Связь (нет в наличии)', related_name='disabled_connection')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта WB')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта WB')
-    promotion = models.ForeignKey(WBPromotion, on_delete = models.CASCADE, verbose_name='Промоакция продукта WB', null=True)
+    # promotion = models.ForeignKey(WBPromotion, on_delete = models.CASCADE, verbose_name='Промоакция продукта WB', null=True)
     # search = models.ForeignKey(WBSearch, on_delete = models.CASCADE, verbose_name='Поиск в каталоге продукта WB', null=True)
 
     objects = models.Manager()
