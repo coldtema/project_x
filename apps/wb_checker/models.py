@@ -2,9 +2,9 @@ from django.db import models
 from apps.blog.models import Author
 from django.utils import timezone
 
-# class EnabledManager(models.Manager):
-#     def get_queryset(self):
-#         return super().get_queryset().filter(enabled=True)
+class EnabledManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(enabled=True)
 
     
 
@@ -66,25 +66,15 @@ class WBBrand(models.Model):
 class WBProduct(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продукта WB')
     artikul = models.IntegerField(unique=True, verbose_name='Артикул продукта WB')
-    latest_price = models.IntegerField(verbose_name='Последняя цена')
     wb_cosh = models.BooleanField(default=True)
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     url = models.URLField(verbose_name='URL')
-    enabled_connection = models.ManyToManyField(Author, verbose_name='Связь (есть в наличии)', related_name='enabled_connection')
-    disabled_connection = models.ManyToManyField(Author, verbose_name='Связь (нет в наличии)', related_name='disabled_connection')
-    created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта WB')
-    updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта WB')
-    # promotion = models.ForeignKey(WBPromotion, on_delete = models.CASCADE, verbose_name='Промоакция продукта WB', null=True)
-    # search = models.ForeignKey(WBSearch, on_delete = models.CASCADE, verbose_name='Поиск в каталоге продукта WB', null=True)
-
-    objects = models.Manager()
-    # enabled_products = EnabledManager()
 
     class Meta:
         verbose_name = 'Продукт WB'
         verbose_name_plural = 'Продукты WB'
-        ordering = ['-updated']
+        # ordering = ['-updated']
         indexes = [
             models.Index(fields=['artikul']),
             ]
@@ -92,34 +82,56 @@ class WBProduct(models.Model):
     def __str__(self):
         return self.name
     
-    def save(self, *args, **kwargs):
-        if self.pk:  # Проверяем, что объект уже существует (не новый)
-            original = WBProduct.objects.get(pk=self.pk)
-            if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
-                self.updated = timezone.now()  # Обновляем вручную
-            else:
-                self.updated = original.updated
-        super().save(*args, **kwargs)
+
+    # def save(self, *args, **kwargs):
+    #     if self.pk:  # Проверяем, что объект уже существует (не новый)
+    #         original = WBProduct.objects.get(pk=self.pk)
+    #         if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
+    #             self.updated = timezone.now()  # Обновляем вручную
+    #         else:
+    #             self.updated = original.updated
+    #     super().save(*args, **kwargs)
 
 
 
-class WBPrice(models.Model):
-    price = models.IntegerField(verbose_name='Цена продукта WB')
-    added_time = models.DateTimeField(verbose_name='Добавлено')
+class WBDetailedInfo(models.Model):
     product = models.ForeignKey(WBProduct, on_delete=models.CASCADE, verbose_name='Продукт WB')
+    latest_price = models.IntegerField(verbose_name='Цена продукта WB')
+    size = models.CharField(max_length=20, null=True, verbose_name='Размер')
+    volume = models.IntegerField(verbose_name='Количество')
+    enabled = models.BooleanField(default=True, verbose_name='Есть в наличии')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Автор продукта')
+    
+    enabled_products = EnabledManager()
+    objects = models.Manager()
 
     class Meta:
-        ordering = ['added_time']
-        verbose_name = 'Цена'
-        verbose_name_plural = 'Цены'
+        verbose_name = 'Информация о продукте'
+        verbose_name_plural = 'Информация о продуктах'
         indexes = [
-            models.Index(fields=['product'])
+            models.Index(fields=['product', 'author'])
         ]
 
     def __str__(self):
         return str(self.product_id)
 
 
+class WBPrice(models.Model):
+    price = models.IntegerField(verbose_name='Цена продукта WB')
+    added_time = models.DateTimeField(verbose_name='Добавлено')
+    detailed_info = models.ForeignKey(WBDetailedInfo, on_delete=models.CASCADE, verbose_name='Продукт WB')
+
+    class Meta:
+        ordering = ['added_time']
+        verbose_name = 'Цена'
+        verbose_name_plural = 'Цены'
+        indexes = [
+            models.Index(fields=['detailed_info'])
+        ]
+
+    def __str__(self):
+        return str(self.detailed_info_id)
+    
 
 
 class WBCategory(models.Model):
