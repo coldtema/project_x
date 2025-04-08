@@ -25,8 +25,35 @@ class Product:
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.artikul = re.search(r'\/(\d+)\/', product_url).group(1)
-        self.product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
+        self.product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
+        self.product_size = self.get_product_size()
 
+
+    def get_product_size(self):
+        response = self.scraper.get(self.product_url_api, headers=self.headers)
+        json_data = json.loads(response.text)
+        sizes = json_data['data']['products'][0]['sizes']
+        sizes_dict = dict()
+        for size in sizes:
+            volume_of_size = 0
+            for stock in size['stocks']:
+                volume_of_size += stock['qty']
+            sizes_dict.update({size['origName']: volume_of_size})
+        print(f'Товар обнаружен! Доступные варианты:')
+        for size, volume in sizes_dict.items():
+            print(f'Вариант: {size}. Количество: {volume}')
+        print('Введите имя варианта, который нужно выбрать')
+        while True:
+            user_size = input()
+            if sizes_dict.get(user_size) is None: 
+                print('Введено неправильное имя варианта, попробуйте снова')
+                continue
+            break
+        if sizes_dict.get(user_size) == 0:
+            print('В выбрали товар, которого нет в наличии. Он добавлен в список отслеживаемого')
+        else:
+            print('Товар добавлен в отслеживаемые')
+        
     @time_count
     def get_repetition_or_run(self):
         '''Проверка на повторки среди считываемых продуктов и продуктов бренда, которые уже существуют в БД'''
