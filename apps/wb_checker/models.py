@@ -111,6 +111,9 @@ class WBDetailedInfo(models.Model):
         indexes = [
             models.Index(fields=['product', 'author'])
         ]
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'latest_price', 'size', 'volume', 'enabled', 'author'], name='total_repetition')
+        ]
 
     def __str__(self):
         return str((self.product, self.latest_price, self.size, self.volume, self.enabled, self.author))
