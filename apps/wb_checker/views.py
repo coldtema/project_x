@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPreset #WBPromotion
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPreset, WBDetailedInfo #WBPromotion
 from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
@@ -15,7 +15,7 @@ def all_price_list(request):
     '''Temp view-функция для представления начальной страницы wb_checker'a'''
     form_parse = WBProductForm()
     form_get_dest = WBDestForm()
-    author_id = 4 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+    author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
     if request.method == 'POST':
         form = WBProductForm(request.POST)
@@ -38,6 +38,7 @@ def clear_db(request):
     WBProduct.objects.all().delete()
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
+    WBDetailedInfo.objects.all().delete()
     # WBPromotion.objects.all().delete()
     WBPreset.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
@@ -63,12 +64,12 @@ def update_prices(request):
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
-
+@utils.time_count
 def url_dispatcher(url, author_object):
     '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
     if re.search(pattern=r'catalog\/\d+\/detail', string=url):
         product = wb_products.Product(url, author_object)
-        product.get_repetition_or_run()
+        product.get_product_info()
         del product
     elif re.search(pattern=r'\/(seller)\/', string=url):
         seller = wb_sellers.Seller(url, author_object)
