@@ -114,10 +114,19 @@ class Product:
         WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
-        new_detailed_info.save()
-        new_price.save()
-        self.author_object.slots -= 1
-        self.author_object.save()
+        new_detailed_info, was_not_in_db = WBDetailedInfo.objects.get_or_create(latest_price=self.product_price,
+                                           size=self.product_size,
+                                           volume=self.product_volume,
+                                           enabled=new_detailed_info.enabled,
+                                           author_id=self.author_id,
+                                           product=new_product)
+        if was_not_in_db:
+            new_price.detailed_info = new_detailed_info
+            new_price.save()
+            self.author_object.slots -= 1
+            self.author_object.save()
+        else:
+            print('Товар уже есть в отслеживании')
     
 
 
