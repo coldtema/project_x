@@ -113,7 +113,7 @@ class WBDetailedInfo(models.Model):
         ]
 
     def __str__(self):
-        return str(self.product_id)
+        return str((self.product, self.latest_price, self.size, self.volume, self.enabled, self.author))
 
 
 class WBPrice(models.Model):
