@@ -15,7 +15,7 @@ def all_price_list(request):
     '''Temp view-функция для представления начальной страницы wb_checker'a'''
     form_parse = WBProductForm()
     form_get_dest = WBDestForm()
-    author_id = 1 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+    author_id = 4 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
             #проверяем поле action_type, чтобы понять какую функцию юзать (можно как альтернативу сделать regex's по урлу, но пока проще так)
     if request.method == 'POST':
         form = WBProductForm(request.POST)
@@ -91,4 +91,17 @@ def update_avaliability(request):
     '''Проверка наличия продуктов, которых не было в наличии'''
     utils.AvaliabilityUpdater().run()
     return HttpResponseRedirect(reverse('all_price_list'))
+
+
+
+@utils.time_count
+def load_test_data(request):
+    author_object = Author.objects.get(pk=4)
+    with open('wb_links.txt', 'r', encoding='utf-8') as file:
+        links_list = file.read().split('\n')
+        for link in links_list:
+            product = wb_products.Product(link, author_object)
+            product.get_product_info()
+            del product
+            
 
