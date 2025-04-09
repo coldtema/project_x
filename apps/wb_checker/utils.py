@@ -1,13 +1,14 @@
 import math
 import time
 from functools import wraps
-from .models import WBBrand, WBSeller, WBProduct, WBPrice
+from .models import WBBrand, WBSeller, WBProduct, WBPrice, WBDetailedInfo
 import cloudscraper
 import json
 from django.utils import timezone
 from django.db import transaction
 from collections import Counter
 from apps.blog.models import Author
+from django.db.models import Prefetch
 
 
 def time_count(func):
@@ -132,12 +133,12 @@ class PriceUpdater:
 class AvaliabilityUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.all_authors_list = Author.objects.all().prefetch_related('enabled_connection', 'disabled_connection')
+        self.all_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
+                                                 queryset=WBDetailedInfo.objects.all().select_related('product')))
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
-        self.updated_prods = []
-        self.updated_enabled_prods = dict()
-        self.updated_prices = []
+        self.new_prices = []
+        self.updated_details = []
 
 
     def run(self):
@@ -148,53 +149,64 @@ class AvaliabilityUpdater:
 
     @time_count
     def update_prices(self):
-        '''Обновление наличия прподуктов, которых нет в наличии'''
+        '''Обновление наличия продуктов, которых нет в наличии'''
         #максимум в листе 512 элементов
         updated_info = []
         for i in range(len(self.all_authors_list)):
             author_object = self.all_authors_list[i]
-            detail_product_url_api = f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
-            author_prods_to_check = self.all_authors_list[i].disabled_connection.all()
-            dict_author_prods_to_check = dict(map(lambda x: (str(x.artikul), x), author_prods_to_check))
-            self.updated_prods = []
-            for i in range(math.ceil(len(author_prods_to_check) / 512)):
-                print(i)
-                temp_prods_artikuls_from_db = tuple(tuple(dict_author_prods_to_check.keys())[512*i:512*(i+1)])
+            detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
+            details_of_prods_to_check = self.all_authors_list[i].wbdetailedinfo_set.all()
+            artikuls_of_details = list(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
+            for j in range(math.ceil(len(details_of_prods_to_check) / 512)):
+                temp_prods_artikuls_from_db = tuple(artikuls_of_details[512*j:512*(j+1)])
                 final_url = detail_product_url_api + ';'.join(temp_prods_artikuls_from_db)
+                print(final_url)
                 response = self.scraper.get(final_url, headers=self.headers)
                 json_data = json.loads(response.text)
                 products_on_page = json_data['data']['products']
                 enabled_products_artikuls = []
-                for j in range(len(products_on_page)):
-                    product_artikul = products_on_page[j]['id']
-                    product_price = products_on_page[j]['sizes'][0]['price']['total'] // 100
-                    product_to_check = dict_author_prods_to_check[str(product_artikul)]
-                    enabled_products_artikuls.append(str(product_artikul))
-                    updated_info.append(f'''Продукт снова в наличии!
-Автор: {author_object}
-Продукт: {product_to_check.url}
-Время:{timezone.now()}
+                for k in range(len(products_on_page)):
+                    current_detail_to_check = details_of_prods_to_check[j*512+k]
+                    if current_detail_to_check.size == None:
+                        stocks = products_on_page[k]['sizes'][0]['stocks']
+                        if len(stocks) != 0:
+                            volume = 0
+                            for stock in stocks:
+                                volume += stock['qty']
+                            price_of_detail = products_on_page[k]['sizes'][0]['price']['product'] // 100
+                            current_detail_to_check.latest_price = price_of_detail
+                            current_detail_to_check.volume = volume
+                            current_detail_to_check.enabled = True
+                            self.updated_details.append(current_detail_to_check)
+                            self.new_prices.append(WBPrice(price=price_of_detail,
+                                                           added_time=timezone.now(),
+                                                           detailed_info=current_detail_to_check))
+                    else:
+                        sizes = products_on_page[k]['sizes']
+                        for size in sizes:
+                            if size['origName'] == current_detail_to_check.size:
+                                stocks = size['stocks']
+                                if len(stocks) != 0:
+                                    volume = 0
+                                    for stock in stocks:
+                                        volume += stock['qty']
+                                    price_of_detail = size['price']['product'] // 100
+                                    current_detail_to_check.latest_price = price_of_detail
+                                    current_detail_to_check.volume = volume
+                                    current_detail_to_check.enabled = True
+                                    self.updated_details.append(current_detail_to_check)
+                                    self.new_prices.append(WBPrice(price=price_of_detail,
+                                                                   added_time=timezone.now(),
+                                                                   detailed_info=current_detail_to_check))
+                                break                      
 
-''')
-                    self.updated_prods.append(product_to_check)
-                    if product_to_check.latest_price != product_price:
-                        product_to_check.latest_price = product_price
-                        self.updated_prices.append(WBPrice(price=product_price,
-                                added_time=timezone.now(),
-                                product=product_to_check))                        
-            self.updated_enabled_prods.update({author_object: self.updated_prods})
-        with open('updated_enabled.txt', 'w', encoding='utf-8') as file:
-            file.write(''.join(updated_info))
 
     @time_count
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД обновления наличия'''
-        WBProduct.objects.bulk_update(self.updated_prods, ['latest_price'])
-        WBPrice.objects.bulk_create(self.updated_prices)
-        for author_object, enabled_prods in self.updated_enabled_prods.items():
-            author_object.enabled_connection.add(*enabled_prods)
-            author_object.disabled_connection.remove(*enabled_prods)
+        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
+        WBPrice.objects.bulk_create(self.new_prices)
         
 
 
