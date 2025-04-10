@@ -204,6 +204,10 @@ class AvaliabilityUpdater:
             response = self.scraper.get(final_url, headers=self.headers)
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
+
+            products_on_page = sorted(products_on_page, key=lambda x: x['id'])
+            details_of_prods_to_check = sorted(details_of_prods_to_check, key=lambda x: x.product.artikul)
+
             for j in range(len(products_on_page)):
                 current_detail_to_check = details_of_prods_to_check[j]
                 if products_on_page[i]['id'] == current_detail_to_check.product.id: #по хорошему вот тут надо добавить исключение какое то
