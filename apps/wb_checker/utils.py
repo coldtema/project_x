@@ -85,54 +85,49 @@ class PriceUpdater:
             details_of_prods_to_check = sorted(details_of_prods_to_check, key=lambda x: x.product.artikul)
 
             for j in range(len(products_on_page)):
-                current_detail_to_check = details_of_prods_to_check[j]
-                if products_on_page[j]['id'] == current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
-                    if current_detail_to_check.size == None:
-                        self.check_nonsize_product(current_detail_to_check, products_on_page[j])
+                self.current_detail_to_check = details_of_prods_to_check[j]
+                if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
+                    if self.current_detail_to_check.size == None:
+                        self.check_nonsize_product(products_on_page[j])
                     else:
-                        self.check_size_product(current_detail_to_check, products_on_page[j])                      
+                        self.check_size_product(products_on_page[j])                      
                 else:
                     print(products_on_page[j]['id'])
-                    print(current_detail_to_check.product.artikul)
+                    print(self.current_detail_to_check.product.artikul)
                     print('Не сходится товар и запрос по индексам')
 
 
 
-    def check_nonsize_product(self, current_detail_to_check, product_on_page):
+    def check_nonsize_product(self, product_on_page):
+        '''Функция проверки изменений товара для продукта, у которого нет размера'''
         self.test_counter += 1
         stocks = product_on_page['sizes'][0]['stocks']
-        flag_change = False
         if len(stocks) != 0:
             volume = 0
             for stock in stocks:
                 volume += stock['qty']
             price_of_detail = int(product_on_page['sizes'][0]['price']['product'] // 100)
             #точка входа для уведомления пользователя
-            if current_detail_to_check.latest_price != price_of_detail:
-                print(f'Цена изменилась!\nПродукт: {current_detail_to_check.product.url}\nБыло: {current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
-                flag_change = True
-                current_detail_to_check.latest_price = price_of_detail
-                self.new_prices.append(WBPrice(price=price_of_detail,
-                                            added_time=timezone.now(),
-                                            detailed_info=current_detail_to_check))
-            if current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
-                flag_change = True
-                current_detail_to_check.volume = volume
-            if flag_change: self.updated_details.append(current_detail_to_check)
+            self.updating_plus_notification(price_of_detail, volume)
         else:
-            print(f'Продукта больше нет в наличии!\nПродукт: {current_detail_to_check.product.url}')
-            current_detail_to_check.enabled = False
-            current_detail_to_check.volume = 0
-            self.updated_details.append(current_detail_to_check)
+            self.disable_product()
             
 
 
-    def check_size_product(self, current_detail_to_check, product_on_page):
+    def disable_product(self):
+        print(f'Продукта больше нет в наличии!\nПродукт: {self.current_detail_to_check.product.url}\n')
+        self.current_detail_to_check.enabled = False
+        self.current_detail_to_check.volume = 0
+        self.updated_details.append(self.current_detail_to_check)   
+
+
+
+    def check_size_product(self, product_on_page):
+        '''Функция проверки изменений товара для продукта, у которого есть размер'''
         self.test_counter += 1
         sizes = product_on_page['sizes']
-        flag_change = False
         for size in sizes:
-            if size['origName'] == current_detail_to_check.size:
+            if size['origName'] == self.current_detail_to_check.size:
                 stocks = size['stocks']
                 if len(stocks) != 0:
                     volume = 0
@@ -140,24 +135,24 @@ class PriceUpdater:
                         volume += stock['qty']
                     price_of_detail = size['price']['product'] // 100
                     #точка входа для уведомления пользователя
-                    if current_detail_to_check.latest_price != price_of_detail:
-                        print(f'Цена изменилась!\nПродукт: {current_detail_to_check.product.url}\nБыло: {current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
-                        flag_change = True
-                        current_detail_to_check.latest_price = price_of_detail
-                        self.new_prices.append(WBPrice(price=price_of_detail,
-                                                    added_time=timezone.now(),
-                                                    detailed_info=current_detail_to_check))
-                    if current_detail_to_check.volume != volume:
-                        print(f'Кол-во изменилось!\nПродукт: {current_detail_to_check.product.url}\nБыло: {current_detail_to_check.volume}\nСтало: {volume}\n') 
-                        flag_change = True
-                        current_detail_to_check.volume = volume
-                    if flag_change: self.updated_details.append(current_detail_to_check)
-                else:
-                    print(f'Продукта больше нет в наличии!\nПродукт: {current_detail_to_check.product.url}')
-                    current_detail_to_check.enabled = False
-                    current_detail_to_check.volume = 0
-                    self.updated_details.append(current_detail_to_check)
-                break                      
+                    self.updating_plus_notification(price_of_detail, volume)
+                break      
+
+
+
+    def updating_plus_notification(self, price_of_detail, volume): 
+        flag_change = False           
+        if self.current_detail_to_check.latest_price != price_of_detail:
+            print(f'Цена изменилась!\nПродукт: {self.current_detail_to_check.product.url}\nБыло: {self.current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
+            flag_change = True
+            self.current_detail_to_check.latest_price = price_of_detail
+            self.new_prices.append(WBPrice(price=price_of_detail,
+                                        added_time=timezone.now(),
+                                        detailed_info=self.current_detail_to_check))
+            if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
+                flag_change = True
+                self.current_detail_to_check.volume = volume
+            if flag_change: self.updated_details.append(self.current_detail_to_check)             
 
 
     @time_count
