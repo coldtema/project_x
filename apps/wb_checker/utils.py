@@ -234,6 +234,7 @@ class AvaliabilityUpdater:
             self.new_prices.append(WBPrice(price=price_of_detail,
                                             added_time=timezone.now(),
                                             detailed_info=current_detail_to_check))
+            print(f'Продукт снова в наличии!\nПродукт: {current_detail_to_check.product.url}\n')
             
 
 
