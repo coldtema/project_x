@@ -180,27 +180,26 @@ class AvaliabilityUpdater:
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.new_prices = []
         self.updated_details = []
+        self.test_counter = 0
 
 
     def run(self):
         '''Запуск скрипта обновления'''
         self.update_avaliability()     
-        self.save_update_prices()
+        self.save_update_avaliability()
+        print(f'Товаров проверено:{self.test_counter}')
 
 
     @time_count
     def update_avaliability(self):
         '''Обновление наличия продуктов, которых нет в наличии'''
-        #максимум в листе 512 элементов
         for i in range(len(self.all_authors_list)):
             author_object = self.all_authors_list[i]
             detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
             details_of_prods_to_check = self.all_authors_list[i].wbdetailedinfo_set.all()
             if len(details_of_prods_to_check) == 0:
                 continue
-            artikuls_of_details = list(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
-            final_url = detail_product_url_api + ';'.join(artikuls_of_details)
-            print(final_url)
+            final_url = detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
             response = self.scraper.get(final_url, headers=self.headers)
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
@@ -210,7 +209,7 @@ class AvaliabilityUpdater:
 
             for j in range(len(products_on_page)):
                 current_detail_to_check = details_of_prods_to_check[j]
-                if products_on_page[i]['id'] == current_detail_to_check.product.id: #по хорошему вот тут надо добавить исключение какое то
+                if products_on_page[j]['id'] == current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
                     if current_detail_to_check.size == None:
                         self.check_nonsize_product(current_detail_to_check, products_on_page[j])
                     else:
@@ -221,12 +220,16 @@ class AvaliabilityUpdater:
 
 
     def check_nonsize_product(self, current_detail_to_check, product_on_page):
+        '''Функция проверки наличия продукта, у которого нет размеров'''
+        self.test_counter += 1
         stocks = product_on_page['sizes'][0]['stocks']
         if len(stocks) != 0:
+            #точка входа для уведомления пользователя о том, что товар в наличии
             volume = 0
             for stock in stocks:
                 volume += stock['qty']
             price_of_detail = product_on_page['sizes'][0]['price']['product'] // 100
+            #проверять тут нужно на разницу цены до "нет в наличии" и после
             current_detail_to_check.latest_price = price_of_detail
             current_detail_to_check.volume = volume
             current_detail_to_check.enabled = True
@@ -240,6 +243,8 @@ class AvaliabilityUpdater:
 
 
     def check_size_product(self, current_detail_to_check, product_on_page):
+        '''Функция проверки наличия продукта, у которого есть размер'''
+        self.test_counter += 1
         sizes = product_on_page['sizes']
         for size in sizes:
             if size['origName'] == current_detail_to_check.size:
@@ -257,19 +262,15 @@ class AvaliabilityUpdater:
                     self.new_prices.append(WBPrice(price=price_of_detail,
                                                     added_time=timezone.now(),
                                                     detailed_info=current_detail_to_check))
+                    print(f'Продукт снова в наличии!\nПродукт: {current_detail_to_check.product.url}\n') #добавить кастомизацию по размеру (вдруг его не было в наличии)
                 break                      
-
+                
 
 
     @time_count
     @transaction.atomic
-    def save_update_prices(self):
+    def save_update_avaliability(self):
         '''Занесение в БД обновления наличия'''
         WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
         WBPrice.objects.bulk_create(self.new_prices)
-        
-
-
-
-#добавить функцию, если dest не прошел на мск
 
