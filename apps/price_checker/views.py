@@ -75,35 +75,23 @@ def delete_price(request, id):
 
 @time_count
 def update_prices(request):
-    all_prod = Product.enabled_products.all()
-    exception_elems = []
-    for elem in all_prod:
-        try:
-            maybe_new_price = get_shop_of_product(elem.url)['price_element']
-        except:
-            exception_elems.append(elem)
-            continue
-        if maybe_new_price != elem.latest_price:
-            print(f'''
-Цена изменилась!
-Продукт: {elem.name}
-Было: {elem.latest_price}
-Стало: {maybe_new_price}
-''')
-            elem.latest_price = maybe_new_price
-            elem.save()
-            Price.objects.create(price=maybe_new_price, product=elem)
-    broken_elems = []
-    if exception_elems:
-        print(f'''
-    эти элементы не прошли с первой попытки: {[elem.name for elem in exception_elems]}
-    ''')
-        time.sleep(1)
-        for elem in exception_elems:
+    dict_products_to_update = dict()
+    all_prod = Product.enabled_products.all().select_related('shop')
+    for product in all_prod:
+        dict_products_to_update.setdefault(product.shop.name, []).append(product)
+    prods_to_go = ['']
+    while len(prods_to_go) != 0:
+        prods_to_go = []
+        for shop, products in dict_products_to_update.items():
+            if len(products) != 0:
+                prods_to_go.append(products[-1])
+                dict_products_to_update[shop].pop()
+        exception_elems = []
+        for elem in prods_to_go:
             try:
                 maybe_new_price = get_shop_of_product(elem.url)['price_element']
             except:
-                broken_elems.append(elem)
+                exception_elems.append(elem)
                 continue
             if maybe_new_price != elem.latest_price:
                 print(f'''
@@ -115,14 +103,36 @@ def update_prices(request):
                 elem.latest_price = maybe_new_price
                 elem.save()
                 Price.objects.create(price=maybe_new_price, product=elem)
-        if broken_elems:
-            print(f'Продукты, по которым не удалось обновить цену:')
-            for elem in broken_elems: 
-                print(f'id: {elem.id}, url: {elem.url}')
-                answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
-                if answer == 'd':
-                    elem.enabled = False
-                    elem.save()
-                else:
+        broken_elems = []
+        if exception_elems:
+            print(f'''
+        эти элементы не прошли с первой попытки: {[elem.name for elem in exception_elems]}
+        ''')
+            time.sleep(1)
+            for elem in exception_elems:
+                try:
+                    maybe_new_price = get_shop_of_product(elem.url)['price_element']
+                except:
+                    broken_elems.append(elem)
                     continue
-    return HttpResponseRedirect(reverse('all_price_list'))
+                if maybe_new_price != elem.latest_price:
+                    print(f'''
+        Цена изменилась!
+        Продукт: {elem.name}
+        Было: {elem.latest_price}
+        Стало: {maybe_new_price}
+        ''')
+                    elem.latest_price = maybe_new_price
+                    elem.save()
+                    Price.objects.create(price=maybe_new_price, product=elem)
+            if broken_elems:
+                print(f'Продукты, по которым не удалось обновить цену:')
+                for elem in broken_elems: 
+                    print(f'id: {elem.id}, url: {elem.url}')
+                    answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
+                    if answer == 'd':
+                        elem.enabled = False
+                        elem.save()
+                    else:
+                        continue
+    return HttpResponseRedirect(reverse('all_price_list_1'))
