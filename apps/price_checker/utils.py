@@ -1,8 +1,20 @@
+from functools import wraps
 from .models import Product, Price
 import time
 from apps.price_checker.site_explorer import get_shop_of_product
-from django.db import transaction
 
+
+
+
+def time_count(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(end - start)
+        return result
+    return wrapper
 
 
 
