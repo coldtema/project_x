@@ -15,6 +15,7 @@ from apps.price_checker.utils import time_count
 
 
 def all_price_list(request):
+    '''Функция представления для отображения всех продуктов'''
     if request.method == 'POST':
         product_form = ProductForm(request.POST)
         if product_form.is_valid():
@@ -38,6 +39,7 @@ def all_price_list(request):
 
 
 def price_history(request, id):
+    '''Функция для открытия истории цены конкретного продукта'''
     product_to_watch = Product.objects.get(id=id)
     prices_of_product = Price.objects.filter(product_id=id)
     dates = []
@@ -51,12 +53,14 @@ def price_history(request, id):
 
 
 def delete_product(request, id):
+    '''Функция представления для удаления конкретного продукта'''
     Product.objects.get(id=id).delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
 
 def delete_price(request, id):
+    '''Функция представления для удаления цены конкретного продукта'''
     product_to_redirect = Price.objects.get(id=id).product
     id_of_product = product_to_redirect.id
     Price.objects.get(id=id).delete()
@@ -67,6 +71,7 @@ def delete_price(request, id):
 
 @time_count
 def update_prices(request):
+    '''Функция представления для запуска обновления цен'''
     p_u = PriceUpdater()
     p_u.run()
     del p_u
