@@ -10,16 +10,7 @@ from .chart_builder import plot_price_history
 # from .async_shit import process_sites
 from django.urls import reverse
 from apps.price_checker.utils import PriceUpdater
-
-def time_count(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(end - start)
-        return result
-    return wrapper
+from apps.price_checker.utils import time_count
 
 
 
