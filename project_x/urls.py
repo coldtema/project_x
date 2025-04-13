@@ -24,4 +24,5 @@ urlpatterns = [
     path('price_checker/', include('apps.price_checker.urls')),
     path('test_generator/', include('apps.test_generator.urls')),
     path('wb_checker/', include('apps.wb_checker.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

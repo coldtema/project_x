@@ -3,7 +3,6 @@ from django.urls import path, re_path, include
 
 urlpatterns = [
     path('', views.index, name='hello'), #путь, функция представления, и имя пути для лаконичности
-    path('accounts/', views.accounts, name='accounts'),
     path('posts/', views.posts, name='posts'),
     path('reg/edit/<int:id>', views.reg_edit, name='reg_edit'),
     path('reg/delete/<int:id>', views.reg_delete, name='reg_delete'),
