@@ -1,0 +1,12 @@
+{%extends 'base.html'%}
+{%block title%}LOGIN{%endblock title%}
+{%block content%}
+<h1>loGG</h1>
+<form method="post">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+     <input type="submit" value="Вход">
+</form>
+{%endblock content%}
