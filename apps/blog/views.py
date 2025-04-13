@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from .models import Author, Post
 from .forms import UserForm, UserEditForm
+from django.contrib.auth import decorators
 
 user_list = [{'name': 'Дмитрий', 'experience': 9},
              {'name': 'Павел',   'experience': 5},
@@ -24,7 +25,7 @@ def accounts(request):
     data = Author.objects.all()
     return render(request, 'blog/accounts.html', context={'data': data})
 
-
+@decorators.login_required
 def posts(request):
     data = Post.objects.all()
     return render(request, 'blog/posts.html', context={'data': data})
