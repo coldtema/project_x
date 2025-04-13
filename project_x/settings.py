@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'apps.price_checker.apps.PriceCheckerConfig',
     'apps.test_generator.apps.TestGeneratorConfig',
-    'apps.wb_checker.apps.WbCheckerConfig'
+    'apps.wb_checker.apps.WbCheckerConfig',
+    'apps.accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
