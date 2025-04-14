@@ -132,6 +132,10 @@ class WBCategory(models.Model):
 
 
 class TopWBProduct(models.Model):
+    class Source(models.TextChoices):
+        BRAND = 'BRAND', ' Бренд'
+        SELLER = 'SELLER', 'Продавец'
+        CATEGORY = 'CATEGORY', 'Категория'
     name = models.CharField(max_length=100, verbose_name='Имя продукта WB')
     artikul = models.IntegerField(unique=True, verbose_name='Артикул продукта WB')
     score = models.FloatField(verbose_name='Внутренний рейтинг топ продукта WB')
@@ -143,6 +147,7 @@ class TopWBProduct(models.Model):
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     url = models.URLField(verbose_name='URL')
     created = models.DateField(verbose_name='Время добавления топ продукта WB')
+    source = models.CharField(max_length=8, choices=Source.choices)
 
     class Meta:
         verbose_name = 'Топ продукт WB'
@@ -151,6 +156,9 @@ class TopWBProduct(models.Model):
         indexes = [
             models.Index(fields=['artikul']),
             ]
+        constraints = [
+            models.UniqueConstraint(fields=['artikul', 'source'], name='source_repetition')
+        ]
     
     def __str__(self):
         return str(self.artikul)
