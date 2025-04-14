@@ -156,3 +156,28 @@ class WBPreset(models.Model):
     max_elems=models.IntegerField(default=0, verbose_name='Количество продуктов, добавленных из пресета')
     author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Никнеймы авторов')
     products = models.ManyToManyField(WBProduct, verbose_name='Продукты пресета')
+
+
+
+class TopWBProduct(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя продукта WB')
+    artikul = models.IntegerField(unique=True, verbose_name='Артикул продукта WB')
+    score = models.FloatField(verbose_name='Внутренний рейтинг топ продукта WB')
+    wb_cosh = models.BooleanField(default=True)
+    latest_price = models.IntegerField(verbose_name='Цена топ продукта WB')
+    rating = models.FloatField(verbose_name='Рейтинг')
+    feedbacks = models.IntegerField(verbose_name='Отзывы')
+    seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
+    brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
+    url = models.URLField(verbose_name='URL')
+
+    class Meta:
+        verbose_name = 'Топ продукт WB'
+        verbose_name_plural = 'Топ продукты WB'
+        # ordering = ['-updated']
+        indexes = [
+            models.Index(fields=['artikul']),
+            ]
+    
+    def __str__(self):
+        return self.name
