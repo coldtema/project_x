@@ -10,7 +10,7 @@ class Author(models.Model):
         FREE = 'FREE', 'Free Status'
     nickname = models.CharField(max_length=20, verbose_name='Никнейм')
     age = models.IntegerField(default=0, verbose_name='Возраст')
-    subscription = models.CharField(max_length=100, default=Subscription.FREE, choices=Subscription.choices)
+    subscription = models.CharField(max_length=6, default=Subscription.FREE, choices=Subscription.choices)
     slots = models.IntegerField(default=1000)
     dest_name = models.CharField(max_length=1000, null=True)
     dest_id = models.CharField(max_length=100, null=True)
