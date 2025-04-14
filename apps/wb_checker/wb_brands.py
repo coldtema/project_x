@@ -94,7 +94,7 @@ class Brand:
         WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
-        self.author_object.subs_set.add(self.brand_object)
+        self.author_object.wbbrand_set.add(self.brand_object)
         # self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
         # self.author_object.enabled_connection.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
         # self.author_object.save()
@@ -177,8 +177,7 @@ class Brand:
         '''Проверка продавца на существование в БД + откладывание его в кэш при отсутствии'''
         seller_object = WBSeller(name=seller_name,
                     wb_id=seller_artikul,
-                    main_url=f'https://www.wildberries.ru/seller/{seller_artikul}', #баг только с самим вб
-                    full_control = False)
+                    main_url=f'https://www.wildberries.ru/seller/{seller_artikul}') #баг только с самим вб
         seller_object = self.dict_sellers_to_add.setdefault(seller_artikul, seller_object)
         return seller_object
 
@@ -204,7 +203,8 @@ class Brand:
                 wb_cosh=True,
                 url=product_url,
                 brand=self.brand_object,
-                seller=seller_object)
+                seller=seller_object,
+                created=datetime.today())
         new_product = {product_artikul: new_product}
         self.dict_brand_products_to_add.update(new_product)
         
