@@ -13,7 +13,7 @@ class WBSeller(models.Model):
     wb_id = models.IntegerField(unique=True, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
     # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
-    full_control = models.BooleanField(default=False)
+    subs = models.ManyToManyField(Author, verbose_name='Подпичсики селлера')
 
     class Meta:
         verbose_name = 'Продавец WB'
@@ -31,7 +31,7 @@ class WBBrand(models.Model):
     wb_id = models.IntegerField(unique=True, verbose_name='ID бренда WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
     # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
-    full_control = models.BooleanField(default=False)
+    subs = models.ManyToManyField(Author, verbose_name='Подписчики бренда')
 
     class Meta:
         verbose_name = 'Магазин'
@@ -170,6 +170,7 @@ class TopWBProduct(models.Model):
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     url = models.URLField(verbose_name='URL')
+    created = models.DateField(verbose_name='Время добавления топ продукта WB')
 
     class Meta:
         verbose_name = 'Топ продукт WB'
@@ -180,4 +181,4 @@ class TopWBProduct(models.Model):
             ]
     
     def __str__(self):
-        return self.name
+        return str(self.artikul)
