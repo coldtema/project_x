@@ -12,7 +12,6 @@ class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
     wb_id = models.IntegerField(unique=True, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге продавца')
     subs = models.ManyToManyField(Author, verbose_name='Подпичсики селлера')
 
     class Meta:
@@ -30,7 +29,6 @@ class WBBrand(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя бренда WB')
     wb_id = models.IntegerField(unique=True, verbose_name='ID бренда WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    # catalog_count = models.IntegerField(verbose_name='Всего товаров в каталоге бренда')
     subs = models.ManyToManyField(Author, verbose_name='Подписчики бренда')
 
     class Meta:
@@ -42,24 +40,7 @@ class WBBrand(models.Model):
 
     def __str__(self):
         return self.name
-    
 
-# class WBPromotion(models.Model):
-#     name = models.CharField(max_length=100, verbose_name='Имя промоакции WB')
-#     wb_id = models.IntegerField(unique=True, verbose_name='ID промоации WB') 
-#     main_url = models.URLField(blank=True, verbose_name='URL страницы промоакции')
-#     shard_key = models.CharField(max_length=200, verbose_name='Часть url для достука к api промоакции WB')
-#     query = models.CharField(max_length=200, verbose_name='Параметр для передачи в api промоакции WB')
-
-#     class Meta:
-#         verbose_name = 'Промоакция'
-#         verbose_name_plural = 'Промоакции'
-#         indexes = [
-#             models.Index(fields=['wb_id']),
-#             ]
-
-#     def __str__(self):
-#         return self.name
     
 
 
@@ -147,15 +128,6 @@ class WBCategory(models.Model):
         indexes = [
             models.Index(fields=['wb_id']),
             ]
-        
-
-
-class WBPreset(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Имя пресета')
-    main_url = models.URLField(verbose_name='URL пресета')
-    max_elems=models.IntegerField(default=0, verbose_name='Количество продуктов, добавленных из пресета')
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Никнеймы авторов')
-    products = models.ManyToManyField(WBProduct, verbose_name='Продукты пресета')
 
 
 

@@ -3,7 +3,7 @@ import json
 import time
 import cloudscraper
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller, WBPreset
+from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller
 from apps.blog.models import Author
 from django.utils import timezone
 import math

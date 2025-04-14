@@ -6,7 +6,7 @@ import json
 import cloudscraper
 from datetime import datetime
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, WBsearchtion
+from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand
 from apps.blog.models import Author
 from django.utils import timezone
 import math

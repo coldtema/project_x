@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBPreset, WBDetailedInfo #WBPromotion
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBDetailedInfo
 from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
@@ -39,8 +39,6 @@ def clear_db(request):
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
     WBDetailedInfo.objects.all().delete()
-    # WBPromotion.objects.all().delete()
-    WBPreset.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
@@ -79,10 +77,6 @@ def url_dispatcher(url, author_object):
         brand = wb_brands.Brand(url, author_object)
         brand.run()
         del brand
-    # elif re.search(pattern=r'\/(promotions)\/', string=url):
-    #     promo = wb_promos.Promo(url, author_object)
-    #     promo.run()
-    #     del promo
 
 
 

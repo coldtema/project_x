@@ -6,7 +6,7 @@ import json
 import cloudscraper
 from datetime import datetime
 import apps.wb_checker.utils as utils
-from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, WBPreset, TopWBProduct
+from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, TopWBProduct
 from apps.blog.models import Author
 from django.utils import timezone
 import math
@@ -94,6 +94,7 @@ class Brand:
         WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
+        self.author_object.subs_set.add(self.brand_object)
         # self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
         # self.author_object.enabled_connection.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
         # self.author_object.save()
