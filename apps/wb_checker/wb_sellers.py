@@ -198,15 +198,6 @@ class Seller:
         return WBSeller(wb_id=self.seller_artikul,
                         name=self.seller_name,
                         main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
-    
-
-
-    def build_raw_preset_object(self, raw_seller_url): #в атомарке засейвить плюс добавить связь
-        '''Создание объекта пресета без лишнего обращения в БД (конфликтов нет - заносится в любом случае)'''
-        return WBPreset(name=f'Товары продавца {self.seller_object.name} ({self.total_products} шт.)',
-                        main_url = raw_seller_url,
-                        max_elems = self.total_products,
-                        author_id=self.author_id)
 
 
 
