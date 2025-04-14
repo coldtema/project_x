@@ -292,3 +292,152 @@ class Brand:
             json_data = json.loads(response.text)
             return f'https://www.wildberries.ru/brands/{json_data['url']}'
 
+
+
+class TopBuilder:
+    def __init__(self, dict_products_in_catalog):
+        self.headers = {"User-Agent": "Mozilla/5.0"}
+        self.scraper = cloudscraper.create_scraper()
+        self.dict_products_in_catalog = dict_products_in_catalog
+        self.feedbacks_median = self.get_feedbacks_median()
+        self.price_history = None
+
+
+
+    @utils.time_count
+    def build_top(self):
+        for artikul, product_object in self.dict_products_in_catalog.items():
+            try: #если вдруг истории цены нет
+                self.price_history = self.get_price_history(artikul)
+                #price_history = list(map(lambda x: (timezone.make_aware(datetime.fromtimestamp(x['dt'])), x['price']['RUB']//100), price_history))
+                self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
+                self.price_history.append((timezone.now(), product_object.latest_price))
+            except:
+                self.price_history = [(timezone.now(), product_object.latest_price)]
+            if len(self.price_history) < 4:
+                product_object.score = 0
+            else:
+                self.prices_duration = self.get_duration_of_prices()
+                score_of_product = self.get_score_of_product(product_object)
+                product_object.score = score_of_product
+        return self.dict_products_in_catalog
+
+
+
+    def get_score_of_product(self, product_object):
+        prices_median = self.get_prices_median()
+        true_discount = (prices_median - product_object.latest_price) / prices_median
+        trust_score = min(1.0, product_object.feedbacks / self.feedbacks_median) * (product_object.rating / 5)
+        score_of_product = true_discount * trust_score
+        return score_of_product
+
+
+
+    def get_prices_median(self):
+        list_prices = []
+        for elem in self.prices_duration:
+            list_prices.extend([elem[1] for i in range(int(elem[0]))])
+        return median(list_prices)
+
+
+
+
+    def get_duration_of_prices(self):
+        prices_duration = []
+        prices_duration.append((7, self.price_history[0][1]))#для первого
+        for i in range(1, len(self.price_history)-1):
+            price_duration = abs(self.price_history[i][0] - self.price_history[i-1][0]) / (60*60*24) #кол-во секунд в дне
+            prices_duration.append((price_duration, self.price_history[i][1]))
+        prices_duration.append((math.ceil(abs(datetime.timestamp(self.price_history[-1][0]) - self.price_history[-2][0]) / (60*60*24)), self.price_history[-1][1]))#для последнего
+        return prices_duration
+
+
+            
+
+    def get_feedbacks_median(self):
+        list_of_feedbacks = []
+        for product_object in self.dict_products_in_catalog.values():
+            list_of_feedbacks.append(product_object.feedbacks)
+        list_of_feedbacks = sorted((list_of_feedbacks))
+        return median(list_of_feedbacks)
+
+
+
+    def get_price_history(self, artikul):
+        '''Функция получения истории цены продукта'''
+        basket_num = TopBuilder.get_basket_num(artikul)
+        artikul = str(artikul)
+        if basket_num < 10:
+            basket_num = f'0{basket_num}'
+        price_history_searcher_url = ''
+        if len(artikul) == 9:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:4]}/part{artikul[:6]}/{artikul}/info/price-history.json'
+        elif len(artikul) == 9:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:3]}/part{artikul[:5]}/{artikul}/info/price-history.json'
+        elif len(artikul) == 7:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/info/price-history.json'
+        elif len(artikul) == 6:
+            price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:1]}/part{artikul[:3]}/{artikul}/info/price-history.json'
+        response = self.scraper.get(price_history_searcher_url, headers=self.headers)
+        json_data = json.loads(response.text)
+        return json_data
+    
+
+
+    @staticmethod
+    def get_basket_num(artikul: int):
+        '''Определение сервера, на котором находится история цены по js скрипту на wb'''
+        s = artikul // 100000  # Разделение артикулов на группы
+        if s <= 143:
+            return 1
+        elif s <= 287:
+            return 2
+        elif s <= 431:
+            return 3
+        elif s <= 719:
+            return 4
+        elif s <= 1007:
+            return 5
+        elif s <= 1061:
+            return 6
+        elif s <= 1115:
+            return 7
+        elif s <= 1169:
+            return 8
+        elif s <= 1313:
+            return 9
+        elif s <= 1601:
+            return 10
+        elif s <= 1655:
+            return 11
+        elif s <= 1919:
+            return 12
+        elif s <= 2045:
+            return 13
+        elif s <= 2189:
+            return 14
+        elif s <= 2405:
+            return 15
+        elif s <= 2621:
+            return 16
+        elif s <= 2837:
+            return 17
+        elif s <= 3053:
+            return 18
+        elif s <= 3269:
+            return 19
+        elif s <= 3485:
+            return 20
+        elif s <= 3701:
+            return 21
+        elif s <= 3917:
+            return 22
+        elif s <= 4133:
+            return 23
+        elif s <= 4349:
+            return 24
+        elif s <= 4565:
+            return 25
+        else:
+            return 26
+            
