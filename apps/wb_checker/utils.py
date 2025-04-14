@@ -10,7 +10,7 @@ from collections import Counter
 from apps.blog.models import Author
 from django.db.models import Prefetch
 from statistics import median
-import datetime
+from datetime import datetime
 
 
 def time_count(func):
@@ -275,6 +275,18 @@ class AvaliabilityUpdater:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 class TopBuilder:
     def __init__(self, dict_products_in_catalog):
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -297,6 +309,7 @@ class TopBuilder:
                 self.price_history = [(timezone.now(), product_object.latest_price)]
             if len(self.price_history) < 4:
                 product_object.score = 0
+                print(f'Не удалось получить информацию по товару: {product_object.url}')
             else:
                 self.prices_duration = self.get_duration_of_prices()
                 score_of_product = self.get_score_of_product(product_object)
@@ -340,6 +353,8 @@ class TopBuilder:
         for product_object in self.dict_products_in_catalog.values():
             list_of_feedbacks.append(product_object.feedbacks)
         list_of_feedbacks = sorted((list_of_feedbacks))
+        if median(list_of_feedbacks) == 0:
+            return sum(list_of_feedbacks) // len(list_of_feedbacks)
         return median(list_of_feedbacks)
 
 
