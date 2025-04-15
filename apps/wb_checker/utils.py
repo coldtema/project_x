@@ -368,7 +368,7 @@ class TopBuilder:
         price_history_searcher_url = ''
         if len(artikul) == 9:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:4]}/part{artikul[:6]}/{artikul}/info/price-history.json'
-        elif len(artikul) == 9:
+        elif len(artikul) == 8:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:3]}/part{artikul[:5]}/{artikul}/info/price-history.json'
         elif len(artikul) == 7:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/info/price-history.json'
