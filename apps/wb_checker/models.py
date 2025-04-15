@@ -165,6 +165,7 @@ class TopWBProduct(models.Model):
     feedbacks = models.IntegerField(verbose_name='Отзывы')
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
+    menu_category = models.ForeignKey(WBMenuCategory, on_delete=models.CASCADE, verbose_name='Категория продукта WB', null=True)
     url = models.URLField(verbose_name='URL')
     created = models.DateField(verbose_name='Время добавления топ продукта WB')
     source = models.CharField(max_length=8, choices=Source.choices)
