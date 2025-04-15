@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBDetailedInfo
+from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBDetailedInfo, WBMenuCategory
 from apps.blog.models import Author
 from .utils import time_count
 from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
@@ -53,6 +53,21 @@ def update_brands_categories(request):
         new_categories_list.append(WBCategory(wb_id=elem[0], url=elem[1]))
     WBCategory.objects.bulk_create(new_categories_list)
     return HttpResponseRedirect(reverse('all_price_list'))
+
+
+
+@utils.time_count
+@transaction.atomic
+def update_menu_categories(request):
+    '''Обновление категорий общего меню wb'''
+    all_categories_list = []
+    data = utils.update_menu_categories()
+    for elem in data:
+        all_categories_list.append(WBMenuCategory(wb_id=elem[0], main_url=elem[1], shard_key=elem[2]))
+    WBMenuCategory.objects.bulk_create(all_categories_list, ignore_conflicts=True)
+    return HttpResponseRedirect(reverse('all_price_list'))
+
+
 
 
 @utils.time_count
