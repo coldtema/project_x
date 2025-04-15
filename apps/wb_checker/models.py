@@ -12,13 +12,14 @@ class EnabledManager(models.Manager):
 class WBMenuCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя категории WB')
     shard_key = models.CharField(max_length=50, verbose_name='Ключ шардирования категории WB')
-    wb_id =  models.IntegerField(unique=True, verbose_name='WB ID категории WB') 
+    wb_id =  models.IntegerField(unique=True, verbose_name='WB ID категории WB')
+    query = models.CharField(max_length=50, verbose_name='Строка запроса к api')
     main_url = models.URLField(blank=True, verbose_name='URL категории')
     subs = models.ManyToManyField(Author, verbose_name='Подписчики категории')
 
     class Meta:
-        verbose_name = 'Продавец WB'
-        verbose_name_plural = 'Продавцы WB'
+        verbose_name = 'Категория меню WB'
+        verbose_name_plural = 'Категории меню WB'
         indexes = [
             models.Index(fields=['wb_id']),
             ]
