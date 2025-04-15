@@ -1,7 +1,7 @@
 import math
 import time
 from functools import wraps
-from .models import WBBrand, WBSeller, WBProduct, WBPrice, WBDetailedInfo
+from ..models import WBBrand, WBSeller, WBProduct, WBPrice, WBDetailedInfo
 import cloudscraper
 import json
 from django.utils import timezone
@@ -336,11 +336,11 @@ class TopBuilder:
                 self.price_history = [(timezone.now(), product_object.latest_price)]
             if len(self.price_history) < 4:
                 product_object.score = 0
-                print(f'Не удалось получить информацию по товару: {product_object.url}')
             else:
                 self.prices_duration = self.get_duration_of_prices()
                 score_of_product = self.get_score_of_product(product_object)
                 product_object.score = score_of_product
+        self.scraper.close()
         return self.dict_products_in_catalog
 
 
