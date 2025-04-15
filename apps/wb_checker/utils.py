@@ -57,13 +57,18 @@ def update_menu_categories():
         for elem in json_data:
             if type(elem) == dict and 'childs' not in elem.keys():
                 try:
-                    categories_list.append((elem['id'], elem['url'], elem['shard']))
+                    shard = elem['shard']
+                    if not shard: continue
+                    categories_list.append((elem['id'], elem['url'], shard, elem['name'], elem['query']))
                 except:
                     continue
             elif type(elem) == dict and 'childs' in elem.keys():
                 try:
-                    categories_list.append((elem['id'], elem['url'], elem['shard']))
+                    shard = elem['shard']
+                    if not shard: continue
+                    categories_list.append((elem['id'], elem['url'], shard, elem['name'], elem['query']))
                 except:
+                    wrapper(elem['childs'])
                     continue
                 wrapper(elem['childs'])
         return categories_list
@@ -376,7 +381,7 @@ class TopBuilder:
             list_of_feedbacks.append(product_object.feedbacks)
         list_of_feedbacks = sorted((list_of_feedbacks))
         if median(list_of_feedbacks) == 0:
-            return sum(list_of_feedbacks) // len(list_of_feedbacks)
+            return math.ceil(sum(list_of_feedbacks) / len(list_of_feedbacks))
         return median(list_of_feedbacks)
 
 
