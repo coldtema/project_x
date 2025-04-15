@@ -137,7 +137,7 @@ class TopWBProduct(models.Model):
         SELLER = 'SELLER', 'Продавец'
         CATEGORY = 'CATEGORY', 'Категория'
     name = models.CharField(max_length=100, verbose_name='Имя продукта WB')
-    artikul = models.IntegerField(unique=True, verbose_name='Артикул продукта WB')
+    artikul = models.IntegerField(verbose_name='Артикул продукта WB')
     score = models.FloatField(verbose_name='Внутренний рейтинг топ продукта WB')
     wb_cosh = models.BooleanField(default=True)
     latest_price = models.IntegerField(verbose_name='Цена топ продукта WB')
