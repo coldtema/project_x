@@ -73,7 +73,7 @@ class Product:
         '''Создание объекта бренда без лишнего обращения в БД'''
         return WBBrand(wb_id=brand_artikul,
                     name=brand_name,
-                    main_url=f'https://www.wildberries.ru/seller/{brand_artikul}')
+                    main_url=f'https://www.wildberries.ru/brands/{brand_artikul}')
     
 
 
