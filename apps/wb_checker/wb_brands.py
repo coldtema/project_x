@@ -48,6 +48,7 @@ class Brand:
             self.get_catalog_of_brand('rate')
             self.build_top_prods()
             self.add_all_to_db()
+        self.scraper.close()
     
 
 
@@ -72,17 +73,8 @@ class Brand:
         print('Вычисляю топ продуктов бренда по цене/отзывам/рейтигу...')
         self.list_brand_products_to_add_with_scores = list(top_builder.build_top().values())
         self.list_brand_products_to_add_with_scores = sorted(self.list_brand_products_to_add_with_scores, key=lambda x: x.score)[-20:]
-        if (len(self.list_brand_products_to_add_with_scores)) < 20:
-            print(f'Топ {self.list_brand_products_to_add_with_scores} продуктов бренда:')
-        else:
-            print(f'Топ 20 продуктов бренда:')
-        for product in self.list_brand_products_to_add_with_scores:
-            print(f'Продукт: {product.url}')
-            print(f'Цена: {product.latest_price}')
-            print(f'Рейтинг: {product.rating}')
-            print(f'Количество отзывов: {product.feedbacks}')
-            print(f'Внутренний скор: {product.score}')
-            print()
+        print(f'Длина топа: {len(self.list_brand_products_to_add_with_scores)}')
+        del top_builder
         
 
 
