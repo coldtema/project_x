@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBDetailedInfo, WBMenuCategory
 from apps.blog.models import Author
 from .utils import time_count
-from apps.wb_checker import wb_products, wb_brands, wb_sellers, wb_promos, wb_pickpoints
+from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers, wb_pickpoints
 from django.db import transaction
 import apps.wb_checker.utils as utils
 import re
@@ -92,6 +92,10 @@ def url_dispatcher(url, author_object):
         brand = wb_brands.Brand(url, author_object)
         brand.run()
         del brand
+    elif re.search(pattern=r'catalog\/\D+\/', string=url):
+        menu_category = wb_menu_categories.MenuCategory(url, author_object)
+        menu_category.run()
+        del menu_category
 
 
 
