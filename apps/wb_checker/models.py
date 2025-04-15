@@ -179,7 +179,7 @@ class TopWBProduct(models.Model):
             models.Index(fields=['artikul']),
             ]
         constraints = [
-            models.UniqueConstraint(fields=['artikul', 'source'], name='source_repetition')
+            models.UniqueConstraint(fields=['artikul', 'source', 'menu_category'], name='source_repetition')
         ]
     
     def __str__(self):
