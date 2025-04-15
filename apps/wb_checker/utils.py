@@ -27,7 +27,7 @@ def time_count(func):
 
 
 def update_categories():
-    '''Обновление базы категорий от самого wb (не кастомные бренда, а именно база wb)'''
+    '''Обновление базы категорий от самого wb которые используются внутри фильтров бренда и селлера'''
     categories_list = []
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
@@ -45,7 +45,29 @@ def update_categories():
     return wrapper(json_data)
 
 
-
+def update_menu_categories():
+    '''Обновление базы категорий меню от самого wb'''
+    categories_list = []
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/main-menu-ru-ru-v3.json'
+    response = scraper.get(final_url, headers=headers)
+    json_data = json.loads(response.text)
+    def wrapper(json_data):
+        for elem in json_data:
+            if type(elem) == dict and 'childs' not in elem.keys():
+                try:
+                    categories_list.append((elem['id'], elem['url'], elem['shard']))
+                except:
+                    continue
+            elif type(elem) == dict and 'childs' in elem.keys():
+                try:
+                    categories_list.append((elem['id'], elem['url'], elem['shard']))
+                except:
+                    continue
+                wrapper(elem['childs'])
+        return categories_list
+    return wrapper(json_data)
 
 
 
