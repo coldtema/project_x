@@ -69,7 +69,7 @@ class Brand:
 
     def build_top_prods(self):
         top_builder = TopBuilder(self.dict_brand_products_to_add)
-        print('Вычисляю топ продуктов по цене/отзывам/рейтигу...')
+        print('Вычисляю топ продуктов бренда по цене/отзывам/рейтигу...')
         self.list_brand_products_to_add_with_scores = list(top_builder.build_top().values())
         self.list_brand_products_to_add_with_scores = sorted(self.list_brand_products_to_add_with_scores, key=lambda x: x.score)[-20:]
         if (len(self.list_brand_products_to_add_with_scores)) < 20:
@@ -131,14 +131,6 @@ class Brand:
     def construct_brand_api_url(self):
         '''Построение url для доступа к api каталога бренда с 
         использованием всех фильтров, сортировок, категорий (путей кастомных)'''
-        clear_brand_url = re.sub(pattern=r'\#.+', repl='', string=self.brand_url)
-        addons = []
-        if '?' in clear_brand_url:
-            addons = clear_brand_url.split('?')[1]
-            addons = addons.split('&')
-        if addons: addons =f"&{'&'.join(list(filter(lambda x: True if 'page' not in x and 'sort' not in x and 'bid' not in x and 'erid' not in x else False, addons)))}"
-        else: addons = ''
-        #dest по топу товаров беру только на мск
         return f'https://catalog.wb.ru/brands/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={-1257786}&hide_dtype=13&lang=ru&spp=30&uclusters=3&page=1&brand={self.brand_artikul}&sort='
 
 
