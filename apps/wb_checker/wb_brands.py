@@ -159,9 +159,13 @@ class Brand:
         '''Создание объекта бренда без занесения в БД и знания,
           есть ли уже такой объект в базе (если есть и будет конфликт => 
           все пройдет правильно из-за уникального wb_id)'''
-        return WBBrand(wb_id=self.brand_artikul,
-                    name=self.brand_name,
-                    main_url=f'https://www.wildberries.ru/seller/{self.brand_artikul}')
+        brand_object, was_not_in_db = WBBrand.objects.get_or_create(wb_id=self.brand_artikul,
+                                                                    name=self.brand_name,
+                                                                    main_url=f'https://www.wildberries.ru/brands/{self.brand_artikul}')
+        if not was_not_in_db and brand_object.subs.exists():
+            self.dest_avaliable = False
+            self.author_object.wbbrand_set.add(brand_object)
+        return brand_object
         
 
 
