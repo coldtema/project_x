@@ -93,11 +93,8 @@ class Brand:
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
-        TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, update_conflicts=True, unique_fields=['artikul'], update_fields=['name']) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
+        TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         self.author_object.wbbrand_set.add(self.brand_object)
-        # self.brand_products_to_add.extend(self.product_repetitions_list) #опять же, связи добавятся, потому что у этих продуктов есть уникальное поле артикула + 
-        # self.author_object.enabled_connection.add(*self.brand_products_to_add) #many-to-many связь через автора (вставляется сразу все) - обязательно распаковать список
-        # self.author_object.save()
 
 
 
@@ -200,7 +197,8 @@ class Brand:
                 url=product_url,
                 brand=self.brand_object,
                 seller=seller_object,
-                created=datetime.today())
+                created=datetime.today(),
+                source='BRAND')
         new_product = {product_artikul: new_product}
         self.dict_brand_products_to_add.update(new_product)
         
