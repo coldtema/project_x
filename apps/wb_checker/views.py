@@ -63,7 +63,7 @@ def update_menu_categories(request):
     all_categories_list = []
     data = utils.update_menu_categories()
     for elem in data:
-        all_categories_list.append(WBMenuCategory(wb_id=elem[0], main_url=elem[1], shard_key=elem[2]))
+        all_categories_list.append(WBMenuCategory(wb_id=elem[0], main_url=elem[1], shard_key=elem[2], name=elem[3], query=elem[4]))
     WBMenuCategory.objects.bulk_create(all_categories_list, ignore_conflicts=True)
     return HttpResponseRedirect(reverse('all_price_list'))
 
@@ -109,12 +109,20 @@ def update_avaliability(request):
 
 @utils.time_count
 def load_test_data(request):
+    # author_object = Author.objects.get(pk=4)
+    # with open('wb_links.txt', 'r', encoding='utf-8') as file:
+    #     links_list = file.read().split('\n')
+    #     for link in links_list:
+    #         product = wb_products.Product(link, author_object)
+    #         product.get_product_info()
+    #         del product
+    all_cats = WBMenuCategory.objects.all()
     author_object = Author.objects.get(pk=4)
-    with open('wb_links.txt', 'r', encoding='utf-8') as file:
-        links_list = file.read().split('\n')
-        for link in links_list:
-            product = wb_products.Product(link, author_object)
-            product.get_product_info()
-            del product
+    for elem in all_cats:
+        url = 'https://www.wildberries.ru' + elem.main_url
+        if elem.shard_key != 'blackhole':
+            menu_category = wb_menu_categories.MenuCategory(url, author_object)
+            menu_category.run()
+            del menu_category
             
 
