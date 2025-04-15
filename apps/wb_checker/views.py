@@ -4,11 +4,13 @@ from .forms import WBProductForm, WBDestForm
 from django.http import HttpResponseRedirect, HttpResponse
 from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBCategory, WBDetailedInfo, WBMenuCategory
 from apps.blog.models import Author
-from .utils import time_count
+from .utils.utils import time_count
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers, wb_pickpoints
 from django.db import transaction
-import apps.wb_checker.utils as utils
+import apps.wb_checker.utils.utils as utils
 import re
+import gc
+import time
 
 
 def all_price_list(request):

@@ -5,7 +5,7 @@ import re
 import json
 import cloudscraper
 from datetime import datetime
-import apps.wb_checker.utils as utils
+import apps.wb_checker.utils.utils as utils
 from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, TopWBProduct, WBMenuCategory
 from apps.blog.models import Author
 from django.utils import timezone
@@ -14,7 +14,7 @@ import time
 from functools import wraps
 from django.db import transaction
 from statistics import median
-from apps.wb_checker.utils import TopBuilder
+from apps.wb_checker.utils.utils import TopBuilder
 
 
 
@@ -120,7 +120,6 @@ class MenuCategory:
         '''Получение количества продуктов для парсинга + 
         имя бренда (для создания объекта бренда при его отсутствии в БД)'''
         category_api_url = self.category_api_url  + 'popular'
-        print(category_api_url)
         response = self.scraper.get(category_api_url, headers=self.headers)
         json_data = json.loads(response.text)
         try:

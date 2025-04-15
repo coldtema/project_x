@@ -5,7 +5,7 @@ import re
 import json
 import cloudscraper
 from datetime import datetime
-import apps.wb_checker.utils as utils
+import apps.wb_checker.utils.utils as utils
 from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, TopWBProduct
 from apps.blog.models import Author
 from django.utils import timezone
@@ -14,7 +14,7 @@ import time
 from functools import wraps
 from django.db import transaction
 from statistics import median
-from apps.wb_checker.utils import TopBuilder
+from apps.wb_checker.utils.utils import TopBuilder
 
 
 

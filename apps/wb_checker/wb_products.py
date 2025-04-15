@@ -6,12 +6,12 @@ import re
 import json
 import cloudscraper
 from datetime import datetime
-import apps.wb_checker.utils as utils
+import apps.wb_checker.utils.utils as utils
 from .models import WBProduct, WBSeller, WBBrand, WBPrice, WBDetailedInfo
 from apps.blog.models import Author
 from django.utils import timezone
 import math
-from .utils import time_count
+from .utils.utils import time_count
 from django.db import transaction
 
 
@@ -127,98 +127,3 @@ class Product:
             self.author_object.save()
         else:
             print('Товар уже есть в отслеживании')
-    
-
-
-    # @staticmethod
-    # def get_basket_num(artikul: int):
-    #     '''Определение сервера, на котором находится история цены по js скрипту на wb'''
-    #     s = artikul // 100000  # Разделение артикулов на группы
-    #     if s <= 143:
-    #         return 1
-    #     elif s <= 287:
-    #         return 2
-    #     elif s <= 431:
-    #         return 3
-    #     elif s <= 719:
-    #         return 4
-    #     elif s <= 1007:
-    #         return 5
-    #     elif s <= 1061:
-    #         return 6
-    #     elif s <= 1115:
-    #         return 7
-    #     elif s <= 1169:
-    #         return 8
-    #     elif s <= 1313:
-    #         return 9
-    #     elif s <= 1601:
-    #         return 10
-    #     elif s <= 1655:
-    #         return 11
-    #     elif s <= 1919:
-    #         return 12
-    #     elif s <= 2045:
-    #         return 13
-    #     elif s <= 2189:
-    #         return 14
-    #     elif s <= 2405:
-    #         return 15
-    #     elif s <= 2621:
-    #         return 16
-    #     elif s <= 2837:
-    #         return 17
-    #     elif s <= 3053:
-    #         return 18
-    #     elif s <= 3269:
-    #         return 19
-    #     elif s <= 3485:
-    #         return 20
-    #     elif s <= 3701:
-    #         return 21
-    #     elif s <= 3917:
-    #         return 22
-    #     elif s <= 4133:
-    #         return 23
-    #     elif s <= 4349:
-    #         return 24
-    #     elif s <= 4565:
-    #         return 25
-    #     else:
-    #         return 26
-
-
-
-    # @time_count
-    # def get_repetition_or_run(self):
-    #     '''Проверка на повторки среди считываемых продуктов и продуктов бренда, которые уже существуют в БД'''
-
-    #     repeated_product = WBProduct.objects.filter(artikul=self.artikul) #посмотреть, как сделать так, чтобы get - функция не выдавала исключения
-    #     if repeated_product and len(repeated_product) == 1: #если нашел повторюшку
-    #         repeated_product = repeated_product[0]
-    #         authors_list = repeated_product.enabled_connection.all() #проверяет, нет ли уже того же автора у этой повторюшки
-    #         for elem in authors_list: #выводит ворнинг, если такой же автор
-    #             if elem.id == self.author_id:
-    #                 print('Товар уже есть в отслеживании')
-    #                 return
-    #             if elem.dest_id == self.author_object.dest_id:
-    #                 repeated_product.enabled_connection.add(Author.objects.get(id=self.author_id)) #если не нашел автора и не выкинуло из функции, то добавляет many-to-many связь (попробовать написать через автора)
-    #                 return
-    #     self.get_product_info()
-
-    # def get_price_history(self):
-    #     '''Функция получения истории цены продукта'''
-    #     basket_num = Product.get_basket_num(int(self.artikul))
-    #     if basket_num < 10:
-    #         basket_num = f'0{basket_num}'
-    #     if len(self.artikul) == 9:
-    #         price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:4]}/part{self.artikul[:6]}/{self.artikul}/info/price-history.json'
-    #     elif len(self.artikul) == 9:
-    #         price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:3]}/part{self.artikul[:5]}/{self.artikul}/info/price-history.json'
-    #     elif len(self.artikul) == 7:
-    #         price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:2]}/part{self.artikul[:4]}/{self.artikul}/info/price-history.json'
-    #     elif len(self.artikul) == 6:
-    #         price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{self.artikul[:1]}/part{self.artikul[:3]}/{self.artikul}/info/price-history.json'
-    #     response = self.scraper.get(price_history_searcher_url, headers=self.headers)
-    #     json_data = json.loads(response.text)
-    #     return json_data

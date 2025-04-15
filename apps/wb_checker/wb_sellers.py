@@ -2,13 +2,13 @@ import re
 import json
 import time
 import cloudscraper
-import apps.wb_checker.utils as utils
+import apps.wb_checker.utils.utils as utils
 from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller, TopWBProduct
 from apps.blog.models import Author
 from django.utils import timezone
 import math
 from django.db import transaction
-from apps.wb_checker.utils import TopBuilder
+from apps.wb_checker.utils.utils import TopBuilder
 from datetime import datetime
 
 
