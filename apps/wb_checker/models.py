@@ -5,6 +5,26 @@ from django.utils import timezone
 class EnabledManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(enabled=True)
+    
+
+
+
+class WBMenuCategory(models.Model):
+    name = models.CharField(max_length=100, verbose_name='Имя категории WB')
+    shard_key = models.CharField(max_length=50, verbose_name='Ключ шардирования категории WB')
+    wb_id =  models.IntegerField(unique=True, verbose_name='WB ID категории WB') 
+    main_url = models.URLField(blank=True, verbose_name='URL категории')
+    subs = models.ManyToManyField(Author, verbose_name='Подписчики категории')
+
+    class Meta:
+        verbose_name = 'Продавец WB'
+        verbose_name_plural = 'Продавцы WB'
+        indexes = [
+            models.Index(fields=['wb_id']),
+            ]
+
+    def __str__(self):
+        return self.name
 
     
 
@@ -162,3 +182,6 @@ class TopWBProduct(models.Model):
     
     def __str__(self):
         return str(self.artikul)
+    
+
+
