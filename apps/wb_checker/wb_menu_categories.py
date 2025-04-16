@@ -1,20 +1,10 @@
-import os
-import psutil
-from requests import request
 import re
 import json
 import cloudscraper
 from datetime import datetime
-import apps.wb_checker.utils.utils as utils
-from .models import WBProduct, WBSeller, WBPrice, WBCategory, WBBrand, TopWBProduct, WBMenuCategory
-from apps.blog.models import Author
-from django.utils import timezone
-import math
-import time
-from functools import wraps
 from django.db import transaction
-from statistics import median
-from apps.wb_checker.utils.utils import TopBuilder
+from apps.wb_checker.utils.top_prods import TopBuilder
+from .models import WBSeller, WBBrand, TopWBProduct, WBMenuCategory
 
 
 
@@ -38,7 +28,6 @@ class MenuCategory:
 
 
 
-    @utils.time_count
     def run(self):
         '''Запуск процесса парсинга'''
         if self.dest_avaliable:
@@ -78,7 +67,6 @@ class MenuCategory:
 
 
     @transaction.atomic
-    @utils.time_count
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         WBBrand.objects.bulk_create(self.dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])

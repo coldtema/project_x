@@ -1,15 +1,10 @@
 import re
 import json
-import time
 import cloudscraper
-import apps.wb_checker.utils.utils as utils
-from .models import WBProduct, WBBrand, WBPrice, WBCategory, WBSeller, TopWBProduct
-from apps.blog.models import Author
-from django.utils import timezone
-import math
 from django.db import transaction
-from apps.wb_checker.utils.utils import TopBuilder
 from datetime import datetime
+from apps.wb_checker.utils.top_prods import TopBuilder
+from .models import WBBrand, WBSeller, TopWBProduct
 
 
 
@@ -19,7 +14,7 @@ class Seller:
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
-        self.author_id = author_object.id #не стал везде в коде менять, оставил автор айди (просто взял из объекта)
+        self.author_id = author_object.id
         self.dest_avaliable = True
         self.seller_url = self.check_url_and_send_correct(raw_seller_url)
         self.seller_artikul = self.get_seller_artikul()
@@ -32,7 +27,6 @@ class Seller:
             self.list_seller_products_to_add_with_scores = []
 
 
-    @utils.time_count
     def run(self):
         '''Функция запуска процесса парсинга'''
         if self.dest_avaliable:
@@ -44,7 +38,7 @@ class Seller:
         self.scraper.close()
 
 
-    @utils.time_count
+
     def get_catalog_of_seller(self, sorting):
         '''Функция, которая:
         1. Парсит товар
@@ -73,7 +67,6 @@ class Seller:
 
 
 
-    @utils.time_count
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
@@ -122,7 +115,7 @@ class Seller:
             return 0, None
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
         print(f'Товары обнаружены! Продавец - {seller_name}. Количество - {total_products}')
-        print(f'Доступных слотов для отслеживания продуктов: {self.author_object.slots}')
+        print(f'Выполняется анализ топовых продуктов....')   
         return total_products, seller_name
     
 

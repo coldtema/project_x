@@ -1,17 +1,8 @@
-import os
-import time
-import psutil
-from requests import request
 import re
 import json
 import cloudscraper
-from datetime import datetime
-import apps.wb_checker.utils.utils as utils
 from .models import WBProduct, WBSeller, WBBrand, WBPrice, WBDetailedInfo
-from apps.blog.models import Author
 from django.utils import timezone
-import math
-from .utils.utils import time_count
 from django.db import transaction
 
 
@@ -28,7 +19,9 @@ class Product:
         self.product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
         self.product_name, self.product_size, self.product_volume, self.product_price = self.get_product_detailed_info()
 
-    @utils.time_count
+
+
+
     def get_product_info(self):
         '''Функция сборки продукта'''
         if self.product_volume == 0: enabled = False 
@@ -106,7 +99,8 @@ class Product:
             break
         return name, user_size, sizes_dict[user_size][0], sizes_dict[user_size][1]
     
-    @utils.time_count
+
+
     @transaction.atomic
     def add_product_to_db(self, new_product, new_detailed_info, new_price):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
