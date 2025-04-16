@@ -26,6 +26,7 @@ class Brand:
             self.dict_brand_products_to_add = dict()
             self.dict_sellers_to_add = dict()
             self.list_brand_products_to_add_with_scores = []
+            self.final_dict_sellers_to_add = dict()
 
 
 
@@ -60,10 +61,10 @@ class Brand:
         top_builder = TopBuilder(self.dict_brand_products_to_add)
         print('Вычисляю топ продуктов бренда по цене/отзывам/рейтигу...')
         self.list_brand_products_to_add_with_scores = list(top_builder.build_top().values())
-        self.list_brand_products_to_add_with_scores = sorted(self.list_brand_products_to_add_with_scores, key=lambda x: x.score)[-20:]
-        print(f'Длина топа: {len(self.list_brand_products_to_add_with_scores)}')
+        self.list_brand_products_to_add_with_scores = sorted(self.list_brand_products_to_add_with_scores, key=lambda x: x.score)[-20:] 
         del top_builder
-        
+        for product in self.list_brand_products_to_add_with_scores:
+            self.final_dict_sellers_to_add.setdefault(product.seller.wb_id, self.dict_sellers_to_add[product.seller.wb_id])
 
 
 
@@ -71,7 +72,7 @@ class Brand:
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
-        WBSeller.objects.bulk_create(self.dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBSeller.objects.bulk_create(self.final_dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         self.author_object.wbbrand_set.add(self.brand_object)
 

@@ -24,6 +24,8 @@ class MenuCategory:
             self.dict_category_products_to_add = dict()
             self.dict_sellers_to_add = dict()
             self.dict_brands_to_add = dict()
+            self.final_dict_brands_to_add = dict()
+            self.final_dict_sellers_to_add = dict()
             self.list_category_products_to_add_with_scores = []
 
 
@@ -60,17 +62,19 @@ class MenuCategory:
         print('Вычисляю топ продуктов категории по цене/отзывам/рейтигу...')
         self.list_category_products_to_add_with_scores = list(top_builder.build_top().values())
         self.list_category_products_to_add_with_scores = sorted(self.list_category_products_to_add_with_scores, key=lambda x: x.score)[-20:]
-        print(f'Длина топа: {len(self.list_category_products_to_add_with_scores)}')
-        del top_builder
-        
+        del top_builder 
+        for product in self.list_category_products_to_add_with_scores:
+            self.final_dict_sellers_to_add.setdefault(product.seller.wb_id, self.dict_sellers_to_add[product.seller.wb_id])
+            self.final_dict_brands_to_add.setdefault(product.brand.wb_id, self.dict_brands_to_add[product.brand.wb_id])
+
 
 
 
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
-        WBBrand.objects.bulk_create(self.dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
-        WBSeller.objects.bulk_create(self.dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBBrand.objects.bulk_create(self.final_dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBSeller.objects.bulk_create(self.final_dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_category_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         self.author_object.wbmenucategory_set.add(self.category_object)
 

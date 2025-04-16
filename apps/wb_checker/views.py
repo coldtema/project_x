@@ -31,11 +31,11 @@ def all_price_list(request):
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
-    # WBPrice.objects.all().delete()
-    # WBProduct.objects.all().delete()
-    # WBSeller.objects.all().delete()
-    # WBBrand.objects.all().delete()
-    # WBDetailedInfo.objects.all().delete()
+    WBPrice.objects.all().delete()
+    WBProduct.objects.all().delete()
+    WBSeller.objects.all().delete()
+    WBBrand.objects.all().delete()
+    WBDetailedInfo.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 

@@ -1,6 +1,7 @@
 import re
 import json
 import cloudscraper
+import copy
 from django.db import transaction
 from datetime import datetime
 from apps.wb_checker.utils.top_prods import TopBuilder
@@ -25,6 +26,7 @@ class Seller:
             self.dict_brands_to_add = dict()
             self.dict_seller_products_to_add = dict()
             self.list_seller_products_to_add_with_scores = []
+            self.final_dict_brands_to_add = dict()
 
 
     def run(self):
@@ -59,19 +61,16 @@ class Seller:
         print('Вычисляю топ продуктов продавца по цене/отзывам/рейтигу...')
         self.list_seller_products_to_add_with_scores = list(top_builder.build_top().values())
         self.list_seller_products_to_add_with_scores = sorted(self.list_seller_products_to_add_with_scores, key=lambda x: x.score)[-20:]
-        print(f'Длина топа: {len(self.list_seller_products_to_add_with_scores)}')
         del top_builder
-
-
-
-
+        for product in self.list_seller_products_to_add_with_scores:
+            self.final_dict_brands_to_add.setdefault(product.brand.wb_id, self.dict_brands_to_add[product.brand.wb_id])
 
 
     @transaction.atomic
     def add_all_to_db(self):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         WBSeller.objects.bulk_create([self.seller_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
-        WBBrand.objects.bulk_create(self.dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
+        WBBrand.objects.bulk_create(self.final_dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_seller_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
         self.author_object.wbseller_set.add(self.seller_object)
 
