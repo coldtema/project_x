@@ -9,6 +9,8 @@ from .models import WBSeller, WBBrand, TopWBProduct, WBMenuCategory
 
 
 class MenuCategory:
+    '''Класс для формирования топовых продуктов из любой категории wb (~2500)'''
+    
     def __init__(self, raw_category_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -31,7 +33,7 @@ class MenuCategory:
 
 
     def run(self):
-        '''Запуск процесса парсинга'''
+        '''Запуск процесса построения топа продуктов'''
         if self.dest_avaliable:
             self.get_catalog_of_category('popular')
             self.get_catalog_of_category('benefit')
@@ -43,11 +45,9 @@ class MenuCategory:
 
 
     def get_catalog_of_category(self, sorting):
-        '''Функция, которая:
-        1. Парсит товар
-        2. Проверяет его на повторку
-        3. Проверяет наличие бренда (откладывает новые в кэш)
-        4. Добавляет в кэш новые объекты цены и продукта, если они прошли проверку на повторки'''
+        '''Функция, которая берет первую страницу категории по разным сортировкам, 
+        достает оттуда информацию о товарах, и вызывает функцию добавления этих 
+        товаров в список для построения будущего топа'''
         category_api_url = self.category_api_url + sorting
         response = self.scraper.get(category_api_url, headers=self.headers)
         json_data = json.loads(response.text)
@@ -58,6 +58,7 @@ class MenuCategory:
 
 
     def build_top_prods(self):
+        '''Построение финального топа товаров с использованием класса TopBuilder'''
         top_builder = TopBuilder(self.dict_category_products_to_add)
         print('Вычисляю топ продуктов категории по цене/отзывам/рейтигу...')
         self.list_category_products_to_add_with_scores = list(top_builder.build_top().values())
@@ -81,7 +82,8 @@ class MenuCategory:
 
 
     def get_category_object(self):
-        ''''''
+        '''Получение объекта категории из БД, 
+        и оформление подписки на нее пользователем'''
         clear_category_url = self.category_url.split('?')[0].split('#')[0]
         category_slug_name = re.search(r'(catalog\/)(.+)', clear_category_url).group(2)
         category_slug_name = '/catalog/' + category_slug_name
@@ -94,14 +96,13 @@ class MenuCategory:
 
 
     def construct_category_api_url(self):
-        ''''''
+        '''Построение url для доступа к api каталога категории'''
         return f'https://catalog.wb.ru/catalog/{self.category_object.shard_key}/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=123589280&hide_dtype=13&lang=ru&page=1&spp=30&{self.category_object.query}&uclusters=3&sort='
 
 
 
     def get_total_products_in_catalog(self):
-        '''Получение количества продуктов для парсинга + 
-        имя бренда (для создания объекта бренда при его отсутствии в БД)'''
+        '''Получение количества продуктов для парсинга категории'''
         category_api_url = self.category_api_url  + 'popular'
         response = self.scraper.get(category_api_url, headers=self.headers)
         json_data = json.loads(response.text)
@@ -118,7 +119,7 @@ class MenuCategory:
 
 
     def build_raw_brand_object(self, brand_artikul, brand_name):
-        '''Проверка бренда на существование в БД + откладывание его в кэш при отсутствии'''
+        '''Проверка бренда (который фигурировал внутри категории) на существование в БД + откладывание его в кэш при отсутствии'''
         if brand_artikul == 0:
             brand_object = WBBrand(name='Без бренда',
                     wb_id=brand_artikul,
@@ -133,7 +134,7 @@ class MenuCategory:
 
 
     def build_raw_seller_object(self, seller_artikul, seller_name):
-        '''Проверка продавца на существование в БД + откладывание его в кэш при отсутствии'''
+        '''Проверка продавца (который фигурировал внутри категории) на существование в БД + откладывание его в кэш при отсутствии'''
         seller_object = WBSeller(name=seller_name,
                     wb_id=seller_artikul,
                     main_url=f'https://www.wildberries.ru/seller/{seller_artikul}') #баг только с самим вб
@@ -171,10 +172,3 @@ class MenuCategory:
                 source='CATEGORY')
         new_product = {product_artikul: new_product}
         self.dict_category_products_to_add.update(new_product)
-        
-            
-
-
-
-#&cat=130207&sort=popular
-#&sort=popular&subject=3488
