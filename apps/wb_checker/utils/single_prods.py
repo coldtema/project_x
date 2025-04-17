@@ -1,3 +1,5 @@
+import math
+import time
 import cloudscraper
 import json
 from django.utils import timezone
@@ -12,30 +14,34 @@ from ..models import WBPrice, WBDetailedInfo
 class PriceUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.all_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
-                                                 queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))
+        self.batch_size = 50
+        self.len_all_authors_list = Author.objects.all().count()
+        self.batched_authors_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.new_prices = []
         self.updated_details = []
         self.test_counter = 0
         self.current_detail_to_check = None
-
-
+    
     def run(self):
-        '''Запуск скрипта обновления'''
-        self.update_prices()     
-        self.save_update_prices()
+        for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
+            self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
+                                                                            queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
+            self.update_prices()
+            self.save_update_prices()
+            self.new_prices = []
+            self.updated_details = []
         print(f'Товаров проверено:{self.test_counter}')
 
 
     @time_count
     def update_prices(self):
         '''Обновление цен продуктов, которые есть наличии'''
-        for i in range(len(self.all_authors_list)):
-            author_object = self.all_authors_list[i]
+        for i in range(len(self.batched_authors_list)):
+            author_object = self.batched_authors_list[i]
             detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
-            details_of_prods_to_check = self.all_authors_list[i].wbdetailedinfo_set.all()
+            details_of_prods_to_check = self.batched_authors_list[i].wbdetailedinfo_set.all()
             if len(details_of_prods_to_check) == 0:
                 continue
             final_url = detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
@@ -104,7 +110,8 @@ class PriceUpdater:
 
     def updating_plus_notification(self, price_of_detail, volume): 
         flag_change = False           
-        if self.current_detail_to_check.latest_price != price_of_detail:
+        if self.current_detail_to_check.latest_price != price_of_detail: #and abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price > 0.03: #сделать потом поле у пользователя (на сколько отслеживаем цену)
+            # print(abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price)
             print(f'Цена изменилась!\nПродукт: {self.current_detail_to_check.product.url}\nБыло: {self.current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
             flag_change = True
             self.current_detail_to_check.latest_price = price_of_detail
