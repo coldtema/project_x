@@ -1,7 +1,6 @@
 import re
 import json
 import cloudscraper
-import copy
 from django.db import transaction
 from datetime import datetime
 from apps.wb_checker.utils.top_prods import TopBuilder
@@ -10,14 +9,16 @@ from .models import WBBrand, WBSeller, TopWBProduct
 
 
 class Seller:
-    def __init__(self, raw_seller_url, author_object):
+    '''Класс для формирования списка топовых продуктов от определенного селлера с вб'''
+
+    def __init__(self, seller_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id
         self.dest_avaliable = True
-        self.seller_url = self.check_url_and_send_correct(raw_seller_url)
+        self.seller_url = seller_url
         self.seller_artikul = self.get_seller_artikul()
         self.seller_api_url = self.construct_seller_api_url()
         self.total_products, self.seller_name = self.get_total_products_and_name_seller_in_catalog()
@@ -30,7 +31,7 @@ class Seller:
 
 
     def run(self):
-        '''Функция запуска процесса парсинга'''
+        '''Запуск процесса построения топа продуктов'''
         if self.dest_avaliable:
             self.get_catalog_of_seller('popular')
             self.get_catalog_of_seller('benefit')
@@ -42,13 +43,11 @@ class Seller:
 
 
     def get_catalog_of_seller(self, sorting):
-        '''Функция, которая:
-        1. Парсит товар
-        2. Проверяет его на повторку
-        3. Проверяет наличие бренда (откладывает новые в кэш)
-        4. Добавляет в кэш новые объекты цены и продукта, если они прошли проверку на повторки'''
+        '''Функция, которая берет первую страницу селлера по разным сортировкам, 
+        достает оттуда информацию о товарах, и вызывает функцию добавления этих 
+        товаров в список для построения будущего топа'''
         seller_api_url = self.seller_api_url + sorting
-        response = self.scraper.get(self.seller_api_url, headers=self.headers)
+        response = self.scraper.get(seller_api_url, headers=self.headers)
         json_data = json.loads(response.text)
         products_on_page = json_data['data']['products']
         for i in range(len(products_on_page)):
@@ -57,6 +56,7 @@ class Seller:
 
 
     def build_top_prods(self):
+        '''Построение финального топа товаров с использованием класса TopBuilder'''
         top_builder = TopBuilder(self.dict_seller_products_to_add)
         print('Вычисляю топ продуктов продавца по цене/отзывам/рейтигу...')
         self.list_seller_products_to_add_with_scores = list(top_builder.build_top().values())
@@ -93,8 +93,7 @@ class Seller:
 
 
     def construct_seller_api_url(self):
-        '''Построение url для доступа к api каталога селлера с 
-        использованием всех фильтров, сортировок, категорий (путей кастомных)'''
+        '''Построение url для доступа к api каталога селлера'''
         return f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={self.author_object.dest_id}&hide_dtype=13&lang=ru&spp=30&uclusters=0&page=1&supplier={self.seller_artikul}&sort='
 
 
@@ -120,9 +119,9 @@ class Seller:
 
 
     def build_raw_seller_object(self):
-        '''Создание объекта селлера без занесения в БД и знания,
-          есть ли уже такой объект в базе (если есть и будет конфликт => 
-          все пройдет правильно из-за уникального wb_id)'''
+        '''Создание объекта селлера с занесением в БД, и, 
+        если селлер был в базе, и, если у него были подписчики, 
+        то просто создается подписка на него у пользователя, вместо конструирования топа'''
         seller_object, was_not_in_db = WBSeller.objects.get_or_create(wb_id=self.seller_artikul,
                                                                       name=self.seller_name,
                                                                       main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
@@ -131,6 +130,8 @@ class Seller:
             self.dest_avaliable = False
             self.author_object.wbseller_set.add(seller_object)
         return seller_object
+
+
 
     def build_raw_brand_object(self, brand_artikul, brand_name):
         '''Проверка бренда на существование в БД + откладывание его в кэш при отсутствии'''
@@ -172,16 +173,4 @@ class Seller:
                 source='SELLER')
         new_product = {product_artikul: new_product}
         self.dict_seller_products_to_add.update(new_product)
-
-
-
-    def check_url_and_send_correct(self, raw_url):
-        '''Проверка url, отправленного пользователем, на предмет 
-        парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
-        if 'seller' in raw_url:
-            return raw_url
-        else:
-            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_url).group(1)}', headers=self.headers)
-            json_data = json.loads(response.text)
-            return f'https://www.wildberries.ru/seller/{json_data['data']['products'][0]['supplierId']}'
         
