@@ -9,6 +9,8 @@ from statistics import median
 from datetime import datetime
 from django.utils import timezone
 from apps.wb_checker.utils.general_utils import time_count
+from apps.wb_checker.models import TopWBProduct
+from django.db import transaction
 
 
 class TopBuilder:
@@ -187,8 +189,65 @@ async def fetch_all_histories(artikuls_urls):
 
 
 
-
-
 class UpdaterInfoOfTop:
     def __init__(self):
-        pass
+        '''Инициализация необходимых атрибутов'''
+        self.batch_size = 100
+        self.len_all_top_wb_products_list = TopWBProduct.objects.all().count()
+        self.batched_top_wb_products_list = []
+        self.scraper = cloudscraper.create_scraper()
+        self.headers = {"User-Agent": "Mozilla/5.0"}
+        self.test_counter = 0
+        self.updated_top_prods = []
+        self.top_prods_artikuls_to_delete = []
+    
+    def run(self):
+        for i in range(math.ceil(self.len_all_top_wb_products_list / self.batch_size)):
+            self.batched_top_wb_products_list = TopWBProduct.objects.all()[i*self.batch_size:(i+1)*self.batch_size]
+            self.update_prices()
+            # self.save_update_prices()
+            self.updated_top_prods = []
+            self.top_prods_artikuls_to_delete = []
+            print(f'Товаров проверено:{self.test_counter}')
+
+
+    @time_count
+    def update_prices(self):
+        '''Обновление цен продуктов, которые есть наличии'''
+        top_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={123589280}&spp=30&ab_testing=false&lang=ru&nm='
+        if len(self.batched_top_wb_products_list) == 0:
+            return
+        final_url = top_product_url_api + ';'.join(map(lambda x: str(x.artikul), self.batched_top_wb_products_list))
+        response = self.scraper.get(final_url, headers=self.headers)
+        json_data = json.loads(response.text)
+        products_on_page = json_data['data']['products']
+
+        products_on_page = sorted(products_on_page, key=lambda x: x['id'])
+        self.batched_top_wb_products_list = sorted(self.batched_top_wb_products_list, key=lambda x: x.artikul)
+
+        for i in range(len(products_on_page)):
+            self.test_counter += 1
+            if products_on_page[i]['id'] == self.batched_top_wb_products_list[i].artikul:
+                if len(products_on_page[i]['sizes'][0]['stocks']) == 0:
+                    self.top_prods_artikuls_to_delete.append(self.batched_top_wb_products_list[i].pk)
+                else:
+                    flag_change = False 
+                    if products_on_page[i]['sizes'][0]['price']['product'] // 100 != self.batched_top_wb_products_list[i].latest_price:
+                        self.batched_top_wb_products_list[i].latest_price = products_on_page[i]['sizes'][0]['price']['product'] // 100
+                        flag_change = True
+                    if products_on_page[i]['feedbacks'] != self.batched_top_wb_products_list[i].feedbacks:
+                        self.batched_top_wb_products_list[i].feedbacks = products_on_page[i]['feedbacks']
+                        flag_change = True
+                    if flag_change == True:
+                        self.updated_top_prods.append(self.batched_top_wb_products_list[i])
+            else:      
+                print(self.batched_top_wb_products_list[i].pk) 
+                print(products_on_page[i]['id'])
+                time.sleep(10)
+
+
+    @transaction.atomic
+    def save_update_prices(self):
+        '''Занесение в БД обновления наличия'''
+        TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks', 'enabled'])
+        TopWBProduct.objects.filter(pk__in=self.top_prods_artikuls_to_delete).delete()
