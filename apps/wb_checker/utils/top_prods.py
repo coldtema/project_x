@@ -192,28 +192,25 @@ async def fetch_all_histories(artikuls_urls):
 class UpdaterInfoOfTop:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.batch_size = 100
+        self.batch_size = 200
         self.len_all_top_wb_products_list = TopWBProduct.objects.all().count()
         self.batched_top_wb_products_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
-        self.test_counter = 0
         self.updated_top_prods = []
         self.top_prods_artikuls_to_delete = []
     
     def run(self):
+        '''Запуск процесса обновления + разбиение всех продуктов на батчи'''
         for i in range(math.ceil(self.len_all_top_wb_products_list / self.batch_size)):
             self.batched_top_wb_products_list = TopWBProduct.objects.all()[i*self.batch_size:(i+1)*self.batch_size]
-            self.update_prices()
-            # self.save_update_prices()
-            self.updated_top_prods = []
-            self.top_prods_artikuls_to_delete = []
-            print(f'Товаров проверено:{self.test_counter}')
+            self.get_new_info()
+        self.save_update_prices()
 
 
-    @time_count
-    def update_prices(self):
-        '''Обновление цен продуктов, которые есть наличии'''
+    def get_new_info(self):
+        '''Получение новой информации из запроса к api wb + 
+        формирование правильных коллекций для обновления информации'''
         top_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={123589280}&spp=30&ab_testing=false&lang=ru&nm='
         if len(self.batched_top_wb_products_list) == 0:
             return
@@ -222,11 +219,27 @@ class UpdaterInfoOfTop:
         json_data = json.loads(response.text)
         products_on_page = json_data['data']['products']
 
+        if len(products_on_page) != len(self.batched_top_wb_products_list):
+            self.delete_not_existing_prods(products_on_page)
+
         products_on_page = sorted(products_on_page, key=lambda x: x['id'])
         self.batched_top_wb_products_list = sorted(self.batched_top_wb_products_list, key=lambda x: x.artikul)
 
+        self.update_top_wb_product_info(products_on_page)
+            
+
+    def delete_not_existing_prods(self, products_on_page):
+        '''Удаление товаров из списка временного, которые вообще
+          удалились с сайта wb и не отображаются в api details'''
+        prods_artikuls_to_delete = set(map(lambda x: x.artikul, self.batched_top_wb_products_list)) - set(map(lambda x: x['id'], products_on_page))
+        self.top_prods_artikuls_to_delete.extend(prods_artikuls_to_delete)
+        self.batched_top_wb_products_list = list(filter(lambda x: True if x.artikul not in prods_artikuls_to_delete else False, self.batched_top_wb_products_list))
+
+
+
+    def update_top_wb_product_info(self, products_on_page):
+        '''Обновление информации о продуктах с одной батчевой страницы'''
         for i in range(len(products_on_page)):
-            self.test_counter += 1
             if products_on_page[i]['id'] == self.batched_top_wb_products_list[i].artikul:
                 if len(products_on_page[i]['sizes'][0]['stocks']) == 0:
                     self.top_prods_artikuls_to_delete.append(self.batched_top_wb_products_list[i].pk)
@@ -240,14 +253,13 @@ class UpdaterInfoOfTop:
                         flag_change = True
                     if flag_change == True:
                         self.updated_top_prods.append(self.batched_top_wb_products_list[i])
-            else:      
-                print(self.batched_top_wb_products_list[i].pk) 
-                print(products_on_page[i]['id'])
-                time.sleep(10)
+            else:
+                raise Exception
+
 
 
     @transaction.atomic
     def save_update_prices(self):
-        '''Занесение в БД обновления наличия'''
-        TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks', 'enabled'])
+        '''Занесение в БД всех обновлений после полного батчевого прохода'''
+        TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks'])
         TopWBProduct.objects.filter(pk__in=self.top_prods_artikuls_to_delete).delete()
