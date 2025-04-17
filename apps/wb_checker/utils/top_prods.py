@@ -1,6 +1,10 @@
 import math
 import json
+import time
 import cloudscraper
+import aiohttp
+import asyncio
+import json
 from statistics import median
 from datetime import datetime
 from django.utils import timezone
@@ -19,9 +23,11 @@ class TopBuilder:
 
     @time_count
     def build_top(self):
+        dict_artikuls_and_urls_to_make_tasks = {artikul:self.get_price_history(artikul) for artikul in self.dict_products_in_catalog.keys()}
+        dict_artikuls_price_history = asyncio.run(fetch_all_histories(dict_artikuls_and_urls_to_make_tasks))
         for artikul, product_object in self.dict_products_in_catalog.items():
             try: #если вдруг истории цены нет
-                self.price_history = self.get_price_history(artikul)
+                self.price_history = dict_artikuls_price_history[artikul]
                 #price_history = list(map(lambda x: (timezone.make_aware(datetime.fromtimestamp(x['dt'])), x['price']['RUB']//100), price_history))
                 self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
                 self.price_history.append((timezone.now(), product_object.latest_price))
@@ -94,9 +100,9 @@ class TopBuilder:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/info/price-history.json'
         elif len(artikul) == 6:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:1]}/part{artikul[:3]}/{artikul}/info/price-history.json'
-        response = self.scraper.get(price_history_searcher_url, headers=self.headers)
-        json_data = json.loads(response.text)
-        return json_data
+        # response = self.scraper.get(price_history_searcher_url, headers=self.headers)
+        # json_data = json.loads(response.text)
+        return price_history_searcher_url#json_data
     
 
 
@@ -156,3 +162,33 @@ class TopBuilder:
             return 25
         else:
             return 26
+        
+
+
+
+async def fetch_price(session, artikul, url):
+    try:
+        async with session.get(url) as resp:
+            data = await resp.json()
+            return artikul, data
+    except:
+        return artikul, []
+    
+
+async def fetch_all_histories(artikuls_urls):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_price(session, artikul, url) for artikul, url in artikuls_urls.items()]
+        results = await asyncio.gather(*tasks)
+        return dict(results)
+        
+
+
+
+
+
+
+
+
+class UpdaterInfoOfTop:
+    def __init__(self):
+        pass
