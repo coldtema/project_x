@@ -174,7 +174,7 @@ class TopWBProduct(models.Model):
     class Meta:
         verbose_name = 'Топ продукт WB'
         verbose_name_plural = 'Топ продукты WB'
-        # ordering = ['-updated']
+        ordering = ['artikul']
         indexes = [
             models.Index(fields=['artikul']),
             ]
