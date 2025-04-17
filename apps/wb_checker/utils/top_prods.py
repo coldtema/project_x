@@ -14,9 +14,9 @@ from django.db import transaction
 
 
 class TopBuilder:
+    '''Класс для постоения топа продуктов исходя 
+    из тех продуктов, которые в него переданы'''
     def __init__(self, dict_products_in_catalog):
-        self.headers = {"User-Agent": "Mozilla/5.0"}
-        self.scraper = cloudscraper.create_scraper()
         self.dict_products_in_catalog = dict_products_in_catalog
         self.feedbacks_median = self.get_feedbacks_median()
         self.price_history = None
@@ -25,28 +25,25 @@ class TopBuilder:
 
     @time_count
     def build_top(self):
-        dict_artikuls_and_urls_to_make_tasks = {artikul:self.get_price_history(artikul) for artikul in self.dict_products_in_catalog.keys()}
-        dict_artikuls_price_history = asyncio.run(fetch_all_histories(dict_artikuls_and_urls_to_make_tasks))
+        '''Главная функция построения топа'''
+        dict_artikuls_and_urls_to_make_tasks = {artikul:self.get_price_history_url(artikul) for artikul in self.dict_products_in_catalog.keys()}
+        dict_artikuls_price_history = asyncio.run(group_all_histories(dict_artikuls_and_urls_to_make_tasks))
         for artikul, product_object in self.dict_products_in_catalog.items():
-            try: #если вдруг истории цены нет
-                self.price_history = dict_artikuls_price_history[artikul]
-                #price_history = list(map(lambda x: (timezone.make_aware(datetime.fromtimestamp(x['dt'])), x['price']['RUB']//100), price_history))
-                self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
-                self.price_history.append((timezone.now(), product_object.latest_price))
-            except:
-                self.price_history = [(timezone.now(), product_object.latest_price)]
+            self.price_history = dict_artikuls_price_history[artikul]
+            self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
+            self.price_history.append((timezone.now(), product_object.latest_price))
             if len(self.price_history) < 4:
                 product_object.score = 0
             else:
                 self.prices_duration = self.get_duration_of_prices()
                 score_of_product = self.get_score_of_product(product_object)
                 product_object.score = score_of_product
-        self.scraper.close()
         return self.dict_products_in_catalog
 
 
 
     def get_score_of_product(self, product_object):
+        '''Получение внутренней оценки отдельного продукта'''
         prices_median = self.get_prices_median()
         true_discount = (prices_median - product_object.latest_price) / prices_median
         trust_score = min(1.0, product_object.feedbacks / self.feedbacks_median) * (product_object.rating / 5)
@@ -56,6 +53,7 @@ class TopBuilder:
 
 
     def get_prices_median(self):
+        '''Получение весовой медианы цен отдельного продукта'''
         list_prices = []
         for elem in self.prices_duration:
             list_prices.extend([elem[1] for i in range(int(elem[0]))])
@@ -65,6 +63,7 @@ class TopBuilder:
 
 
     def get_duration_of_prices(self):
+        '''Получение списка цен в виде (цена*кол-во дней этой цены) для отдельного продукта'''
         prices_duration = []
         prices_duration.append((7, self.price_history[0][1]))#для первого
         for i in range(1, len(self.price_history)-1):
@@ -73,10 +72,10 @@ class TopBuilder:
         prices_duration.append((math.ceil(abs(datetime.timestamp(self.price_history[-1][0]) - self.price_history[-2][0]) / (60*60*24)), self.price_history[-1][1]))#для последнего
         return prices_duration
 
-
             
 
     def get_feedbacks_median(self):
+        '''Получение медианы кол-ва отзывов по всей категории'''
         list_of_feedbacks = []
         for product_object in self.dict_products_in_catalog.values():
             list_of_feedbacks.append(product_object.feedbacks)
@@ -87,8 +86,8 @@ class TopBuilder:
 
 
 
-    def get_price_history(self, artikul):
-        '''Функция получения истории цены продукта'''
+    def get_price_history_url(self, artikul):
+        '''Функция конструирования url-api для последующего обращения'''
         basket_num = TopBuilder.get_basket_num(artikul)
         artikul = str(artikul)
         if basket_num < 10:
@@ -102,9 +101,7 @@ class TopBuilder:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/info/price-history.json'
         elif len(artikul) == 6:
             price_history_searcher_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:1]}/part{artikul[:3]}/{artikul}/info/price-history.json'
-        # response = self.scraper.get(price_history_searcher_url, headers=self.headers)
-        # json_data = json.loads(response.text)
-        return price_history_searcher_url#json_data
+        return price_history_searcher_url
     
 
 
@@ -168,7 +165,8 @@ class TopBuilder:
 
 
 
-async def fetch_price(session, artikul, url):
+async def get_price_history(session, artikul, url):
+    '''Функция получения истории цены отдельного продукта'''
     try:
         async with session.get(url) as resp:
             data = await resp.json()
@@ -177,9 +175,10 @@ async def fetch_price(session, artikul, url):
         return artikul, []
     
 
-async def fetch_all_histories(artikuls_urls):
+async def group_all_histories(artikuls_urls):
+    '''Асинхронное получение историй цен всех переданных продуктов'''
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_price(session, artikul, url) for artikul, url in artikuls_urls.items()]
+        tasks = [get_price_history(session, artikul, url) for artikul, url in artikuls_urls.items()]
         results = await asyncio.gather(*tasks)
         return dict(results)
         
