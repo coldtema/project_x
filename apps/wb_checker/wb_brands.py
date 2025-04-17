@@ -9,16 +9,17 @@ from apps.wb_checker.utils.top_prods import TopBuilder
 
 
 class Brand:
-    def __init__(self, raw_brand_url, author_object):
+    '''Класс для формирования списка топовых продуктов от определенного бренда с вб'''
+
+    def __init__(self, brand_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id
         self.dest_avaliable = True
-        self.brand_url = self.check_url_and_send_correct(raw_brand_url)
-        self.brand_artikul, self.brand_siteId = self.get_brand_artikul_and_siteId()
-        self.brandzone_url_api = self.get_brandzone_url_api()
+        self.brand_url = brand_url
+        self.brand_artikul = self.get_brand_artikul()
         self.brand_api_url = self.construct_brand_api_url()
         self.total_products, self.brand_name = self.get_total_products_and_name_brand_in_catalog()
         if self.dest_avaliable:
@@ -31,7 +32,7 @@ class Brand:
 
 
     def run(self):
-        '''Запуск процесса парсинга'''
+        '''Запуск процесса построения топа продуктов'''
         if self.dest_avaliable:
             self.get_catalog_of_brand('popular')
             self.get_catalog_of_brand('benefit')
@@ -43,11 +44,9 @@ class Brand:
 
 
     def get_catalog_of_brand(self, sorting):
-        '''Функция, которая:
-        1. Парсит товар
-        2. Проверяет его на повторку
-        3. Проверяет наличие бренда (откладывает новые в кэш)
-        4. Добавляет в кэш новые объекты цены и продукта, если они прошли проверку на повторки'''
+        '''Функция, которая берет первую страницу бренда по разным сортировкам, 
+        достает оттуда информацию о товарах, и вызывает функцию добавления этих 
+        товаров в список для построения будущего топа'''
         brand_api_url = self.brand_api_url + sorting
         response = self.scraper.get(brand_api_url, headers=self.headers)
         json_data = json.loads(response.text)
@@ -58,6 +57,7 @@ class Brand:
 
 
     def build_top_prods(self):
+        '''Построение финального топа товаров с использованием класса TopBuilder'''
         top_builder = TopBuilder(self.dict_brand_products_to_add)
         print('Вычисляю топ продуктов бренда по цене/отзывам/рейтигу...')
         self.list_brand_products_to_add_with_scores = list(top_builder.build_top().values())
@@ -78,36 +78,19 @@ class Brand:
 
 
 
-    def get_brand_artikul_and_siteId(self):
+    def get_brand_artikul(self):
         '''Получение артикула (wb_id) бренда + id мини-сайта этого бренда'''
         brand_slug_name = re.search(r'(brands\/)([a-z\-\d]+)(\?)?(\/)?(\#)?', self.brand_url).group(2)
         final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
         response = self.scraper.get(final_url, headers=self.headers)
         json_data = json.loads(response.text)
         brand_artikul = json_data['id']
-        brand_siteId = json_data['siteId']
-        return brand_artikul, brand_siteId
-    
-
-
-    def get_brandzone_url_api(self):
-        '''Конструирование url для доступа к api со всеми url-путями мини-сайта бренда'''
-        return f'https://brandzones.wildberries.ru/api/v1/site/brandzone?siteID={self.brand_siteId}&admin=false&contentID={self.brand_artikul}'
-
-
-
-    def get_custom_links_of_brand(self):
-        '''Получение всех url-путей мини-сайта бренда'''
-        response = self.scraper.get(self.brandzone_url_api, headers=self.headers)
-        json_data = json.loads(response.text)['sections'][2]['blocks'][0]['items']
-        json_data = dict(map(lambda x: (x['url'].split('/')[-1].split('?')[0], x['query']), json_data))
-        return json_data
+        return brand_artikul
 
 
 
     def construct_brand_api_url(self):
-        '''Построение url для доступа к api каталога бренда с 
-        использованием всех фильтров, сортировок, категорий (путей кастомных)'''
+        '''Построение url для доступа к api каталога бренда'''
         return f'https://catalog.wb.ru/brands/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={-1257786}&hide_dtype=13&lang=ru&spp=30&uclusters=3&page=1&brand={self.brand_artikul}&sort='
 
 
@@ -133,9 +116,9 @@ class Brand:
 
 
     def build_raw_brand_object(self):
-        '''Создание объекта бренда без занесения в БД и знания,
-          есть ли уже такой объект в базе (если есть и будет конфликт => 
-          все пройдет правильно из-за уникального wb_id)'''
+        '''Создание объекта бренда с занесением в БД, и, 
+        если бренд был в базе, и, если у него были подписчики, 
+        то просто создается подписка на него у пользователя, вместо конструирования топа'''
         brand_object, was_not_in_db = WBBrand.objects.get_or_create(wb_id=self.brand_artikul,
                                                                     name=self.brand_name,
                                                                     main_url=f'https://www.wildberries.ru/brands/{self.brand_artikul}')
@@ -182,17 +165,4 @@ class Brand:
         new_product = {product_artikul: new_product}
         self.dict_brand_products_to_add.update(new_product)
         
-
-
-    def check_url_and_send_correct(self, raw_url):
-        '''Проверка url, отправленного пользователем, на предмет 
-        парсинга бренда по продукту или парсинга бренда по прямой ссылке'''
-        if 'brands' in raw_url:
-            return raw_url
-        else:
-            response = self.scraper.get(f'https://card.wb.ru/cards/v2/list?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={re.search(r'\/(\d+)\/', raw_url).group(1)}', headers=self.headers)
-            json_data = json.loads(response.text)
-            response = self.scraper.get(f'https://static-basket-01.wbbasket.ru/vol0/data/brands-by-id/{json_data['data']['products'][0]['brandId']}.json', headers=self.headers)
-            json_data = json.loads(response.text)
-            return f'https://www.wildberries.ru/brands/{json_data['url']}'
             
