@@ -6,6 +6,7 @@ from apps.wb_checker.utils.general_utils import time_count
 from apps.wb_checker.utils.pickpoints import load_dest_to_author
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
 from apps.wb_checker.utils.categories import update_menu_cats
+from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm, WBDestForm
 from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBDetailedInfo, WBMenuCategory
@@ -105,3 +106,9 @@ def load_test_data(request):
     #         menu_category = wb_menu_categories.MenuCategory(url, author_object)
     #         menu_category.run()
     #         del menu_category
+
+@time_count
+def update_top_prods_info(request):
+    updater_info_of_top = UpdaterInfoOfTop()
+    updater_info_of_top.run()
+    del updater_info_of_top
