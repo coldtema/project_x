@@ -29,9 +29,12 @@ class TopBuilder:
         dict_artikuls_and_urls_to_make_tasks = {artikul:self.get_price_history_url(artikul) for artikul in self.dict_products_in_catalog.keys()}
         dict_artikuls_price_history = asyncio.run(group_all_histories(dict_artikuls_and_urls_to_make_tasks))
         for artikul, product_object in self.dict_products_in_catalog.items():
-            self.price_history = dict_artikuls_price_history[artikul]
-            self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
-            self.price_history.append((timezone.now(), product_object.latest_price))
+            try: #если вдруг истории цены нет
+                self.price_history = dict_artikuls_price_history[artikul]
+                self.price_history = list(map(lambda x: (x['dt'], x['price']['RUB']//100), self.price_history))
+                self.price_history.append((timezone.now(), product_object.latest_price))
+            except:
+                self.price_history = [(timezone.now(), product_object.latest_price)]
             if len(self.price_history) < 4:
                 product_object.score = 0
             else:
@@ -71,6 +74,7 @@ class TopBuilder:
             prices_duration.append((price_duration, self.price_history[i][1]))
         prices_duration.append((math.ceil(abs(datetime.timestamp(self.price_history[-1][0]) - self.price_history[-2][0]) / (60*60*24)), self.price_history[-1][1]))#для последнего
         return prices_duration
+
 
             
 

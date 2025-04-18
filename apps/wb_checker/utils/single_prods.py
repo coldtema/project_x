@@ -63,6 +63,8 @@ class PriceUpdater:
                     print(products_on_page[j]['id'])
                     print(self.current_detail_to_check.product.artikul)
                     print('Не сходится товар и запрос по индексам')
+                    raise Exception
+
 
 
 

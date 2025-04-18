@@ -31,9 +31,8 @@ def update_custom_cats():
 
 
 
-
-
 def update_menu_cats():
+    '''Обновление базы категорий меню от самого wb в самой БД'''
     categories_list = get_menu_cats()
     new_categories_list = []
     for elem in categories_list:
@@ -42,7 +41,7 @@ def update_menu_cats():
 
 
 def get_menu_cats():
-    '''Обновление базы категорий меню от самого wb'''
+    '''Получение свежей базы категорий меню от самого wb'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
     final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/main-menu-ru-ru-v3.json'
