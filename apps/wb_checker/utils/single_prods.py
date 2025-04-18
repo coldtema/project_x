@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import Prefetch
 from apps.blog.models import Author
 from apps.wb_checker.utils.general_utils import time_count
-from ..models import WBPrice, WBDetailedInfo
+from ..models import WBPrice, WBDetailedInfo, WBProduct
 
 
 
@@ -23,48 +23,74 @@ class PriceUpdater:
         self.updated_details = []
         self.test_counter = 0
         self.current_detail_to_check = None
+        self.detail_product_url_api = None
+        self.prods_artikuls_to_delete = []
     
     def run(self):
         for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
             self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
-            self.update_prices()
+            self.go_through_all_authors()
             self.save_update_prices()
             self.new_prices = []
             self.updated_details = []
+            self.prods_artikuls_to_delete = []
         print(f'Товаров проверено:{self.test_counter}')
 
 
-    @time_count
-    def update_prices(self):
-        '''Обновление цен продуктов, которые есть наличии'''
+    def go_through_all_authors(self):
         for i in range(len(self.batched_authors_list)):
             author_object = self.batched_authors_list[i]
-            detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
+            self.detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
             details_of_prods_to_check = self.batched_authors_list[i].wbdetailedinfo_set.all()
             if len(details_of_prods_to_check) == 0:
                 continue
-            final_url = detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
+            self.go_through_all_details(details_of_prods_to_check)
+
+
+    def go_through_all_details(self, details_of_prods_to_check):
+        for j in range(math.ceil(len(details_of_prods_to_check) / 200)):
+            self.batched_details_of_prods_to_check = details_of_prods_to_check[j*200:(j+1)*200]
+            final_url = self.detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), self.batched_details_of_prods_to_check))
             response = self.scraper.get(final_url, headers=self.headers)
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
 
+            if len(products_on_page) != len(self.batched_details_of_prods_to_check):
+                self.delete_not_existing_prods(products_on_page)
+
+            print(len(products_on_page))
             products_on_page = sorted(products_on_page, key=lambda x: x['id'])
-            details_of_prods_to_check = sorted(details_of_prods_to_check, key=lambda x: x.product.artikul)
+            self.batched_details_of_prods_to_check = sorted(self.batched_details_of_prods_to_check, key=lambda x: x.product.artikul)
+            self.update_info(products_on_page)
 
-            for j in range(len(products_on_page)):
-                self.current_detail_to_check = details_of_prods_to_check[j]
-                if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
-                    if self.current_detail_to_check.size == None:
-                        self.check_nonsize_product(products_on_page[j])
-                    else:
-                        self.check_size_product(products_on_page[j])                      
+
+
+
+    @time_count
+    def update_info(self, products_on_page):
+        '''Обновление цен продуктов, которые есть наличии'''
+        for j in range(len(products_on_page)):
+            self.current_detail_to_check = self.batched_details_of_prods_to_check[j]
+            if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul:
+                if self.current_detail_to_check.size == None:
+                    self.check_nonsize_product(products_on_page[j])
                 else:
-                    print(products_on_page[j]['id'])
-                    print(self.current_detail_to_check.product.artikul)
-                    print('Не сходится товар и запрос по индексам')
-                    raise Exception
+                    self.check_size_product(products_on_page[j])                      
+            else: #по факту до этого никогда не должно доходить (оставил на всякий случай)
+                print(products_on_page[j]['id'])
+                print(self.current_detail_to_check.product.artikul)
+                print('Не сходится товар и запрос по индексам')
+                raise Exception
 
+
+
+    def delete_not_existing_prods(self, products_on_page):
+        '''Удаление товаров из списка временного, которые вообще
+          удалились с сайта wb и не отображаются в api details'''
+        prods_artikuls_to_delete = set(map(lambda x: x.product.artikul, self.batched_details_of_prods_to_check)) - set(map(lambda x: x['id'], products_on_page))
+        self.prods_artikuls_to_delete.extend(prods_artikuls_to_delete)
+        self.batched_details_of_prods_to_check = list(filter(lambda x: True if x.product.artikul not in prods_artikuls_to_delete else False, self.batched_details_of_prods_to_check))
 
 
 
@@ -132,6 +158,7 @@ class PriceUpdater:
         '''Занесение в БД обновления наличия'''
         WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
         WBPrice.objects.bulk_create(self.new_prices)
+        WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
 
 
 
