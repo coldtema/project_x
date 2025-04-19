@@ -59,7 +59,7 @@ class PriceUpdater:
             if len(products_on_page) != len(self.batched_details_of_prods_to_check):
                 self.delete_not_existing_prods(products_on_page)
 
-            print(len(products_on_page))
+
             products_on_page = sorted(products_on_page, key=lambda x: x['id'])
             self.batched_details_of_prods_to_check = sorted(self.batched_details_of_prods_to_check, key=lambda x: x.product.artikul)
             self.update_info(products_on_page)
@@ -164,52 +164,79 @@ class PriceUpdater:
 
 
 
+
+
+
+
 class AvaliabilityUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.all_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
-                                                 queryset=WBDetailedInfo.objects.filter(enabled=False).select_related('product')))
+        self.batch_size = 50
+        self.len_all_authors_list = Author.objects.all().count()
+        self.batched_authors_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.new_prices = []
         self.updated_details = []
         self.test_counter = 0
         self.current_detail_to_check = None
+        self.detail_product_url_api = None
+        self.prods_artikuls_to_delete = []
 
 
     def run(self):
         '''Запуск скрипта обновления'''
-        self.update_avaliability()     
-        self.save_update_avaliability()
+        for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
+            self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
+                                                                            queryset=WBDetailedInfo.objects.filter(enabled=False).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
+            self.go_through_all_authors()     
+            self.save_update_avaliability()
+            self.new_prices = []
+            self.updated_details = []
+            self.prods_artikuls_to_delete = []
         print(f'Товаров проверено:{self.test_counter}')
 
 
-    @time_count
-    def update_avaliability(self):
-        '''Обновление наличия продуктов, которых нет в наличии'''
-        for i in range(len(self.all_authors_list)):
-            author_object = self.all_authors_list[i]
-            detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
-            details_of_prods_to_check = self.all_authors_list[i].wbdetailedinfo_set.all()
+
+    def go_through_all_authors(self):
+        for i in range(len(self.batched_authors_list)):
+            author_object = self.batched_authors_list[i]
+            self.detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
+            details_of_prods_to_check = self.batched_authors_list[i].wbdetailedinfo_set.all()
             if len(details_of_prods_to_check) == 0:
                 continue
-            final_url = detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), details_of_prods_to_check))
+            self.go_through_all_details(details_of_prods_to_check)
+
+
+    def go_through_all_details(self, details_of_prods_to_check):
+        for j in range(math.ceil(len(details_of_prods_to_check) / 200)):
+            self.batched_details_of_prods_to_check = details_of_prods_to_check[j*200:(j+1)*200]
+            final_url = self.detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), self.batched_details_of_prods_to_check))
             response = self.scraper.get(final_url, headers=self.headers)
             json_data = json.loads(response.text)
             products_on_page = json_data['data']['products']
 
-            products_on_page = sorted(products_on_page, key=lambda x: x['id'])
-            details_of_prods_to_check = sorted(details_of_prods_to_check, key=lambda x: x.product.artikul)
+            if len(products_on_page) != len(self.batched_details_of_prods_to_check):
+                self.delete_not_existing_prods(products_on_page)
 
-            for j in range(len(products_on_page)):
-                self.current_detail_to_check = details_of_prods_to_check[j]
-                if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
-                    if self.current_detail_to_check.size == None:
-                        self.check_nonsize_product(products_on_page[j])
-                    else:
-                        self.check_size_product(products_on_page[j])                      
+
+            products_on_page = sorted(products_on_page, key=lambda x: x['id'])
+            self.batched_details_of_prods_to_check = sorted(self.batched_details_of_prods_to_check, key=lambda x: x.product.artikul)
+            self.update_avaliability(products_on_page)
+
+
+    @time_count
+    def update_avaliability(self, products_on_page):
+        '''Обновление наличия продуктов, которых нет в наличии'''
+        for j in range(len(products_on_page)):
+            self.current_detail_to_check = self.batched_details_of_prods_to_check[j]
+            if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
+                if self.current_detail_to_check.size == None:
+                    self.check_nonsize_product(products_on_page[j])
                 else:
-                    print('Не сходится товар и запрос по индексам')
+                    self.check_size_product(products_on_page[j])                      
+            else:
+                print('Не сходится товар и запрос по индексам')
 
 
 
@@ -265,3 +292,4 @@ class AvaliabilityUpdater:
         '''Занесение в БД обновления наличия'''
         WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
         WBPrice.objects.bulk_create(self.new_prices)
+        WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
