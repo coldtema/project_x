@@ -27,6 +27,7 @@ class PriceUpdater:
         self.prods_artikuls_to_delete = []
     
     def run(self):
+        '''Запуск процесса обновления цен + батчинг по авторам'''
         for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
             self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
@@ -39,6 +40,7 @@ class PriceUpdater:
 
 
     def go_through_all_authors(self):
+        '''Функция, в которой идет проход по одному автору из батча'''
         for i in range(len(self.batched_authors_list)):
             author_object = self.batched_authors_list[i]
             self.detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
@@ -49,6 +51,7 @@ class PriceUpdater:
 
 
     def go_through_all_details(self, details_of_prods_to_check):
+        '''Подготовка списка для обновления цены'''
         for j in range(math.ceil(len(details_of_prods_to_check) / 200)):
             self.batched_details_of_prods_to_check = details_of_prods_to_check[j*200:(j+1)*200]
             final_url = self.detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), self.batched_details_of_prods_to_check))
@@ -69,7 +72,8 @@ class PriceUpdater:
 
     @time_count
     def update_info(self, products_on_page):
-        '''Обновление цен продуктов, которые есть наличии'''
+        '''Обновление цен продуктов, которые есть наличии + 
+        разведение по тем, у кого есть размер, и тем, у кого нет'''
         for j in range(len(products_on_page)):
             self.current_detail_to_check = self.batched_details_of_prods_to_check[j]
             if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul:
@@ -111,6 +115,7 @@ class PriceUpdater:
 
 
     def disable_product(self):
+        '''Отключение товара (тк его больше нет в наличии)'''
         print(f'Продукта больше нет в наличии!\nПродукт: {self.current_detail_to_check.product.url}\n')
         self.current_detail_to_check.enabled = False
         self.current_detail_to_check.volume = 0
@@ -136,7 +141,9 @@ class PriceUpdater:
 
 
 
-    def updating_plus_notification(self, price_of_detail, volume): 
+    def updating_plus_notification(self, price_of_detail, volume):
+        '''Точка входа для уведомления пользователя + изменение полей товара
+        добавление товара в общую коллекцию обновления'''
         flag_change = False           
         if self.current_detail_to_check.latest_price != price_of_detail: #and abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price > 0.03: #сделать потом поле у пользователя (на сколько отслеживаем цену)
             # print(abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price)
@@ -185,7 +192,7 @@ class AvaliabilityUpdater:
 
 
     def run(self):
-        '''Запуск скрипта обновления'''
+        '''Запуск процесса обновления цен + батчинг по авторам'''
         for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
             self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=False).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
@@ -199,6 +206,7 @@ class AvaliabilityUpdater:
 
 
     def go_through_all_authors(self):
+        '''Функция, в которой идет проход по одному автору из батча'''
         for i in range(len(self.batched_authors_list)):
             author_object = self.batched_authors_list[i]
             self.detail_product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm='
@@ -209,6 +217,7 @@ class AvaliabilityUpdater:
 
 
     def go_through_all_details(self, details_of_prods_to_check):
+        '''Подготовка списка для обновления цены'''
         for j in range(math.ceil(len(details_of_prods_to_check) / 200)):
             self.batched_details_of_prods_to_check = details_of_prods_to_check[j*200:(j+1)*200]
             final_url = self.detail_product_url_api + ';'.join(map(lambda x: str(x.product.artikul), self.batched_details_of_prods_to_check))
@@ -225,9 +234,20 @@ class AvaliabilityUpdater:
             self.update_avaliability(products_on_page)
 
 
+
+    def delete_not_existing_prods(self, products_on_page):
+        '''Удаление товаров из списка временного, которые вообще
+          удалились с сайта wb и не отображаются в api details'''
+        prods_artikuls_to_delete = set(map(lambda x: x.product.artikul, self.batched_details_of_prods_to_check)) - set(map(lambda x: x['id'], products_on_page))
+        self.prods_artikuls_to_delete.extend(prods_artikuls_to_delete)
+        self.batched_details_of_prods_to_check = list(filter(lambda x: True if x.product.artikul not in prods_artikuls_to_delete else False, self.batched_details_of_prods_to_check))
+
+
+
     @time_count
     def update_avaliability(self, products_on_page):
-        '''Обновление наличия продуктов, которых нет в наличии'''
+        '''Обновление наличия продуктов, которые были не в наличии в БД + 
+        разведение по тем, у кого есть размер, и тем, у кого нет'''
         for j in range(len(products_on_page)):
             self.current_detail_to_check = self.batched_details_of_prods_to_check[j]
             if products_on_page[j]['id'] == self.current_detail_to_check.product.artikul: #по хорошему вот тут надо добавить исключение какое то
@@ -241,7 +261,7 @@ class AvaliabilityUpdater:
 
 
     def check_nonsize_product(self, product_on_page):
-        '''Функция проверки наличия продукта, у которого нет размеров'''
+        '''Функция проверки наличия продукта, у которого нет размера'''
         self.test_counter += 1
         stocks = product_on_page['sizes'][0]['stocks']
         if len(stocks) != 0:
@@ -275,6 +295,8 @@ class AvaliabilityUpdater:
 
 
     def enable_product(self, price_of_detail, volume):
+        '''Точка входа для уведомления пользователя + изменение полей товара
+        добавление товара в общую коллекцию обновления'''
         self.current_detail_to_check.latest_price = price_of_detail
         self.current_detail_to_check.volume = volume
         self.current_detail_to_check.enabled = True
