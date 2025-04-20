@@ -540,14 +540,14 @@ def get_product_m_reason(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find("div", class_='price-card__price').text.strip()
+    price_element = soup_engine.find("div", class_='price').text.strip()
     price_element = price_element.split('i')
     if price_element[1]:
         price_element = price_element[1]
     else:
         price_element = price_element[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('div', class_='product-detail__title').text.strip()
+    name = soup_engine.find('h1', class_='product-detail__title').text.strip()
     name = ' '.join(name.split())
     return {'price_element': price_element, 'name': name, 'shop': 'm-reason'}
 
@@ -1016,15 +1016,13 @@ def get_product_apple_avenue(product_url):
 
 
 
-def get_product_re_store(product_url):
+def get_product_re_store(product_url): #бывает, что включается дудос гард (решается сменой заголовка)
     '''Функция для парсинга товара из re-store'''
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    time.sleep(1)
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
-    full = re.search(pattern=r'(\<meta content\=\")(.+)(от официального магазина)', string=full).group(2)
     price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = re.search(pattern=r'(Купить )(.+)( по цене)', string=full).group(2)
@@ -1546,9 +1544,9 @@ def get_product_hyperauto(product_url):
 
 
 
-def get_product_kubaninstrument(product_url):
+def get_product_kubaninstrument(product_url): #отлетел - потом попробовать еще, что с ним не так
     '''Функция для парсинга товара из kubaninstrument'''
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
@@ -1667,8 +1665,7 @@ def get_product_fkniga(product_url):
 def get_product_santehnika_tut(product_url):
     '''Функция для парсинга товара из santehnika-tut'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = httpx.get(url='product_url', headers=headers, verify=False)#что-то с проверкой сертификатов
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('div', class_='price clubprice').text.strip()
@@ -1734,7 +1731,7 @@ def get_product_hansa(product_url):
 
 
 
-def get_product_zvet(product_url):
+def get_product_zvet(product_url): #просто сейчас не грузит сайт......
     '''Функция для парсинга товара из zvet'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
@@ -1989,8 +1986,8 @@ def get_product_krups(product_url):
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
-    price_element = re.search(pattern=r'items: \[\{(.+?)\}', string=response.text).group(1)
-    price_element = re.search(pattern=r'\"price\"(.+)', string=response.text).group(1)
+    full = soup_engine.find('title').text
+    price_element = re.search(pattern=r'(выгодной цене )(.+?)( в магазине)', string=full).group(2)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'krups'}

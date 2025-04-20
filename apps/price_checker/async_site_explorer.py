@@ -11,7 +11,7 @@ import asyncio
 class Parser:
 
     def __init__(self):
-        self.client = httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}, limits=httpx.Limits(max_connections=200, max_keepalive_connections=200), timeout=httpx.Timeout(10.0, connect=9.0))
+        self.client = httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}, limits=httpx.Limits(max_connections=200, max_keepalive_connections=200), timeout=httpx.Timeout(10.0, connect=9.0))
 
     def get_shop_of_product(self, product_url):
         '''Функция, определяющая, какому магазину принадлежит ссылка'''
@@ -556,14 +556,14 @@ class Parser:
         '''Функция для парсинга товара из m-reason'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find("div", class_='price-card__price').text.strip()
+        price_element = soup_engine.find("div", class_='price').text.strip()
         price_element = price_element.split('i')
         if price_element[1]:
             price_element = price_element[1]
         else:
             price_element = price_element[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-        name = soup_engine.find('div', class_='product-detail__title').text.strip()
+        name = soup_engine.find('h1', class_='product-detail__title').text.strip()
         name = ' '.join(name.split())
         return {'price_element': price_element, 'name': name, 'shop': 'm-reason'}
 
@@ -1037,9 +1037,7 @@ class Parser:
         '''Функция для парсинга товара из re-store'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        time.sleep(1)
         full = str(soup_engine.find('meta', attrs={'name':'description'}))
-        full = re.search(pattern=r'(\<meta content\=\")(.+)(от официального магазина)', string=full).group(2)
         price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = re.search(pattern=r'(Купить )(.+)( по цене)', string=full).group(2)
@@ -1943,8 +1941,8 @@ class Parser:
         '''Функция для парсинга товара из krups'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'html.parser')
-        price_element = re.search(pattern=r'items: \[\{(.+?)\}', string=response.text).group(1)
-        price_element = re.search(pattern=r'\"price\"(.+)', string=response.text).group(1)
+        full = soup_engine.find('title').text
+        price_element = re.search(pattern=r'(выгодной цене )(.+?)( в магазине)', string=full).group(2)
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find('h1').text.strip()
         return {'price_element': price_element, 'name': name, 'shop': 'krups'}
