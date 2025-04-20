@@ -265,4 +265,4 @@ class UpdaterInfoOfTop:
     def save_update_prices(self):
         '''Занесение в БД всех обновлений после полного батчевого прохода'''
         TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks'])
-        TopWBProduct.objects.filter(pk__in=self.top_prods_artikuls_to_delete).delete()
+        TopWBProduct.objects.filter(artikul__in=self.top_prods_artikuls_to_delete).delete()
