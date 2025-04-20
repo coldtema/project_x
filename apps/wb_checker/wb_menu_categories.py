@@ -89,7 +89,7 @@ class MenuCategory:
         category_slug_name = re.search(r'(catalog\/)(.+)', clear_category_url).group(2)
         category_slug_name = '/catalog/' + category_slug_name
         category_object = WBMenuCategory.objects.filter(main_url=category_slug_name).first() #тк есть дубли в БД (дочерняя категория может вставиться в другой blackhole)
-        if category_object.subs.exists():
+        if category_object.subs.exists() and self.author_id != 4:
             self.dest_avaliable=False
             self.author_object.wbmenucategory_set.add(category_object)
         return category_object
@@ -106,10 +106,10 @@ class MenuCategory:
         '''Получение количества продуктов для парсинга категории'''
         category_api_url = self.category_api_url  + 'popular'
         response = self.scraper.get(category_api_url, headers=self.headers)
-        print(category_api_url)
         json_data = json.loads(response.text)
         try:
             total_products = json_data['data']['total']
+            br = json_data['data']['products'][0]['brand'] #просто заглушка для keyerror если вдруг в категории пусто
         except:
             print('Не найдено ни одного товара категории (скорее всего они недоступны центральном регионе)')
             self.dest_avaliable = False

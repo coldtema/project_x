@@ -82,7 +82,7 @@ def url_dispatcher(url, author_object):
         brand = wb_brands.Brand(url, author_object)
         brand.run()
         del brand
-    elif re.search(pattern=r'catalog\/\D+\/', string=url):
+    elif re.search(pattern=r'catalog\/\D+\/?', string=url):
         menu_category = wb_menu_categories.MenuCategory(url, author_object)
         menu_category.run()
         del menu_category
