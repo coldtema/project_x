@@ -368,7 +368,7 @@ def get_product_bungly(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', url=product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find("div", class_='price-first-load').text.strip()
+    price_element = soup_engine.find("div", class_='price-first-load').text.strip().split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("div", class_='product-title').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'bungly'}
@@ -1738,7 +1738,7 @@ def get_product_zvet(product_url):
     '''Функция для парсинга товара из zvet'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='detail-price__item current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
@@ -2363,7 +2363,7 @@ def get_product_bookvoed(product_url):
     response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-block-price-info__price').text.strip()
-    price_element = price_element.split(' ₽')[0]
+    price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+)\s\-\s(купить)', string=name).group(1)
