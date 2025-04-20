@@ -1,9 +1,11 @@
 from functools import wraps
+import math
 from .models import Product, Price
 import time
 from apps.price_checker.site_explorer import get_shop_of_product
 from django.db import transaction
-
+import asyncio
+from .async_site_explorer import Parser
 
 
 def time_count(func):
@@ -23,9 +25,12 @@ class PriceUpdater:
 
     def __init__(self):
         '''Инициализация всех необходимых атрибутов'''
-        self.all_prod = Product.enabled_products.all().select_related('shop')
-        self.all_shop_prod_dict = self.build_all_shop_prod_dict()
+        self.batch_size = 1000
+        self.len_all_prod = Product.enabled_products.all().count()
+        self.batched_prods = None
+        self.batched_shop_prod_dict = None
         self.prods_to_go = ['']
+        self.async_exeption_prods = []
         self.exception_prods = []
         self.broken_prods = []
         self.new_prices = []
@@ -35,18 +40,30 @@ class PriceUpdater:
 
     def run(self):
         '''Запуск процесса обновления продуктов (на цену и наличие)'''
-        self.update_prices()
-        if self.exception_prods:
-            self.check_exception_prods()
-        if self.broken_prods:
-            self.change_enable_of_broken_prods()
-        self.save_all_to_db()
+        for i in range(math.ceil(self.len_all_prod / self.batch_size)):
+            self.batched_prods=Product.enabled_products.all()[i*self.batch_size:(i+1)*self.batch_size]
+            self.batched_shop_prod_dict = self.build_all_shop_prod_dict()
+            self.async_update_prices()
+            if self.async_exeption_prods:
+                print(f'Элементы, не прошедшие асинхронно: {len(self.async_exeption_prods)}')
+                self.sync_update_prices()
+                if self.exception_prods:
+                    self.check_exception_prods()
+                if self.broken_prods:
+                    self.change_enable_of_broken_prods()
+            self.save_all_to_db()
+            self.products_to_update = []
+            self.new_prices = []
+            self.broken_prods = []
+            self.exception_prods = []
+            self.prods_to_go = ['']
+
 
 
     def build_all_shop_prod_dict(self):
         '''Функция для конструирования словаря типа (магазин: все его продукты)'''
         temp_dict = dict()
-        for product in self.all_prod:
+        for product in self.batched_prods:
             temp_dict.setdefault(product.shop.name, []).append(product)
         return temp_dict
         
@@ -55,25 +72,40 @@ class PriceUpdater:
     def fill_prods_to_go(self):
         '''Заполнение мини-стека продуктов (по 1му от каждого магазина)'''
         self.prods_to_go.clear()
-        for shop, products in self.all_shop_prod_dict.items():
+        for shop, products in self.batched_shop_prod_dict.items():
             if len(products) != 0:
                 self.prods_to_go.append(products[-1])
-                self.all_shop_prod_dict[shop].pop()
+                self.batched_shop_prod_dict[shop].pop()
 
 
     @time_count
-    def update_prices(self):
+    def async_update_prices(self):
         '''Функция обновления цен'''
         while len(self.prods_to_go) != 0:
             self.fill_prods_to_go()
-            for product in self.prods_to_go:
-                try:
-                    maybe_new_price = get_shop_of_product(product.url)['price_element']
-                except:
-                    self.exception_prods.append(product)
+            parser = Parser()
+            async_results = asyncio.run(parser.process_all_sites(self.prods_to_go))
+            for i in range(len(async_results)):
+                if isinstance(async_results[i], tuple):
+                    self.async_exeption_prods.append(self.prods_to_go[i])
                     continue
-                if maybe_new_price != product.latest_price:
-                    self.updating_plus_notification(maybe_new_price, product)
+                if async_results[i]['price_element'] != self.prods_to_go[i].latest_price:
+                    self.updating_plus_notification(async_results[i]['price_element'], self.prods_to_go[i])
+
+
+
+    @time_count
+    def sync_update_prices(self):
+        '''Функция обновления цен'''
+        for product in self.async_exeption_prods:
+            try:
+                maybe_new_price = get_shop_of_product(product.url)['price_element']
+            except:
+                self.exception_prods.append(product)
+                continue
+            if maybe_new_price != product.latest_price:
+                self.updating_plus_notification(maybe_new_price, product)
+
 
 
     @time_count
@@ -94,7 +126,7 @@ class PriceUpdater:
 
 
     def updating_plus_notification(self, maybe_new_price, product):
-        '''Функция-точка входяа для уведомления пользователя + изменения продукта (при изменении его цены)'''
+        '''Функция-точка входа для уведомления пользователя + изменения продукта (при изменении его цены)'''
         print(f'''
 Цена изменилась!
 Продукт: {product.name}
@@ -108,7 +140,7 @@ class PriceUpdater:
 
 
     def change_enable_of_broken_prods(self):
-        '''Функция-точка входяа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
+        '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         for product in self.broken_prods: 
             print(f'id: {product.id}, url: {product.url}')
