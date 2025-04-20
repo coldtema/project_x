@@ -5,6 +5,7 @@ from django.db import transaction
 from datetime import datetime
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBBrand, WBSeller, TopWBProduct
+from apps.blog.models import Author
 
 
 
@@ -126,7 +127,7 @@ class Seller:
                                                                       name=self.seller_name,
                                                                       main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
         
-        if not was_not_in_db and seller_object.subs.exists():
+        if not was_not_in_db and seller_object.subs.exists() and self.author_id != 4:
             self.dest_avaliable = False
             self.author_object.wbseller_set.add(seller_object)
         return seller_object
@@ -174,3 +175,16 @@ class Seller:
         new_product = {product_artikul: new_product}
         self.dict_seller_products_to_add.update(new_product)
         
+
+
+class TopWBProductSellerUpdater():
+    def __init__(self):
+        self.sellers_with_subs = WBSeller.objects.filter(subs__isnull=False)
+        
+
+    def run(self):
+        author_object = Author.objects.get(pk=4)
+        TopWBProduct.objects.filter(source='SELLER').delete()
+        for seller in self.sellers_with_subs:
+            TopWBProduct.objects.filter(source='SELLER', seller=seller).delete()
+            Seller(seller.main_url, author_object).run()
