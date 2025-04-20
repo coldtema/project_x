@@ -5,6 +5,7 @@ from datetime import datetime
 from django.db import transaction
 from .models import WBSeller, WBBrand, TopWBProduct
 from apps.wb_checker.utils.top_prods import TopBuilder
+from apps.blog.models import Author
 
 
 
@@ -19,7 +20,7 @@ class Brand:
         self.author_id = author_object.id
         self.dest_avaliable = True
         self.brand_url = brand_url
-        self.brand_artikul = self.get_brand_artikul()
+        self.brand_artikul, self.brand_slug_name = self.get_brand_artikul_and_slug_name() 
         self.brand_api_url = self.construct_brand_api_url()
         self.total_products, self.brand_name = self.get_total_products_and_name_brand_in_catalog()
         if self.dest_avaliable:
@@ -78,14 +79,14 @@ class Brand:
 
 
 
-    def get_brand_artikul(self):
+    def get_brand_artikul_and_slug_name(self):
         '''Получение артикула (wb_id) бренда + id мини-сайта этого бренда'''
         brand_slug_name = re.search(r'(brands\/)([a-z\-\d]+)(\?)?(\/)?(\#)?', self.brand_url).group(2)
         final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
         response = self.scraper.get(final_url, headers=self.headers)
         json_data = json.loads(response.text)
         brand_artikul = json_data['id']
-        return brand_artikul
+        return brand_artikul, brand_slug_name
 
 
 
@@ -110,7 +111,7 @@ class Brand:
             return 0, None
         #точка входа для вопроса пользователю - сколько продуктов нужно взять, если их больше 10
         print(f'Товары обнаружены! Бренд - {brand_name}. Количество - {total_products}')
-        print(f'Выполняется анализ топовых продуктов....')       
+        print(f'Выполняется анализ топовых продуктов....')
         return total_products, brand_name
     
 
@@ -119,10 +120,9 @@ class Brand:
         '''Создание объекта бренда с занесением в БД, и, 
         если бренд был в базе, и, если у него были подписчики, 
         то просто создается подписка на него у пользователя, вместо конструирования топа'''
-        brand_object, was_not_in_db = WBBrand.objects.get_or_create(wb_id=self.brand_artikul,
-                                                                    name=self.brand_name,
-                                                                    main_url=f'https://www.wildberries.ru/brands/{self.brand_artikul}')
-        if not was_not_in_db and brand_object.subs.exists():
+        brand_object, was_not_in_db = WBBrand.objects.get_or_create(wb_id=self.brand_artikul, defaults={'name': self.brand_name,  
+                                                                                                        'main_url': f'https://www.wildberries.ru/brands/{self.brand_slug_name}'})
+        if not was_not_in_db and brand_object.subs.exists() and self.author_id != 4: #вот здесь надо поменять на админа потом или как то (тк это разграничитель между добавлением нового и обновлением)
             self.dest_avaliable = False
             self.author_object.wbbrand_set.add(brand_object)
         return brand_object
@@ -165,4 +165,16 @@ class Brand:
         new_product = {product_artikul: new_product}
         self.dict_brand_products_to_add.update(new_product)
         
-            
+
+
+
+class TopWBProductBrandUpdater():
+    def __init__(self):
+        self.brands_with_subs = WBBrand.objects.filter(subs__isnull=False)
+        
+
+    def run(self):
+        author_object = Author.objects.get(pk=4)
+        for brand in self.brands_with_subs:
+            TopWBProduct.objects.filter(source='BRAND', brand=brand).delete()
+            Brand(brand.main_url, author_object).run()
