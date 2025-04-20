@@ -5,20 +5,21 @@ from datetime import datetime
 from django.db import transaction
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBSeller, WBBrand, TopWBProduct, WBMenuCategory
+from apps.blog.models import Author
 
 
 
 class MenuCategory:
     '''Класс для формирования топовых продуктов из любой категории wb (~2500)'''
     
-    def __init__(self, raw_category_url, author_object):
+    def __init__(self, category_url, author_object):
         '''Инициализация необходимых атрибутов'''
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
         self.author_id = author_object.id
         self.dest_avaliable = True
-        self.category_url = raw_category_url
+        self.category_url = category_url
         self.category_object = self.get_category_object()
         self.category_api_url = self.construct_category_api_url()
         self.total_products = self.get_total_products_in_catalog()
@@ -105,6 +106,7 @@ class MenuCategory:
         '''Получение количества продуктов для парсинга категории'''
         category_api_url = self.category_api_url  + 'popular'
         response = self.scraper.get(category_api_url, headers=self.headers)
+        print(category_api_url)
         json_data = json.loads(response.text)
         try:
             total_products = json_data['data']['total']
@@ -172,3 +174,18 @@ class MenuCategory:
                 source='CATEGORY')
         new_product = {product_artikul: new_product}
         self.dict_category_products_to_add.update(new_product)
+
+
+
+class TopWBProductMenuCategoryUpdater():
+    def __init__(self):
+        self.all_categories = WBMenuCategory.objects.all()
+        
+
+
+    def run(self):
+        author_object = Author.objects.get(pk=4)
+        for category in self.all_categories:
+            if category.shard_key != 'blackhole':
+                TopWBProduct.objects.filter(source='CATEGORY', menu_category=category).delete()
+                MenuCategory(f'https://www.wildberries.ru{category.main_url}', author_object).run()
