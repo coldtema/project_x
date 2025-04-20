@@ -9,7 +9,7 @@ from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm, WBDestForm
-from .models import WBBrand, WBPrice, WBProduct, WBSeller, WBDetailedInfo, WBMenuCategory
+from .models import WBBrand, WBSeller, WBDetailedInfo, TopWBProduct
 import re
 
 
@@ -17,7 +17,7 @@ def all_price_list(request):
     '''Temp view-функция для представления начальной страницы wb_checker'a'''
     form_parse = WBProductForm()
     form_get_dest = WBDestForm()
-    author_id = 4 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
+    author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
     if request.method == 'POST':
         form = WBProductForm(request.POST)
         if form.is_valid():
@@ -32,11 +32,9 @@ def all_price_list(request):
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
-    WBPrice.objects.all().delete()
-    WBProduct.objects.all().delete()
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
-    WBDetailedInfo.objects.all().delete()
+    TopWBProduct.objects.all().delete()
     return HttpResponseRedirect(reverse('all_price_list'))
 
 
@@ -89,15 +87,21 @@ def url_dispatcher(url, author_object):
         menu_category.run()
         del menu_category
             
+
+
+
 @time_count
-def load_test_data(request):
-    author_object = Author.objects.get(pk=4)
-    with open('wb_links.txt', 'r', encoding='utf-8') as file:
-        links_list = file.read().split('\n')
-        for link in links_list:
-            product = wb_products.Product(link, author_object)
-            product.get_product_info()
-            del product
+def update_top_prods(request):
+    # author_object = Author.objects.get(pk=4)
+    # with open('wb_links.txt', 'r', encoding='utf-8') as file:
+    #     links_list = file.read().split('\n')
+    #     for link in links_list:
+    #         product = wb_products.Product(link, author_object)
+    #         product.get_product_info()
+    #         del product
+    wb_brands.TopWBProductBrandUpdater().run()
+    wb_sellers.TopWBProductSellerUpdater().run()
+    wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
     # all_cats = WBMenuCategory.objects.all()
     # author_object = Author.objects.get(pk=4)
     # for elem in all_cats:
@@ -106,9 +110,14 @@ def load_test_data(request):
     #         menu_category = wb_menu_categories.MenuCategory(url, author_object)
     #         menu_category.run()
     #         del menu_category
+    return HttpResponseRedirect(reverse('all_price_list'))
+
+
+
 
 @time_count
 def update_top_prods_info(request):
     updater_info_of_top = UpdaterInfoOfTop()
     updater_info_of_top.run()
     del updater_info_of_top
+    return HttpResponseRedirect(reverse('all_price_list'))
