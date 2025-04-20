@@ -6,6 +6,7 @@ import re
 import json
 import httpx
 import traceback
+import asyncio
 
 class Parser:
 
@@ -383,7 +384,7 @@ class Parser:
         '''Функция для парсинга товара из bungly'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find("div", class_='price-first-load').text.strip()
+        price_element = soup_engine.find("div", class_='price-first-load').text.strip().split('руб.')[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find("div", class_='product-title').text.strip()
         return {'price_element': price_element, 'name': name, 'shop': 'bungly'}
@@ -2293,7 +2294,7 @@ class Parser:
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
         price_element = soup_engine.find('div', class_='price-block-price-info__price').text.strip()
-        price_element = price_element.split(' ₽')[0]
+        price_element = price_element.split('₽')[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find('title').text.strip()
         name = re.search(pattern=r'(.+)\s\-\s(купить)', string=name).group(1)
@@ -2788,57 +2789,15 @@ class Parser:
                     'bbcream': get_product_bbcream,
                     }
     
-    async def process_all_sites(self):
-        all_links = []
-        with open('links_of_shops.txt', 'r', encoding='utf-8') as file:
-            all_links = file.read().split('\n')
-
-
-        all_shops = []
-        with open('shops.txt', 'r', encoding='utf-8') as file:
-            all_shops = file.read().split('\n')
-
-
-        dict_products_to_update = dict()
-
-
-        for shop in all_shops:
-            for link in all_links:
-                if shop in link:
-                    dict_products_to_update.setdefault(shop, []).append(link)
-        prods_to_go = ['']
-        while len(prods_to_go) != 0:
-            prods_to_go = []
-            for shop, products in dict_products_to_update.items():
-                if len(products) != 0:
-                    prods_to_go.append(products[-1])
-                    dict_products_to_update[shop].pop()
-    
-            tasks = []
-            for url in prods_to_go:
-                parser_func = eval(f'self.{self.get_shop_of_product(url).__name__}')
-                tasks.append(parser_func(url))
-            print(len(tasks))
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            # Печать результатов
-            with open('response.txt', 'a', encoding='utf-8') as file:
-                for result in results:
-                    if isinstance(result, Exception):
-                        file.write(''.join(traceback.format_exception(type(result), result, result.__traceback__)))
-                    else:
-                        file.write(f'{str(result)}\n')
-        
-
-
-
-
-import asyncio
-
-start = time.time()
-parser = Parser()
-asyncio.run(parser.process_all_sites())
-end = time.time()
-print(end - start)
+    async def process_all_sites(self, prods_to_go):
+        tasks = []
+        for product in prods_to_go:
+            parser_func = eval(f'self.{self.get_shop_of_product(product.url).__name__}')
+            tasks.append(parser_func(product.url))
+        print(len(tasks))
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # Печать результатов
+        return results
 
 
 
