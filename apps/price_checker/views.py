@@ -21,13 +21,13 @@ def all_price_list(request):
         if product_form.is_valid():
             product_data = get_shop_of_product(request.POST.get('url'))
             new_product = Product.objects.create(name=product_data['name'], 
-                                                 author=Author.objects.get(id=2),
                                                  url=request.POST.get('url'),
                                                  latest_price=product_data['price_element'], 
                                                  shop=Shop.objects.get(regex_name=product_data['shop']),  
-                                                 ref_url=request.POST.get('url'))
+                                                 ref_url=request.POST.get('url')) #прописать здесь get_or_create и вообще вынести в другое место
+            Author.objects.get(id=2).product_set.add(new_product)
             Price.objects.create(product=new_product, price=product_data['price_element'])
-            return HttpResponseRedirect(reverse('all_price_list'))
+            return HttpResponseRedirect(reverse('all_price_list_1'))
         else:
             return HttpResponseBadRequest('Так себе ссылка')
     else:
