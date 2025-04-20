@@ -3,8 +3,8 @@ from .models import Product, Price, Shop, Tag
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'shop', 'latest_price', 'created', 'updated', 'author']
-    list_filter = ['shop', 'author__nickname']
+    list_display = ['name', 'shop', 'latest_price', 'created', 'updated']
+    list_filter = ['shop']
     search_fields = ['name']
     ordering = ['-updated']
 

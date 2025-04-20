@@ -45,9 +45,10 @@ class Product(models.Model):
     url = models.URLField(verbose_name='URL')
     ref_url = models.URLField(verbose_name='Ref-URL')
     enabled = models.BooleanField(default=True)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='products', verbose_name='Никнейм автора')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
+    subs = models.ManyToManyField(Author, verbose_name='Подписчики продукта')
+
     objects = models.Manager()
     enabled_products = EnabledManager()
     class Meta:
@@ -55,7 +56,7 @@ class Product(models.Model):
         verbose_name_plural = 'Продукты'
         ordering = ['-updated']
         indexes = [
-            models.Index(fields=['shop', 'author']),
+            models.Index(fields=['shop']),
             ]
     
     def __str__(self):
