@@ -23,7 +23,7 @@
             <td>{{elem.id}}</td>
             <td>{{elem.nickname}}</td>
             <td>{{elem.age}}</td>
-            <td><a href="edit/{{elem.id}}">edit</a> | <a href="delete/{{elem.id}}">delete</a></td>
+            <td><a href="{%url 'blog:reg_edit' id=elem.id%}">edit</a> | <a href="{%url 'blog:reg_delete' id=elem.id%}">delete</a></td>
         </tr>
         {%endfor%}
         </tbody>

@@ -18,7 +18,7 @@
         <tr align="center">
             <td>{{elem.price}}</td>
             <td>{{elem.added_time}}</td>
-            <td><a href="delete_price/{{elem.id}}">Удалить</a></td>
+            <td><a href="{%url 'price_checker:delete_price' id=elem.id%}">Удалить</a></td>
         </tr>
         {%endfor%}
     </tbody>

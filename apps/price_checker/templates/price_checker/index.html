@@ -12,7 +12,7 @@
 </form>
 <h1></h1>
 <h1></h1>
-<h4><a href="/price_checker/update_prices">Обновить цены</a></h4>
+<h4><a href="{%url 'price_checker:update_prices'%}">Обновить цены</a></h4>
 <table>
     <thead align="center">
         <tr>
@@ -40,8 +40,8 @@
             <td><a href="{{elem.url}}">{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
             <td>{{elem.author_id}}</td>
-            <td><a href="/price_checker/price_history/{{elem.id}}">История цены</a></td>
-            <td><a href="/price_checker/delete_product/{{elem.id}}"> Удалить</a></td>
+            <td><a href="{%url 'price_checker:price_history' id=elem.id%}">История цены</a></td>
+            <td><a href="{%url 'price_checker:delete_product' id=elem.id%}"> Удалить</a></td>
         </tr>
         {%endfor%}
     </tbody>

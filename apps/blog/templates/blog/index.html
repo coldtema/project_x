@@ -3,7 +3,7 @@
 {%block content%}
 <body>
     <h1>ГЛАВНАЯ СТРАНИЦА</h1>
-    <h2><a href="blog/reg">Link for registration</a></h2>
+    <h2><a href="{%url 'blog:reg'%}">Link for registration</a></h2>
     <img src="{%static 'blog/cat.png'%}" width="300px">
     {%include "blog/main_product.html" with name='cold' only%}
 </body>
