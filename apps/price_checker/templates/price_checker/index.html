@@ -27,7 +27,7 @@
         </tr>
     </thead>
     <tbody align="center">
-        {%for elem in db_products%}
+        {%for elem in db_products_page%}
         <tr>
             <td>{{elem.id}}</td>
             <td>{{elem.shop}}</td>
@@ -46,5 +46,6 @@
         {%endfor%}
     </tbody>
 </table>
+{%include "price_checker/pagination.html" with page=db_products_page page_range=page_range%}
 <h1></h1>
 {%endblock content%}
