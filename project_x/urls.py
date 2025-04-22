@@ -20,9 +20,9 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include("apps.blog.urls")),
-    path('', include("apps.blog.urls")),
-    path('price_checker/', include('apps.price_checker.urls')),
-    path('test_generator/', include('apps.test_generator.urls')),
-    path('wb_checker/', include('apps.wb_checker.urls')),
+    path('', include("apps.blog.urls", namespace='blog')),
+    path('price_checker/', include('apps.price_checker.urls', namespace='price_checker')),
+    path('test_generator/', include('apps.test_generator.urls', namespace='test_generator')),
+    path('wb_checker/', include('apps.wb_checker.urls', namespace='wb_checker')),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
