@@ -6,6 +6,7 @@ from apps.price_checker.site_explorer import get_shop_of_product
 from django.db import transaction
 import asyncio
 from .async_site_explorer import Parser
+from django.utils import timezone
 
 
 def time_count(func):
@@ -100,6 +101,8 @@ class PriceUpdater:
         for product in self.async_exeption_prods:
             try:
                 maybe_new_price = get_shop_of_product(product.url)['price_element']
+            except TimeoutError:
+                print(product, '- завершился по таймауту')
             except:
                 self.exception_prods.append(product)
                 continue
@@ -110,6 +113,7 @@ class PriceUpdater:
 
     @time_count
     def check_exception_prods(self):
+            time.sleep(10)
             '''Функция проверки тех элементов, которые не прошли проверку с 1го раза'''
             print(f'''
         эти элементы не прошли с первой попытки: {[elem.name for elem in self.exception_prods]}
@@ -129,11 +133,12 @@ class PriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при изменении его цены)'''
         print(f'''
 Цена изменилась!
-Продукт: {product.name}
+Продукт: {product.url}
 Было: {product.latest_price}
 Стало: {maybe_new_price}
 ''')
         product.latest_price = maybe_new_price
+        product.updated = timezone.now()
         self.new_prices.append(Price(price=maybe_new_price, product=product))
         self.products_to_update.append(product)
 
@@ -147,6 +152,7 @@ class PriceUpdater:
             answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
             if answer == 'd':
                 product.enabled = False
+                product.updated = timezone.now()
             else:
                 continue
 
@@ -154,6 +160,6 @@ class PriceUpdater:
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''
-        Product.enabled_products.all().bulk_update(self.products_to_update, fields=['latest_price'])
+        Product.enabled_products.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated'])
         Price.objects.all().bulk_create(self.new_prices)
-        Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled'])
+        Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
