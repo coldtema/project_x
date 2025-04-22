@@ -1,6 +1,10 @@
 import apps.blog.views as views
 from django.urls import path, re_path, include
 
+
+app_name = 'blog'
+
+
 urlpatterns = [
     path('', views.index, name='hello'), #путь, функция представления, и имя пути для лаконичности
     path('posts/', views.posts, name='posts'),
