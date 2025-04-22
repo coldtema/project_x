@@ -36,8 +36,21 @@ def all_price_list(request):
         db_products = Product.objects.filter(enabled=True)
         paginator = Paginator(db_products, 10)
         page_number = request.GET.get('page', 1)
-        db_products = paginator.page(page_number)
-        return render(request, 'price_checker/index.html', context={'form': product_form, 'db_products': db_products})
+        db_products_page = paginator.get_page(page_number)
+        page_number = db_products_page.number #исключение обработано строкой выше, а вот тип может быть строкой итд, поэтому беру номер еще раз уже из готового объекта класса Page
+        number_of_pages = paginator.num_pages
+        if page_number - 3 < 1:
+            lowest_page = 1
+        else:
+            lowest_page = page_number - 3
+        if page_number + 3 > number_of_pages:
+            highest_page = number_of_pages
+        else:
+            highest_page = page_number + 3
+        page_range = list(range(lowest_page, highest_page+1))
+        return render(request, 'price_checker/index.html', context={'form': product_form, 
+                                                                    'db_products_page': db_products_page,
+                                                                    'page_range': page_range})
 
 
 
