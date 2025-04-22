@@ -18,7 +18,7 @@ def get_shop_of_product(product_url):
 def get_product_brandshop(product_url):
     '''Функция для парсинга товара из brandshop'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find("div", class_="product-order__price_new").text.strip()
@@ -34,7 +34,7 @@ def get_product_brandshop(product_url):
 def get_product_superstep(product_url):
     '''Функция для парсинга товара из superstep'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find("div", class_="product-detail__sale-price--black").text.strip()
@@ -52,7 +52,7 @@ def get_product_superstep(product_url):
 def get_product_rendez_vous(product_url):
     '''Функция для парсинга товара из rendez-vous'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_="item-price-value").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
@@ -73,7 +73,7 @@ def get_product_rendez_vous(product_url):
 def get_product_tsum_outlet(product_url):
     '''Функция для парсинга товара из tsum_outlet'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_=re.compile(r'Price__wrapper___\w+')).text.strip()
     price_element = price_element.split('₽')
@@ -94,7 +94,7 @@ def get_product_tsum(product_url):
     if 'outlet' in product_url:
         return get_product_tsum_outlet(product_url)
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("p", class_=re.compile(r'Price__price___\w+')).text.strip()
     price_element = price_element.split('₽')
@@ -114,7 +114,7 @@ def get_product_tsum(product_url):
 def get_product_street_beat(product_url):
     '''Функция для парсинга товара из street beat'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
     json_data = json.loads(digital_data_dict.group(1))
     name = json_data['product']['name']
@@ -125,7 +125,7 @@ def get_product_street_beat(product_url):
 def get_product_lacoste(product_url):
     '''Функция для парсинга товара из lacoste'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_="nl-product-price nl-product-configuration__price").text.strip().split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
@@ -137,7 +137,7 @@ def get_product_lacoste(product_url):
 def get_product_sv77(product_url):
     '''Функция для парсинга товара из sv77'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("button", class_="button button-bordered items-center button-rect w-100 db fade button-hover-black").text.strip().split('руб.')
     if price_element[1] != '':
@@ -154,7 +154,7 @@ def get_product_sv77(product_url):
 def get_product_elyts(product_url):
     '''Функция для парсинга товара из elyts'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_="final-price-block").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
@@ -166,7 +166,7 @@ def get_product_elyts(product_url):
 def get_product_vipavenue(product_url):
     '''Функция для парсинга товара из vipavenue'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_="product__card--price-actual").text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
@@ -178,7 +178,7 @@ def get_product_vipavenue(product_url):
 def get_product_aimclo(product_url):
     '''Функция для парсинга товара из aimclo'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find("div", class_="product-information__price js-element-price").text.strip()
@@ -193,7 +193,7 @@ def get_product_aimclo(product_url):
 def get_product_befree(product_url):
     '''Функция для парсинга товара из befree'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_=re.compile(r'.+(digi-product-price)')).text.strip()
     price_element = price_element.split('₽')[0]
@@ -204,7 +204,7 @@ def get_product_befree(product_url):
 def get_product_loverepublic(product_url):
     '''Функция для парсинга товара из love republic'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='item-prices').text.strip()
     price_element = price_element.split('₽')
@@ -221,7 +221,7 @@ def get_product_loverepublic(product_url):
 def get_product_youstore(product_url):
     '''Функция для парсинга товара из youstore'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-view-price').text.strip()
     price_element = price_element.split('₽')[0].strip()
@@ -234,7 +234,7 @@ def get_product_youstore(product_url):
 def get_product_gate31(product_url): #вообще не увидел раздел скидок
     '''Функция для парсинга товара из gate31'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-price__default').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -246,7 +246,7 @@ def get_product_gate31(product_url): #вообще не увидел разде�
 def get_product_incanto(product_url):
     '''Функция для парсинга товара из incanto'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find("title").text.strip()
     price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
@@ -258,7 +258,7 @@ def get_product_incanto(product_url):
 def get_product_sportcourt(product_url):
     '''Функция для парсинга товара из sportcourt'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     response.encoding = response.apparent_encoding #свойство, которое угадывает кодировку на основе содержимого
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='p_price').text.strip()
@@ -276,7 +276,7 @@ def get_product_sportcourt(product_url):
 def get_product_1811stores(product_url):
     '''Функция для парсинга товара из 1811stores'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find("title").text.strip()
     price_element = re.search(pattern=r'(за )(.+?)( руб.)', string=full).group(2)
@@ -289,7 +289,7 @@ def get_product_1811stores(product_url):
 def get_product_bask(product_url):
     '''Функция для парсинга товара из bask'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_='avail-b').text.strip()
     price_element = re.search(pattern=r'(.+?)(Доступно)', string=price_element).group(1)
@@ -307,7 +307,7 @@ def get_product_bask(product_url):
 def get_product_noone(product_url):
     '''Функция для парсинга товара из noone'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='item-price').text.strip()
     price_element = price_element.split('RUB')[0].strip()
@@ -320,7 +320,7 @@ def get_product_noone(product_url):
 def get_product_elis(product_url):
     '''Функция для парсинга товара из elis'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(url=product_url, headers=headers, verify=False) #пока выключил проверку SSL-сертификатов - что-то с ними случилось
+    response = httpx.get(url=product_url, headers=headers, timeout=10, verify=False) #пока выключил проверку SSL-сертификатов - что-то с ними случилось
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -332,7 +332,7 @@ def get_product_elis(product_url):
 def get_product_afinabags(product_url):
     '''Функция для парсинга товара из afinabags'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='item-card__price').text.strip()
     price_element = price_element.split('₽')
@@ -353,7 +353,7 @@ def get_product_afinabags(product_url):
 def get_product_crockid(product_url):
     '''Функция для парсинга товара из crockid'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_=re.compile(r'(cost)(.+)?')).text.strip()
     price_element = price_element.split('р.')[0]
@@ -366,7 +366,7 @@ def get_product_crockid(product_url):
 def get_product_bungly(product_url):
     '''Функция для парсинга товара из bungly'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='price-first-load').text.strip().split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -378,7 +378,7 @@ def get_product_bungly(product_url):
 def get_product_aupontrouge(product_url):
     '''Функция для парсинга товара из aupontrouge'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -392,7 +392,7 @@ def get_product_aupontrouge(product_url):
 def get_product_sohoshop(product_url):
     '''Функция для парсинга товара из sohoshop'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='prices_block').text.strip()
     price_element = price_element.split('руб')[0]
@@ -406,7 +406,7 @@ def get_product_sohoshop(product_url):
 def get_product_lichi(product_url):
     '''Функция для парсинга товара из lichi'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_=re.compile(r'(product-content_price_box__).+')).text.strip()
     price_element = price_element.split('₽')
@@ -423,7 +423,7 @@ def get_product_lichi(product_url):
 def get_product_askent(product_url):
     '''Функция для парсинга товара из askent'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product__currentPrice').text.strip()
     price_element = price_element.split('₽')[0]
@@ -436,7 +436,7 @@ def get_product_askent(product_url):
 def get_product_darsi(product_url):
     '''Функция для парсинга товара из darsi'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find("title").text.strip()
     price_element = re.search(pattern=r'(цене )(.+?)( руб)', string=full).group(2)
@@ -449,7 +449,7 @@ def get_product_darsi(product_url):
 def get_product_cocos_moscow(product_url):
     '''Функция для парсинга товара из cocos-moscow'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-item-detail-price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -462,7 +462,7 @@ def get_product_cocos_moscow(product_url):
 def get_product_inspireshop(product_url):
     '''Функция для парсинга товара из inspireshop'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-page__item-price-container').text.strip()
     price_element = price_element.split('₽')[0]
@@ -475,10 +475,10 @@ def get_product_inspireshop(product_url):
 def get_product_respect_shoes(product_url):
     '''Функция для парсинга товара из respect-shoes'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='price-div-flex').text.strip()
-    price_element = price_element.split('р.')[0]
+    price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find("h1", class_='h1-cart').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'respect-shoes'}
@@ -488,7 +488,7 @@ def get_product_respect_shoes(product_url):
 def get_product_pompa(product_url):
     '''Функция для парсинга товара из pompa'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_='current_price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -500,7 +500,7 @@ def get_product_pompa(product_url):
 def get_product_bunnyhill(product_url):
     '''Функция для парсинга товара из bunnyhill'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("span", class_='price price_to_change').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -512,7 +512,7 @@ def get_product_bunnyhill(product_url):
 def get_product_annapekun(product_url):
     '''Функция для парсинга товара из annapekun'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='catalog-item__price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -526,7 +526,7 @@ def get_product_annapekun(product_url):
 def get_product_amazingred(product_url):
     '''Функция для парсинга товара из amazingred'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(product_url, headers=headers)
+    response = httpx.get(product_url, headers=headers, timeout=10)
     digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
     json_data = json.loads(digital_data_dict.group(1))
     price_element = json_data['product']['unitSalePrice']
@@ -538,7 +538,7 @@ def get_product_amazingred(product_url):
 def get_product_m_reason(product_url):
     '''Функция для парсинга товара из m-reason'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='price').text.strip()
     price_element = price_element.split('i')
@@ -560,7 +560,7 @@ def get_product_voishe(product_url):
     "Referer": "https://www.voishe.ru/",
     "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
 }
-    response = httpx.get(product_url, headers=headers)
+    response = httpx.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='js-product-price js-store-prod-price-val t-store__prod-popup__price-value').text.strip()
     price_element = price_element.split(',')[0]
@@ -573,7 +573,7 @@ def get_product_voishe(product_url):
 def get_product_choux(product_url):
     '''Функция для парсинга товара из choux'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(цене )(.+?)( ₽)', string=full).group(2)
@@ -586,7 +586,7 @@ def get_product_choux(product_url):
 def get_product_fablestore(product_url):
     '''Функция для парсинга товара из fablestore'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-result__price body-text').text.strip()
     price_element = price_element.split('₽')[0]
@@ -599,7 +599,7 @@ def get_product_fablestore(product_url):
 def get_product_selfmade(product_url):
     '''Функция для парсинга товара из selfmade'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -611,7 +611,7 @@ def get_product_selfmade(product_url):
 def get_product_kanzler_style(product_url):
     '''Функция для парсинга товара из kanzler-style'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product__price-wrapper').text.strip()
     price_element = price_element.split('₽')[0]
@@ -624,7 +624,7 @@ def get_product_kanzler_style(product_url):
 def get_product_belleyou(product_url):
     '''Функция для парсинга товара из belleyou'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -636,7 +636,7 @@ def get_product_belleyou(product_url):
 def get_product_zolla(product_url):
     '''Функция для парсинга товара из zolla'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='catalog-detail--redesign__aside-price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -648,7 +648,7 @@ def get_product_zolla(product_url):
 def get_product_danielonline(product_url):
     '''Функция для парсинга товара из danielonline'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='item-price__value').text.strip()
     price_element = price_element.split('руб.')[0]
@@ -661,7 +661,7 @@ def get_product_danielonline(product_url):
 def get_product_zarina(product_url):
     '''Функция для парсинга товара из zarina'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product__price-current').text.strip()
     price_element = price_element.split('руб.')[0]
@@ -674,7 +674,7 @@ def get_product_zarina(product_url):
 def get_product_alexanderbogdanov(product_url):
     '''Функция для парсинга товара из alexanderbogdanov'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-card-info__prices').text.strip()
     price_element = price_element.split('₽')[0]
@@ -687,7 +687,7 @@ def get_product_alexanderbogdanov(product_url):
 def get_product_werfstore(product_url): #не нашел скидок
     '''Функция для парсинга товара из werfstore'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('p', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -699,7 +699,7 @@ def get_product_werfstore(product_url): #не нашел скидок
 def get_product_koffer(product_url):
     '''Функция для парсинга товара из koffer'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-info__buy-block').text.strip()
     price_element = price_element.split('₽')[0]
@@ -712,7 +712,7 @@ def get_product_koffer(product_url):
 def get_product_age_of_innocence(product_url):
     '''Функция для парсинга товара из age-of-innocence'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('div', class_='v-stack')
     price_element = ''.join(list(map(lambda x: x.text.strip(), price_element)))
@@ -726,7 +726,7 @@ def get_product_age_of_innocence(product_url):
 def get_product_nice_one(product_url):
     '''Функция для парсинга товара из nice-one'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = price_element.split('руб.')
@@ -743,7 +743,7 @@ def get_product_nice_one(product_url):
 def get_product_alpindustria(product_url):
     '''Функция для парсинга товара из alpindustria'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product__price-wrap').text.strip()
     price_element = price_element.split('руб.')
@@ -760,7 +760,7 @@ def get_product_alpindustria(product_url):
 def get_product_indiwd(product_url):
     '''Функция для парсинга товара из indiwd'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='h3 product__page-price').text.strip()
     price_element = price_element.split('₽')
@@ -774,7 +774,7 @@ def get_product_indiwd(product_url):
 def get_product_biggeek(product_url):
     '''Функция для парсинга товара из biggeek'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='total-prod-price').text.strip()
     price_element = price_element.split('₽')
@@ -788,7 +788,7 @@ def get_product_biggeek(product_url):
 def get_product_tefal(product_url):
     '''Функция для парсинга товара из tefal'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = int(float(re.search(pattern=r'(цена )(.+)( руб)', string=full).group(2)))
@@ -800,7 +800,7 @@ def get_product_tefal(product_url):
 def get_product_yves_rocher(product_url):
     '''Функция для парсинга товара из yves-rocher'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='bold text_size_20 tab_text_size_24').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -812,7 +812,7 @@ def get_product_yves_rocher(product_url):
 def get_product_galaxystore(product_url):
     '''Функция для парсинга товара из galaxystore'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     digital_data_dict = re.search(r'window\.digitalData\s*=\s*(\{.*?\});', response.text)
     json_data = json.loads(digital_data_dict.group(1))
     price_element = int(json_data['product']['unitSalePrice'])
@@ -824,7 +824,7 @@ def get_product_galaxystore(product_url):
 def get_product_megafon(product_url):
     '''Функция для парсинга товара из megafon'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_=re.compile(r'(Price_text__).+')).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -836,7 +836,7 @@ def get_product_megafon(product_url):
 def get_product_ecco(product_url):
     '''Функция для парсинга товара из ecco'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -848,7 +848,7 @@ def get_product_ecco(product_url):
 def get_product_xcom_shop(product_url):
     '''Функция для парсинга товара из xcom-shop'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='card-content-total-price__current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -860,7 +860,7 @@ def get_product_xcom_shop(product_url):
 def get_product_epldiamond(product_url):
     '''Функция для парсинга товара из epldiamond'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(цене )(.+)( руб)', string=price_element).group(2)
@@ -873,7 +873,7 @@ def get_product_epldiamond(product_url):
 def get_product_doctorslon(product_url):
     '''Функция для парсинга товара из doctorslon'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -885,7 +885,7 @@ def get_product_doctorslon(product_url):
 def get_product_randewoo(product_url): #пока добавляется последний элемент, если там список ароматов, подумать, как предложить выбор
     '''Функция для парсинга товара из randewoo'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find_all('span', class_='s-productType__priceNewValue')
@@ -909,7 +909,7 @@ def get_product_randewoo(product_url): #пока добавляется посл
 def get_product_babor(product_url):
     '''Функция для парсинга товара из babor'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='productCard-price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -922,7 +922,7 @@ def get_product_babor(product_url):
 def get_product_mir_kubikov(product_url):
     '''Функция для парсинга товара из mir-kubikov'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('p', class_='product__info__price g-h2 m-old').text.strip()
@@ -940,7 +940,7 @@ def get_product_bombbar(product_url): #может отлетать - надо д
     '''Функция для парсинга товара из bombbar'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -952,7 +952,7 @@ def get_product_bombbar(product_url): #может отлетать - надо д
 def get_product_iledebeaute(product_url): 
     '''Функция для парсинга товара из iledebeaute'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', itemprop='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -964,7 +964,7 @@ def get_product_iledebeaute(product_url):
 def get_product_shop_polaris(product_url): 
     '''Функция для парсинга товара из shop-polaris'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price d-flex').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -976,7 +976,7 @@ def get_product_shop_polaris(product_url):
 def get_product_patchandgo(product_url):
     '''Функция для парсинга товара из patchandgo'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-page__controls__price').text.strip()
     price_element = price_element.split('р.')
@@ -993,7 +993,7 @@ def get_product_patchandgo(product_url):
 def get_product_madwave(product_url):
     '''Функция для парсинга товара из madwave'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('span', class_='target-price')
     price_element = list(map(lambda x: x.text, price_element))[-1].strip(' .')
@@ -1007,7 +1007,7 @@ def get_product_madwave(product_url):
 def get_product_apple_avenue(product_url):
     '''Функция для парсинга товара из apple-avenue'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price font-price-large bold').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1020,7 +1020,7 @@ def get_product_re_store(product_url): #бывает, что включаетс�
     '''Функция для парсинга товара из re-store'''
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
     price_element = re.search(pattern=r'(по цене )(.+)( рублей)', string=full).group(2)
@@ -1033,7 +1033,7 @@ def get_product_re_store(product_url): #бывает, что включаетс�
 def get_product_bestmebelshop(product_url):
     '''Функция для парсинга товара из bestmebelshop'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = int(re.search(pattern=r'\- (\d+) р', string=full).group(1))
@@ -1046,7 +1046,7 @@ def get_product_garlyn(product_url):
     '''Функция для парсинга товара из garlyn'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', 'price current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1065,7 +1065,7 @@ def get_product_garlyn(product_url):
 def get_product_kuppersberg(product_url):
     '''Функция для парсинга товара из kuppersberg'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='prodMain__price--new').text.strip()
     name = soup_engine.find('h1').text.strip()
@@ -1077,7 +1077,7 @@ def get_product_kuppersberg(product_url):
 def get_product_bosssleep(product_url):
     '''Функция для парсинга товара из bosssleep'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('p', class_='item-header__price')
     price_element = list(map(lambda x: x.text, price_element))
@@ -1094,7 +1094,7 @@ def get_product_bosssleep(product_url):
 def get_product_muztorg(product_url):
     '''Функция для парсинга товара из muztorg'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers)
+    response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('div', class_='mt-product-price__default-value').text.strip()
@@ -1110,7 +1110,7 @@ def get_product_finn_flare(product_url):
     '''Функция для парсинга товара из finn-flare'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(цене от )(.+)( в)', string=full).group(2)
@@ -1124,7 +1124,7 @@ def get_product_litres(product_url):
     '''Функция для парсинга товара из litres'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = str(soup_engine.find('meta', itemprop="price"))
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
@@ -1138,7 +1138,7 @@ def get_product_orteka(product_url):
     '''Функция для парсинга товара из orteka'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name':"description"}))
     price_element = re.search(pattern=r'(по цене )(.+)( руб.)', string=full).group(2)
@@ -1152,7 +1152,7 @@ def get_product_quke(product_url):
     '''Функция для парсинга товара из quke'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='price__value').text
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
@@ -1165,7 +1165,7 @@ def get_product_leonardo(product_url):
     '''Функция для парсинга товара из leonardo'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text
     price_element = re.search(pattern=r'(за )(.+)( ₽)', string=full).group(2)
@@ -1180,7 +1180,7 @@ def get_product_beeline(product_url):
     '''Функция для парсинга товара из beeline'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     response.encoding = response.apparent_encoding
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name':'description'}))
@@ -1195,7 +1195,7 @@ def get_product_tvoydom(product_url):
     '''Функция для парсинга товара из tvoydom'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     response.encoding = response.apparent_encoding
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
@@ -1210,7 +1210,7 @@ def get_product_sela(product_url):
     '''Функция для парсинга товара из sela'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name': 'Description'}))
     price_element = re.search(pattern=r'(цене )(.+?)( руб\.)', string=full).group(2)
@@ -1224,7 +1224,7 @@ def get_product_aquaphor(product_url):
     '''Функция для парсинга товара из aquaphor'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-block').text.strip()
     price_element=price_element.split('₽')[0]
@@ -1238,7 +1238,7 @@ def get_product_mnogomebeli(product_url):
     '''Функция для парсинга товара из mnogomebeli'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(ли )(\- )?(.+)( руб\.)', string=full).group(3)
@@ -1252,7 +1252,7 @@ def get_product_davines(product_url):
     '''Функция для парсинга товара из davines'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name': 'description'}))
     price_element = re.search(pattern=r'(за\s)(.+)(\sруб)', string=full).group(2)
@@ -1266,7 +1266,7 @@ def get_product_vsesmart(product_url):
     '''Функция для парсинга товара из vsesmart'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='detail__price-cost').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1279,7 +1279,7 @@ def get_product_boobl_goom(product_url):
     '''Функция для парсинга товара из boobl-goom'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = str(soup_engine.find('meta', attrs={'name': 'description'}))
     price_element = re.search(pattern=r'(Цена )(.+)( рублей)', string=full).group(2)
@@ -1293,7 +1293,7 @@ def get_product_ipiter(product_url):
     '''Функция для парсинга товара из ipiter'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title')
     price_element = soup_engine.find('div', class_='saleprice price').text.strip()
@@ -1308,7 +1308,7 @@ def get_product_mie(product_url):
     '''Функция для парсинга товара из mie'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='current-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1321,7 +1321,7 @@ def get_product_evitastore(product_url):
     '''Функция для парсинга товара из evitastore'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='cd-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1334,7 +1334,7 @@ def get_product_chitai_gorod(product_url):
     '''Функция для парсинга товара из chitai-gorod'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-offer-price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -1353,7 +1353,7 @@ def get_product_bestwatch(product_url):
     '''Функция для парсинга товара из bestwatch'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', itemprop='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1368,7 +1368,7 @@ def get_product_koleso(product_url):
     '''Функция для парсинга товара из koleso'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_=re.compile(r'(PriceBlock_Price__).+')).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1381,7 +1381,7 @@ def get_product_mann_ivanov_ferber(product_url):
     '''Функция для парсинга товара из mann-ivanov-ferber'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', attrs={'data-start-price-animation': 'priceElement'}).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1395,7 +1395,7 @@ def get_product_cozyhome(product_url):
     '''Функция для парсинга товара из cozyhome'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', attrs={'data-role': 'price'}).text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1408,7 +1408,7 @@ def get_product_christinacosmetics(product_url):
     '''Функция для парсинга товара из christinacosmetics'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-detale').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1421,7 +1421,7 @@ def get_product_velosklad(product_url):
     '''Функция для парсинга товара из velosklad'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     name = soup_engine.find('h1').text.strip()
     price_element = str(soup_engine.find('meta', itemprop='price'))
@@ -1434,7 +1434,7 @@ def get_product_multivarka(product_url):
     '''Функция для парсинга товара из multivarka'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('div', class_='product-item-price-new').text.strip()
@@ -1451,7 +1451,7 @@ def get_product_iboxstore(product_url):
     '''Функция для парсинга товара из iboxstore'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-card__price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1464,7 +1464,7 @@ def get_product_market_sveta(product_url):
     '''Функция для парсинга товара из market-sveta'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='productfull-block-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1477,7 +1477,7 @@ def get_product_aravia(product_url):
     '''Функция для парсинга товара из aravia'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-detail-price-block').text.strip()
     price_element = price_element.split('₽')
@@ -1495,7 +1495,7 @@ def get_product_krona(product_url):
     '''Функция для парсинга товара из krona'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='card__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1508,7 +1508,7 @@ def get_product_tddomovoy(product_url):
     '''Функция для парсинга товара из tddomovoy'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='base-product-price__main').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
@@ -1521,7 +1521,7 @@ def get_product_ansaligy(product_url):
     '''Функция для парсинга товара из ansaligy'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product__price-current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1534,7 +1534,7 @@ def get_product_hyperauto(product_url):
     '''Функция для парсинга товара из hyperauto'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', itemprop='price').text.strip()
     price_element = price_element.split(',')[0]
@@ -1548,7 +1548,7 @@ def get_product_kubaninstrument(product_url): #отлетел - потом по�
     '''Функция для парсинга товара из kubaninstrument'''
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-price__std').text.strip()
     price_element = price_element.split('₽')[0]
@@ -1562,7 +1562,7 @@ def get_product_nespresso(product_url):
     '''Функция для парсинга товара из nespresso'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('div', class_='product_prices -hasComparePrice').text.strip()
@@ -1579,7 +1579,7 @@ def get_product_aofb(product_url):
     '''Функция для парсинга товара из aofb'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = str(soup_engine.find('meta', itemprop='price'))
     price_element = re.search(pattern=r'\"(.+)₽', string=price_element).group(1).strip()
@@ -1593,7 +1593,7 @@ def get_product_yamanshop(product_url):
     '''Функция для парсинга товара из yamanshop'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-wrapper').text.strip()
     price_element = price_element.split('₽')
@@ -1611,7 +1611,7 @@ def get_product_dvamyacha(product_url):
     '''Функция для парсинга товара из dvamyacha'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='elem-description-price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -1626,9 +1626,9 @@ def get_product_ochkarik(product_url):
     '''Функция для парсинга товара из ochkarik'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get('https://ochkarik.ru/catalog/kontaktnye-linzy/acuvue-oasys-with-hydraluxe-30-linz/', headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = re.search(r'(price":")(.+?)\"', response.text).group(2)
+    price_element = soup_engine.find('div', 'basket-info__price').text.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
     return {'price_element': price_element, 'name': name, 'shop': 'ochkarik'}
@@ -1639,7 +1639,7 @@ def get_product_hi_stores(product_url):
     '''Функция для парсинга товара из hi-stores'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='cost prices detail').text.strip()
     price_element = re.search(pattern=r'(наличными\:)(.+)\n', string=price_element).group(2)
@@ -1653,7 +1653,7 @@ def get_product_fkniga(product_url):
     '''Функция для парсинга товара из fkniga'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price price--ruble price--md').text.strip()
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
@@ -1665,7 +1665,7 @@ def get_product_fkniga(product_url):
 def get_product_santehnika_tut(product_url):
     '''Функция для парсинга товара из santehnika-tut'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(url='product_url', headers=headers, verify=False)#что-то с проверкой сертификатов
+    response = httpx.get(url='product_url', headers=headers, timeout=10, verify=False)#что-то с проверкой сертификатов
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find('div', class_='price clubprice').text.strip()
@@ -1681,7 +1681,7 @@ def get_product_wau(product_url):
     '''Функция для парсинга товара из wau'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='product__price-wrapper').text.strip()
     price_element = price_element.split('₽')[0]
@@ -1695,7 +1695,7 @@ def get_product_skinjestique(product_url):
     '''Функция для парсинга товара из skinjestique'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('div', class_='product-item-price price-actual')[1].text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
@@ -1708,7 +1708,7 @@ def get_product_igroray(product_url):
     '''Функция для парсинга товара из igroray'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='product-info-main__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
@@ -1721,7 +1721,7 @@ def get_product_hansa(product_url):
     '''Функция для парсинга товара из hansa'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('script', attrs={'type':'application/ld+json'}).text
     price_element = re.search(pattern=r'\"price\"\: \"(.+)\.', string=full).group(1)
@@ -1748,7 +1748,7 @@ def get_product_x_moda(product_url):
     '''Функция для парсинга товара из x-moda'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='product-b__price-new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element))))
@@ -1761,7 +1761,7 @@ def get_product_playtoday(product_url):
     '''Функция для парсинга товара из playtoday'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='item-price__club-value').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1774,7 +1774,7 @@ def get_product_santehmoll(product_url):
     '''Функция для парсинга товара из santehmoll'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='pcard-info__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1787,7 +1787,7 @@ def get_product_golden_line(product_url):
     '''Функция для парсинга товара из golden-line'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', itemprop='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1800,7 +1800,7 @@ def get_product_tmktools(product_url):
     '''Функция для парсинга товара из tmktools'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = re.search(pattern=r'(\<meta itemprop\=\"price\")\s(content\=\"(.+))\"\>', string=response.text).group(3)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1813,7 +1813,7 @@ def get_product_ochkov(product_url):
     '''Функция для парсинга товара из ochkov'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='nfe_single-product__price').text.strip()
     price_element = price_element.split('руб.')
@@ -1831,7 +1831,7 @@ def get_product_svetlux(product_url):
     '''Функция для парсинга товара из svetlux'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='catalog-item-price-cur').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1844,7 +1844,7 @@ def get_product_divanboss(product_url):
     '''Функция для парсинга товара из divanboss'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('p', class_='item-header__price')
     price_element = list(map(lambda x: x.text, price_element))
@@ -1862,7 +1862,7 @@ def get_product_postel_deluxe(product_url):
     '''Функция для парсинга товара из postel-deluxe'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = str(soup_engine.find('meta', itemprop='price'))
     if price_element == 'None':
@@ -1877,7 +1877,7 @@ def get_product_dushevoi(product_url):
     '''Функция для парсинга товара из dushevoi'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = str(soup_engine.find('meta', itemprop='price'))
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1890,7 +1890,7 @@ def get_product_tastycoffee(product_url):
     '''Функция для парсинга товара из tastycoffee'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = str(soup_engine.find('meta', itemprop='price'))
     price_element = re.search(pattern=r'(content)(.+?)\s', string=price_element).group(2)
@@ -1904,7 +1904,7 @@ def get_product_eurodom(product_url):
     '''Функция для парсинга товара из eurodom'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='product-detail__main-info-prices-actual font-weight-bold').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1917,7 +1917,7 @@ def get_product_happylook(product_url):
     '''Функция для парсинга товара из happylook'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find('div', class_='product-detail__price js-product-detail__price').text.strip()
@@ -1933,7 +1933,7 @@ def get_product_happylook(product_url):
 def get_product_consul_coton(product_url):
     '''Функция для парсинга товара из consul-coton'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(product_url, headers=headers)
+    response = httpx.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find('div', class_='detail-price__new detail-price__new_red').text
@@ -1953,7 +1953,7 @@ def get_product_consul_coton(product_url):
 def get_product_audiomania(product_url):
     '''Функция для парсинга товара из audiomania'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(product_url, headers=headers)
+    response = httpx.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find('span', class_='price-v3 price-sale').text
@@ -1970,7 +1970,7 @@ def get_product_planeta_sport(product_url):
     '''Функция для парсинга товара из planeta-sport'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('span', class_='price_value').text.split()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -1984,7 +1984,7 @@ def get_product_krups(product_url):
     '''Функция для парсинга товара из krups'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     full = soup_engine.find('title').text
     price_element = re.search(pattern=r'(выгодной цене )(.+?)( в магазине)', string=full).group(2)
@@ -1999,7 +1999,7 @@ def get_product_rocky_shop(product_url):
     '''Функция для парсинга товара из rocky-shop'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = re.search(pattern=r'\<meta\sitemprop\=\"price\" content\=\"(\d+)', string=response.text).group(1)
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2013,7 +2013,7 @@ def get_product_aromacode(product_url):
     '''Функция для парсинга товара из aromacode'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('span', class_='price prices-price prices-price-regular active')
     price_element = list(map(lambda x: int(x.text), price_element))
@@ -2031,7 +2031,7 @@ def get_product_kosmetika_proff(product_url):
     '''Функция для парсинга товара из kosmetika-proff'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='svg-currency').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2045,7 +2045,7 @@ def get_product_clever_media(product_url):
     '''Функция для парсинга товара из clever-media'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('span', class_='product__price-cur').text
     price_element = re.findall(pattern=r'(\"price\"\:)(.+)', string=response.text)[0][1]
@@ -2060,7 +2060,7 @@ def get_product_elemis(product_url):
     '''Функция для парсинга товара из elemis'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('span', class_='new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2074,7 +2074,7 @@ def get_product_mdm_complect(product_url):
     '''Функция для парсинга товара из mdm-complect'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='price-main').text.strip()
     price_element = price_element.split('.')[0]
@@ -2089,7 +2089,7 @@ def get_product_lu(product_url):
     '''Функция для парсинга товара из lu'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='card2-price__current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2103,7 +2103,7 @@ def get_product_litnet(product_url):
     '''Функция для парсинга товара из litnet'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('span', class_='ln_btn-get-text').text.strip()
     price_element = re.search(pattern=r'\s([\d\.]+)\s(RUB)', string=price_element).group(1)
@@ -2118,7 +2118,7 @@ def get_product_mi_shop(product_url):
     '''Функция для парсинга товара из mi-shop'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='b-product-info__price-new').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2131,7 +2131,7 @@ def get_product_parfums(product_url):
     '''Функция для парсинга товара из parfums'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find_all('label', class_='pd-product__variants-item')
     price_element = list(map(lambda x: x.text.strip(' \n'), price_element))
@@ -2156,7 +2156,7 @@ def get_product_lex1(product_url):
     '''Функция для парсинга товара из lex1'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='item-single-product-price mb-3 price').text.strip()
     if '%' in price_element:
@@ -2173,7 +2173,7 @@ def get_product_r_ulybka(product_url):
     '''Функция для парсинга товара из r-ulybka'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('script', attrs={'type':"application/ld+json"}).text.strip()
     price_element = re.search(pattern=r'(\"price\"\:)([\d ]+)\,', string=price_element).group(2)
@@ -2187,7 +2187,7 @@ def get_product_top_santehnika(product_url):
     '''Функция для парсинга товара из top-santehnika'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find('div', class_='coupon-price').text.strip()
@@ -2199,11 +2199,11 @@ def get_product_top_santehnika(product_url):
 
 
 
-def get_product_rossko(product_url):
+def get_product_rossko(product_url):#временно отвалился
     '''Функция для парсинга товара из rossko'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2212,11 +2212,11 @@ def get_product_rossko(product_url):
 
 
 
-def get_product_z51(product_url):
+def get_product_z51(product_url):#ыресенно отвалился
     '''Функция для парсинга товара из z51'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='zone__product__price__value').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2229,7 +2229,7 @@ def get_product_moulinex(product_url):
     '''Функция для парсинга товара из moulinex'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('title').text.strip()
     price_element = re.search(pattern=r'(цене\s)(.+)₽', string=price_element).group(2)
@@ -2243,7 +2243,7 @@ def get_product_krutizmi(product_url):
     '''Функция для парсинга товара из krutizmi'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='sidebar-card__price').text.strip()
     price_element = price_element.split('руб.')[0]
@@ -2257,7 +2257,7 @@ def get_product_pharmacosmetica(product_url):
     '''Функция для парсинга товара из pharmacosmetica'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     try:
         price_element = soup_engine.find('h2', class_='tprice').text.strip()
@@ -2295,7 +2295,7 @@ def get_product_gamepark(product_url):
     '''Функция для парсинга товара из gamepark'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     if 'used' in product_url:
         price_element = soup_engine.find_all('div', class_='price')[1].text.strip()
@@ -2317,7 +2317,7 @@ def get_product_domsporta(product_url):
     '''Функция для парсинга товара из domsporta'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='b-detail__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2330,7 +2330,7 @@ def get_product_lustrof(product_url):
     '''Функция для парсинга товара из lustrof'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='price product__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2343,7 +2343,7 @@ def get_product_lakestone(product_url):
     '''Функция для парсинга товара из lakestone'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price').text.strip()
     price_element = price_element.split('руб.')[0]
@@ -2357,7 +2357,7 @@ def get_product_bookvoed(product_url):
     '''Функция для парсинга товара из bookvoed'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-block-price-info__price').text.strip()
     price_element = price_element.split('₽')[0]
@@ -2372,7 +2372,7 @@ def get_product_proficosmetics(product_url):
     '''Функция для парсинга товара из proficosmetics'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('p', class_='new_price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2385,7 +2385,7 @@ def get_product_vamvelosiped(product_url):
     '''Функция для парсинга товара из vamvelosiped'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find_all('span', class_='price price-new')
@@ -2402,7 +2402,7 @@ def get_product_book24(product_url):
     '''Функция для парсинга товара из book24'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='app-price product-sidebar-price__price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2415,7 +2415,7 @@ def get_product_birota(product_url):
     '''Функция для парсинга товара из birota'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('strong', class_='price').text.strip()
     price_element = price_element.split('руб.')[0]
@@ -2429,7 +2429,7 @@ def get_product_bebakids(product_url):
     '''Функция для парсинга товара из bebakids'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='wr_item_3_1').text.strip()
     price_element = price_element.split('₽')[0]
@@ -2443,7 +2443,7 @@ def get_product_med_magazin(product_url):
     '''Функция для парсинга товара из med-magazin'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price-block').text.strip()
     price_element = price_element.split('₽')[0]
@@ -2457,7 +2457,7 @@ def get_product_iherbgroup(product_url):
     '''Функция для парсинга товара из iherbgroup'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='product__price price nowrap').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
@@ -2590,7 +2590,7 @@ def get_product_bbcream(product_url):
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', url=product_url, headers=headers)
+    response = request('GET', url=product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find("div", class_='product-card__content-wrapper').text.strip()
     print(price_element)
@@ -2608,7 +2608,7 @@ def get_product_askona(product_url): #блокает ip после 5-10 запр
     "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
 }
     scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     full = soup_engine.find('title').text.strip()
     try:
