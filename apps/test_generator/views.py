@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from .forms import AddTest
 from .models import Test
@@ -11,7 +12,7 @@ def all_tests_list(request):
         if form.is_valid():
             new_test = Test(name=request.POST.get('name'), text=request.POST.get('text'))
             send_message_and_get_reply(request.POST.get('text'), new_test, request.POST.get('max_questions'))
-            return HttpResponseRedirect('/test_generator')
+            return HttpResponseRedirect(reverse('test_generator:test_generator'))
     else:
         return render(request, 'test_generator/all_tests.html', context={'form': AddTest, 'all_tests': all_tests})
     
@@ -60,7 +61,7 @@ def answers_on_test(request, id):
 
 def delete_test(request, id):
     Test.objects.get(id=id).delete()
-    return HttpResponseRedirect('/test_generator')
+    return HttpResponseRedirect(reverse('test_generator:test_generator'))
 
 
 

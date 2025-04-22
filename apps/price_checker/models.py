@@ -6,6 +6,9 @@ class EnabledManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(enabled=True)
 
+
+
+
 class Tag(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя тега')
 
@@ -18,6 +21,7 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
 
 
 
@@ -36,6 +40,8 @@ class Shop(models.Model):
 
     def __str__(self):
         return self.name
+
+
 
 
 class Product(models.Model):
@@ -71,6 +77,8 @@ class Product(models.Model):
                 self.updated = original.updated
         super().save(*args, **kwargs)
     
+
+
 
 class Price(models.Model):
     price = models.IntegerField(verbose_name='Цена')

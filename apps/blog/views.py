@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from .models import Author, Post
 from .forms import UserForm, UserEditForm
@@ -36,7 +37,7 @@ def reg(request):
         form_obj = UserForm(request.POST)
         if form_obj.is_valid():
             Author.objects.create(nickname=request.POST.get('nickname'), age=request.POST.get('age'))
-            return HttpResponseRedirect('/blog/reg')
+            return HttpResponseRedirect(reverse('blog:reg'))
         else:
             return HttpResponseBadRequest('Неправильно введены данные в форме')
     elif request.method == 'GET':
@@ -53,9 +54,9 @@ def reg_edit(request, id):
             # object_to_edit.nickname, object_to_edit.age=request.POST.get('nickname'), request.POST.get('age')
             # object_to_edit.save()
             form_to_validate.save()
-            return HttpResponseRedirect('/blog/reg') #надо как то обратиться к урлу через имя этого урла
+            return HttpResponseRedirect(reverse('blog:reg')) #надо как то обратиться к урлу через имя этого урла
         else:
-            return HttpResponseRedirect('/blog/reg') 
+            return HttpResponseRedirect(reverse('blog:reg')) 
     else:
         try:
             # object_form = UserEditForm(initial={'age': object_to_edit.age, 'nickname': object_to_edit.nickname, 'id':object_to_edit.id}) #при создании формы initial уже не может измениться
@@ -67,7 +68,7 @@ def reg_edit(request, id):
 def reg_delete(request, id):
     try:
         Author.objects.get(id=id).delete()
-        return HttpResponseRedirect('/blog/reg')
+        return HttpResponseRedirect(reverse('blog:reg'))
     except:
         return HttpResponseNotFound('Пользователь не найден')
 

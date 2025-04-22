@@ -35,7 +35,7 @@ def clear_db(request):
     WBSeller.objects.all().delete()
     WBBrand.objects.all().delete()
     TopWBProduct.objects.all().delete()
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 
@@ -43,7 +43,7 @@ def clear_db(request):
 def update_menu_categories(request):
     '''Обновление категорий общего меню wb'''
     update_menu_cats()
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 
@@ -53,7 +53,7 @@ def update_prices(request):
     price_updater = PriceUpdater()
     price_updater.run()
     del price_updater
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 
@@ -63,7 +63,7 @@ def update_avaliability(request):
     avaliability_updater = AvaliabilityUpdater()
     avaliability_updater.run()
     del avaliability_updater
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 
@@ -110,7 +110,7 @@ def update_top_prods(request):
     #         menu_category = wb_menu_categories.MenuCategory(url, author_object)
     #         menu_category.run()
     #         del menu_category
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 
@@ -120,4 +120,4 @@ def update_top_prods_info(request):
     updater_info_of_top = UpdaterInfoOfTop()
     updater_info_of_top.run()
     del updater_info_of_top
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))

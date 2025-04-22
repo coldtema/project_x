@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm
 from .models import Product, Price, Shop
@@ -27,7 +27,7 @@ def all_price_list(request):
                                                  ref_url=request.POST.get('url')) #прописать здесь get_or_create и вообще вынести в другое место
             Author.objects.get(id=2).product_set.add(new_product)
             Price.objects.create(product=new_product, price=product_data['price_element'])
-            return HttpResponseRedirect(reverse('all_price_list_1'))
+            return HttpResponseRedirect(reverse('price_checker:all_price_list'))
         else:
             return HttpResponseBadRequest('Так себе ссылка')
     else:
@@ -40,7 +40,7 @@ def all_price_list(request):
 
 def price_history(request, id):
     '''Функция для открытия истории цены конкретного продукта'''
-    product_to_watch = Product.objects.get(id=id)
+    product_to_watch = get_object_or_404(Product, id=id)
     prices_of_product = Price.objects.filter(product_id=id)
     dates = []
     prices = []
@@ -55,7 +55,7 @@ def price_history(request, id):
 def delete_product(request, id):
     '''Функция представления для удаления конкретного продукта'''
     Product.objects.get(id=id).delete()
-    return HttpResponseRedirect(reverse('all_price_list'))
+    return HttpResponseRedirect(reverse('price_checker:all_price_list'))
 
 
 
@@ -64,7 +64,7 @@ def delete_price(request, id):
     product_to_redirect = Price.objects.get(id=id).product
     id_of_product = product_to_redirect.id
     Price.objects.get(id=id).delete()
-    return HttpResponseRedirect(reverse('price_history', args=[id_of_product]))
+    return HttpResponseRedirect(reverse('price_checker:price_history', args=[id_of_product]))
 
 # def update_prices(request):
 #     asyncio.create_task(process_sites())
@@ -75,4 +75,4 @@ def update_prices(request):
     p_u = PriceUpdater()
     p_u.run()
     del p_u
-    return HttpResponseRedirect(reverse('all_price_list_1'))
+    return HttpResponseRedirect(reverse('price_checker:all_price_list'))
