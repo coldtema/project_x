@@ -11,6 +11,7 @@ from .chart_builder import plot_price_history
 from django.urls import reverse
 from apps.price_checker.utils import PriceUpdater
 from apps.price_checker.utils import time_count
+from django.core.paginator import Paginator
 
 
 
@@ -33,6 +34,9 @@ def all_price_list(request):
     else:
         product_form = ProductForm()
         db_products = Product.objects.filter(enabled=True)
+        paginator = Paginator(db_products, 10)
+        page_number = request.GET.get('page', 1)
+        db_products = paginator.page(page_number)
         return render(request, 'price_checker/index.html', context={'form': product_form, 'db_products': db_products})
 
 
