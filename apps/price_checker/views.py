@@ -1,6 +1,7 @@
+import os
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from .forms import ProductForm
+from .forms import ProductForm, SendMailForm
 from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
@@ -8,10 +9,15 @@ import time
 from functools import wraps
 from .chart_builder import plot_price_history
 # from .async_shit import process_sites
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from apps.price_checker.utils import PriceUpdater
 from apps.price_checker.utils import time_count
 from django.core.paginator import Paginator
+from django.views.generic import FormView
+from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 
@@ -93,3 +99,62 @@ def update_prices(request):
     p_u.run()
     del p_u
     return HttpResponseRedirect(reverse('price_checker:all_price_list'))
+
+
+
+class ShareProduct(FormView):
+    form_class = SendMailForm
+    template_name = 'price_checker/share_product.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.product = Product.enabled_products.get(id=self.kwargs['id']) #перыое место прокидывания kwargs из url
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def get_success_url(self):
+        return reverse('price_checker:share_product', args=[self.product.id])
+    
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        self.product = Product.enabled_products.get(id=self.kwargs['id'])
+        context_data.update({'name_of_product':self.product.name})
+        return context_data
+
+
+    def send_html_mail(self, email_to, comment):
+        subject = "Смотрите, какую находку прислали!"
+        from_email = os.getenv('EMAIL_HOST_USER')
+
+        context = {
+            'product_name': self.product.name,
+            'product_link':  self.product.ref_url,
+            'comment': comment,
+            # 'image_cid': 'product_image'
+        }
+
+        html_content = render_to_string('price_checker/share_product_mail.html', context)
+        text_content = strip_tags(html_content)  
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, email_to)
+        msg.attach_alternative(html_content, "text/html")
+
+        # Прикрепляем изображение
+        # with open('static/images/burger.jpg', 'rb') as img:
+        #     msg_image = img.read()
+        #     msg.attach_inline('burger.jpg', msg_image, 'image/jpeg', cid='product_image')
+
+        msg.send()
+
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            text = f'Пользователь coldtema поделился с вами его находкой из магазина! {self.product.name}'
+            self.send_html_mail([form.cleaned_data['email_to']], form.cleaned_data['comment'])
+            # send_mail(subject='ОЧЕНЬ ВАЖНОЕ ПИСЬМО',
+            #         from_email=os.getenv('EMAIL_HOST_USER'),
+            #         message=text,
+            #         recipient_list=[form.cleaned_data['email_to']],
+            #         fail_silently=False)
+        return super().post(request, *args, **kwargs)
