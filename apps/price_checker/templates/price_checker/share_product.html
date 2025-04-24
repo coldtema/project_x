@@ -1,0 +1,12 @@
+{%extends 'base.html'%}
+{%block title%}Поделиться Продуктом{%endblock title%}
+{%block content%}
+<h2>Поделиться товаром: {{name_of_product}}</h2>
+<form method="post">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="Поделиться">
+</form>
+{%endblock content%}
