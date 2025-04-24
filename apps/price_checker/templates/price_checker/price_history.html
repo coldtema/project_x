@@ -3,7 +3,7 @@
 {%block title%}PriceHistory{%endblock title%}
 {%block content%}
 <h1>История цены</h1>
-<h2>Продукт: {{product_to_watch.name}}</h2>
+<h2>Продукт: {{product_to_watch.name}}     <a href="{%url 'price_checker:share_product' id=product_to_watch.id%}">Поделиться Продуктом</a></h2>
 <h1></h1>
 <table>
     <thead>
