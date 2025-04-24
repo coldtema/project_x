@@ -7,3 +7,8 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['url']
+
+
+class SendMailForm(forms.Form):
+    comment = forms.CharField(max_length=1000, widget=forms.Textarea, label='Введите ваш комментарий (можно оставить пустым)', required=False)
+    email_to = forms.EmailField(label='Введите email получателя')
