@@ -27,7 +27,7 @@ def all_price_list(request):
         product_form = ProductForm(request.POST)
         if product_form.is_valid():
             product_data = get_shop_of_product(request.POST.get('url'))
-            new_product = Product.objects.create(name=product_data['name'], 
+            new_product = Product.objects.create(name=product_data['name'][:150], #оформить с троеточием, если слишком большое имя
                                                  url=request.POST.get('url'),
                                                  latest_price=product_data['price_element'], 
                                                  shop=Shop.objects.get(regex_name=product_data['shop']),  
