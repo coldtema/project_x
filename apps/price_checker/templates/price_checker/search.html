@@ -1,0 +1,48 @@
+{%extends 'base.html'%}
+{%block title%}Поиск продукта{%endblock title%}
+{%block content%}
+<h2>Найти продукт</h2>
+<form method="post">
+    {%csrf_token%}
+    <table>
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="Поиск">
+</form>
+{%if search_products%}
+<h2>Результаты поиска:</h2>
+<table>
+    <thead align="center">
+        <tr>
+            <th>id</th>
+            <th>shop</th>
+            <th>category</th>
+            <th>name</th>
+            <th>price</th>
+            <th>author_id</th>
+            <th>price_history</th>
+            <th>action</th>
+        </tr>
+    </thead>
+    <tbody align="center">
+        {%for elem in search_products%}
+        <tr>
+            <td>{{elem.id}}</td>
+            <td>{{elem.shop}}</td>
+            <!-- <td>{{elem.shop.tags.all}}</td> -->
+            <td>
+                {%for item in elem.shop.tags.all%}
+                {{item}}
+                {%endfor%}
+            </td>
+            <td><a href="{{elem.url}}">{{elem.name}}</a></td>
+            <td>{{elem.latest_price}}</td>
+            <td>{{elem.author_id}}</td>
+            <td><a href="{%url 'price_checker:price_history' id=elem.id%}">История цены</a></td>
+            <td><a href="{%url 'price_checker:delete_product' id=elem.id%}"> Удалить</a></td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+{%endif%}
+{%endblock content%}
