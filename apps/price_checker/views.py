@@ -117,7 +117,6 @@ class ShareProduct(FormView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        self.product = Product.enabled_products.get(id=self.kwargs['id'])
         context_data.update({'name_of_product':self.product.name})
         return context_data
 
@@ -151,9 +150,4 @@ class ShareProduct(FormView):
         if form.is_valid():
             text = f'Пользователь coldtema поделился с вами его находкой из магазина! {self.product.name}'
             self.send_html_mail([form.cleaned_data['email_to']], form.cleaned_data['comment'])
-            # send_mail(subject='ОЧЕНЬ ВАЖНОЕ ПИСЬМО',
-            #         from_email=os.getenv('EMAIL_HOST_USER'),
-            #         message=text,
-            #         recipient_list=[form.cleaned_data['email_to']],
-            #         fail_silently=False)
         return super().post(request, *args, **kwargs)
