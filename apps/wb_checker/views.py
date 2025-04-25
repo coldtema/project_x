@@ -9,7 +9,7 @@ from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm, WBDestForm
-from .models import WBBrand, WBSeller, WBDetailedInfo, TopWBProduct
+from .models import WBBrand, WBSeller, TopWBProduct
 import re
 
 
