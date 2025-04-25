@@ -130,7 +130,7 @@ class ShareProduct(FormView):
             'product_name': self.product.name,
             'product_link':  self.product.ref_url,
             'comment': comment,
-            # 'image_cid': 'product_image'
+            'image_cid': 'product_image'
         }
 
         html_content = render_to_string('price_checker/share_product_mail.html', context)
@@ -139,10 +139,9 @@ class ShareProduct(FormView):
         msg = EmailMultiAlternatives(subject, text_content, from_email, email_to)
         msg.attach_alternative(html_content, "text/html")
 
-        # Прикрепляем изображение
-        # with open('static/images/burger.jpg', 'rb') as img:
-        #     msg_image = img.read()
-        #     msg.attach_inline('burger.jpg', msg_image, 'image/jpeg', cid='product_image')
+        with open('apps/price_checker/static/price_checker/cat.png', 'rb') as img:
+            msg_image = img.read()
+            msg.attach('cat.png', msg_image, 'image/png')
 
         msg.send()
 

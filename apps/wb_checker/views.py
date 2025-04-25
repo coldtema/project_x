@@ -23,7 +23,7 @@ def all_price_list(request):
         if form.is_valid():
             author_object = Author.objects.get(pk=author_id)
             url_dispatcher(request.POST['url'], author_object)
-            return HttpResponseRedirect(reverse('all_price_list'))
+            return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
         elif WBDestForm(request.POST).is_valid():
             load_dest_to_author(author_id, request.POST['address'])
     return render(request, 'index.html', context={'form_parse': form_parse, 'form_get_dest':form_get_dest})
