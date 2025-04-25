@@ -45,7 +45,7 @@ class Shop(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Имя продукта')
+    name = models.CharField(max_length=150, verbose_name='Имя продукта')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     url = models.URLField(verbose_name='URL')
