@@ -1,7 +1,7 @@
 import os
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from .forms import ProductForm, SendMailForm
+from .forms import ProductForm, SendMailForm, SearchForm
 from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
 from apps.blog.models import Author
@@ -14,10 +14,12 @@ from apps.price_checker.utils import PriceUpdater
 from apps.price_checker.utils import time_count
 from django.core.paginator import Paginator
 from django.views.generic import FormView
+from django.views import View
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.contrib.postgres.search import SearchVector
 
 
 
@@ -89,8 +91,7 @@ def delete_price(request, id):
     Price.objects.get(id=id).delete()
     return HttpResponseRedirect(reverse('price_checker:price_history', args=[id_of_product]))
 
-# def update_prices(request):
-#     asyncio.create_task(process_sites())
+
 
 @time_count
 def update_prices(request):
@@ -148,6 +149,23 @@ class ShareProduct(FormView):
     def post(self, request, *args, **kwargs):
         form = self.get_form()
         if form.is_valid():
-            text = f'Пользователь coldtema поделился с вами его находкой из магазина! {self.product.name}'
             self.send_html_mail([form.cleaned_data['email_to']], form.cleaned_data['comment'])
         return super().post(request, *args, **kwargs)
+    
+
+
+class SearchView(View):
+    def get(self, request, *args, **kwargs):
+        form = SearchForm()
+        search_products = None
+        return render(request, 'price_checker/search.html', context={'form': form,
+                                                                     'search_products': search_products})   
+    
+
+    def post(self, request, *args, **kwargs):
+        search_products = None
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            search_products = Product.enabled_products.annotate(search=SearchVector('name', 'url')).filter(search=form.cleaned_data['query'])
+        return render(request, 'price_checker/search.html', context={'form': form,
+                                                                     'search_products': search_products})
