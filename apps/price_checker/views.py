@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from .forms import ProductForm, SendMailForm, SearchForm
 from .models import Product, Price, Shop
@@ -8,7 +8,6 @@ from apps.blog.models import Author
 import time
 from functools import wraps
 from .chart_builder import plot_price_history
-# from .async_shit import process_sites
 from django.urls import reverse, reverse_lazy
 from apps.price_checker.utils import PriceUpdater
 from apps.price_checker.utils import time_count
@@ -20,32 +19,54 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.postgres.search import SearchVector
+from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.accounts.models import CustomUser
+from django.contrib.auth.decorators import login_required
 
 
 
-def all_price_list(request):
-    '''Функция представления для отображения всех продуктов'''
-    if request.method == 'POST':
-        product_form = ProductForm(request.POST)
-        if product_form.is_valid():
-            product_data = get_shop_of_product(request.POST.get('url'))
-            new_product = Product.objects.create(name=product_data['name'][:150], #оформить с троеточием, если слишком большое имя
-                                                 url=request.POST.get('url'),
-                                                 latest_price=product_data['price_element'], 
-                                                 shop=Shop.objects.get(regex_name=product_data['shop']),  
-                                                 ref_url=request.POST.get('url')) #прописать здесь get_or_create и вообще вынести в другое место
-            Author.objects.get(id=2).product_set.add(new_product)
-            Price.objects.create(product=new_product, price=product_data['price_element'])
-            return HttpResponseRedirect(reverse('price_checker:all_price_list'))
-        else:
-            return HttpResponseBadRequest('Так себе ссылка')
-    else:
+class PriceCheckerMain(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
         product_form = ProductForm()
-        db_products = Product.objects.filter(enabled=True)
+        db_products = request.user.product_set.filter(enabled=True)
         paginator = Paginator(db_products, 10)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
-        page_number = db_products_page.number #исключение обработано строкой выше, а вот тип может быть строкой итд, поэтому беру номер еще раз уже из готового объекта класса Page
+        page_range = self.get_page_range(db_products_page, paginator)
+        return render(request, 'price_checker/index.html', context={'form': product_form, 
+                                                                    'db_products_page': db_products_page,
+                                                                    'page_range': page_range})
+    
+
+    def post(self, request, *args, **kwargs):
+        product_form = ProductForm(request.POST)
+        if product_form.is_valid():
+            self.get_product_info_and_save(request)
+        return redirect('price_checker:all_price_list')
+    
+
+    def get_product_info_and_save(self, request):
+        try:
+            product_data = get_shop_of_product(request.POST.get('url'))
+        except:
+            return False
+        if len(product_data['name']) > 150:
+            product_data['name'] = product_data['name'][:147]+'...'
+        new_product, was_not_in_db = Product.objects.get_or_create(name=product_data['name'],
+                                                                   url=request.POST.get('url'),
+                                                                   shop=Shop.objects.get(regex_name=product_data['shop']),  
+                                                                   ref_url=request.POST.get('url'),
+                                                                   defaults={'latest_price':product_data['price_element']})
+        if was_not_in_db:
+            Price.objects.create(product=new_product, price=product_data['price_element'])
+        CustomUser.objects.get(id=request.user.id).product_set.add(new_product)
+        return True
+
+
+
+    @staticmethod
+    def get_page_range(db_products_page, paginator):
+        page_number = db_products_page.number
         number_of_pages = paginator.num_pages
         if page_number - 3 < 1:
             lowest_page = 1
@@ -55,18 +76,24 @@ def all_price_list(request):
             highest_page = number_of_pages
         else:
             highest_page = page_number + 3
-        page_range = list(range(lowest_page, highest_page+1))
-        return render(request, 'price_checker/index.html', context={'form': product_form, 
-                                                                    'db_products_page': db_products_page,
-                                                                    'page_range': page_range})
+        return list(range(lowest_page, highest_page+1))
+    
+
+def check_prod_of_user(id_of_prod, user):
+    try:
+        return user.product_set.get(pk=id_of_prod) 
+    except:
+        return None
+    
 
 
-
-
+@login_required
 def price_history(request, id):
     '''Функция для открытия истории цены конкретного продукта'''
-    product_to_watch = get_object_or_404(Product, id=id)
-    prices_of_product = Price.objects.filter(product_id=id)
+    product_to_watch = check_prod_of_user(id, request.user)
+    if not product_to_watch:
+        return HttpResponseBadRequest('??? (нет такого продукта)')
+    prices_of_product = product_to_watch.price_set.all()
     dates = []
     prices = []
     for elem in prices_of_product:
@@ -77,13 +104,18 @@ def price_history(request, id):
                                                                         'prices_of_product': prices_of_product})
 
 
+@login_required
 def delete_product(request, id):
     '''Функция представления для удаления конкретного продукта'''
-    Product.objects.get(id=id).delete()
+    product_to_delete = check_prod_of_user(id, request.user)
+    if not product_to_delete:
+        return HttpResponseBadRequest('??? (нет такого продукта)')
+    request.user.product_set.remove(Product.objects.get(pk=id))
     return HttpResponseRedirect(reverse('price_checker:all_price_list'))
 
 
 
+@login_required
 def delete_price(request, id):
     '''Функция представления для удаления цены конкретного продукта'''
     product_to_redirect = Price.objects.get(id=id).product
@@ -103,12 +135,12 @@ def update_prices(request):
 
 
 
-class ShareProduct(FormView):
+class ShareProduct(LoginRequiredMixin, FormView):
     form_class = SendMailForm
     template_name = 'price_checker/share_product.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.product = Product.enabled_products.get(id=self.kwargs['id']) #перыое место прокидывания kwargs из url
+        self.product = Product.enabled_products.get(id=self.kwargs['id']) #первое место прокидывания kwargs из url
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -154,7 +186,7 @@ class ShareProduct(FormView):
     
 
 
-class SearchView(View):
+class SearchView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = SearchForm()
         search_products = None
