@@ -1,5 +1,5 @@
 from django.db import models
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 from django.utils import timezone
 
 class EnabledManager(models.Manager):
@@ -7,15 +7,13 @@ class EnabledManager(models.Manager):
         return super().get_queryset().filter(enabled=True)
     
 
-
-
 class WBMenuCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя категории WB')
     shard_key = models.CharField(max_length=50, verbose_name='Ключ шардирования категории WB')
     wb_id =  models.IntegerField(unique=True, verbose_name='WB ID категории WB')
     query = models.CharField(max_length=300, verbose_name='Строка запроса к api')
     main_url = models.URLField(blank=True, verbose_name='URL категории')
-    subs = models.ManyToManyField(Author, verbose_name='Подписчики категории')
+    subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики категории')
 
     class Meta:
         verbose_name = 'Категория меню WB'
@@ -33,7 +31,7 @@ class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
     wb_id = models.IntegerField(unique=True, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    subs = models.ManyToManyField(Author, verbose_name='Подпичсики селлера')
+    subs = models.ManyToManyField(CustomUser, verbose_name='Подпичсики селлера')
 
     class Meta:
         verbose_name = 'Продавец WB'
@@ -50,7 +48,7 @@ class WBBrand(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя бренда WB')
     wb_id = models.IntegerField(unique=True, verbose_name='ID бренда WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    subs = models.ManyToManyField(Author, verbose_name='Подписчики бренда')
+    subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики бренда')
 
     class Meta:
         verbose_name = 'Магазин'
@@ -102,7 +100,7 @@ class WBDetailedInfo(models.Model):
     size = models.CharField(max_length=20, null=True, verbose_name='Размер')
     volume = models.IntegerField(verbose_name='Количество')
     enabled = models.BooleanField(default=True, verbose_name='Есть в наличии')
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Автор продукта')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор продукта')
     
     enabled_products = EnabledManager()
     objects = models.Manager()
