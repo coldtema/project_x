@@ -1,6 +1,6 @@
 import os
 import cloudscraper
-from apps.wb_checker.models import Author
+from apps.blog.models import Author
 
 
 def load_dest_to_author(author_id, address):
