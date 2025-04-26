@@ -1,5 +1,5 @@
 from django.db import models
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 from django.utils import timezone
 
 class EnabledManager(models.Manager):
@@ -53,7 +53,7 @@ class Product(models.Model):
     enabled = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
-    subs = models.ManyToManyField(Author, verbose_name='Подписчики продукта')
+    subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики продукта')
 
     objects = models.Manager()
     enabled_products = EnabledManager()
