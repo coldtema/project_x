@@ -7,7 +7,7 @@
 </head>
 <link href="{% static 'style.css' %}" rel="stylesheet">
 <body>
-    <div><a href="/">Главная</a> | <a href="{%url 'blog:reg'%}">Регистрация</a> | <a href="{%url 'blog:posts'%}">Посты</a> | <a href="{%url 'blog:about'%}">О нас</a> | <a href="{%url 'price_checker:all_price_list'%}">Товары</a> | <a href="{%url 'test_generator:test_generator'%}">Генератор тестов</a> | <a href="{%url 'wb_checker:all_price_list'%}">WB_checker</a></div>
+    <div><a href="/">Главная</a> | <a href="{%url 'accounts:signup'%}">Регистрация</a> | <a href="{%url 'blog:posts'%}">Посты</a> | <a href="{%url 'blog:about'%}">О нас</a> | <a href="{%url 'price_checker:all_price_list'%}">Товары</a> | <a href="{%url 'test_generator:test_generator'%}">Генератор тестов</a> | <a href="{%url 'wb_checker:all_price_list'%}">WB_checker</a></div>
     <h1>{% block header %}
         {%if user.is_authenticated%}
             Привет, {{user.username}}!
