@@ -22,7 +22,6 @@
             <th>category</th>
             <th>name</th>
             <th>price</th>
-            <th>author_id</th>
             <th>price_history</th>
             <th>action</th>
         </tr>
@@ -40,7 +39,6 @@
             </td>
             <td><a href="{{elem.url}}">{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
-            <td>{{elem.author_id}}</td>
             <td><a href="{%url 'price_checker:price_history' id=elem.id%}">История цены</a></td>
             <td><a href="{%url 'price_checker:delete_product' id=elem.id%}"> Удалить</a></td>
         </tr>
