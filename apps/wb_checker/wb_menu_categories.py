@@ -5,7 +5,7 @@ from datetime import datetime
 from django.db import transaction
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBSeller, WBBrand, TopWBProduct, WBMenuCategory
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 
 
 
@@ -184,7 +184,7 @@ class TopWBProductMenuCategoryUpdater():
 
 
     def run(self):
-        author_object = Author.objects.get(pk=4)
+        author_object = CustomUser.objects.get(pk=1)
         for category in self.all_categories:
             if category.shard_key != 'blackhole':
                 TopWBProduct.objects.filter(source='CATEGORY', menu_category=category).delete()
