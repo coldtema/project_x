@@ -5,7 +5,7 @@ from django.db import transaction
 from datetime import datetime
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBBrand, WBSeller, TopWBProduct
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 
 
 
@@ -183,7 +183,7 @@ class TopWBProductSellerUpdater():
         
 
     def run(self):
-        author_object = Author.objects.get(pk=4)
+        author_object = CustomUser.objects.get(pk=1)
         TopWBProduct.objects.filter(source='SELLER').delete()
         for seller in self.sellers_with_subs:
             TopWBProduct.objects.filter(source='SELLER', seller=seller).delete()
