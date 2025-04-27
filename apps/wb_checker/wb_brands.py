@@ -5,7 +5,7 @@ from datetime import datetime
 from django.db import transaction
 from .models import WBSeller, WBBrand, TopWBProduct
 from apps.wb_checker.utils.top_prods import TopBuilder
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 
 
 
@@ -120,8 +120,8 @@ class Brand:
         '''Создание объекта бренда с занесением в БД, и, 
         если бренд был в базе, и, если у него были подписчики, 
         то просто создается подписка на него у пользователя, вместо конструирования топа'''
-        brand_object, was_not_in_db = WBBrand.objects.get_or_create(wb_id=self.brand_artikul, defaults={'name': self.brand_name,  
-                                                                                                        'main_url': f'https://www.wildberries.ru/brands/{self.brand_slug_name}'})
+        brand_object, was_not_in_db = WBBrand.objects.update_or_create(wb_id=self.brand_artikul, defaults={'name': self.brand_name,  
+                                                                                                          'main_url': f'https://www.wildberries.ru/brands/{self.brand_slug_name}'})
         if not was_not_in_db and brand_object.subs.exists() and self.author_id != 4: #вот здесь надо поменять на админа потом или как то (тк это разграничитель между добавлением нового и обновлением)
             self.dest_avaliable = False
             self.author_object.wbbrand_set.add(brand_object)
@@ -174,7 +174,7 @@ class TopWBProductBrandUpdater():
         
 
     def run(self):
-        author_object = Author.objects.get(pk=4)
+        author_object = CustomUser.objects.get(pk=1)
         for brand in self.brands_with_subs:
             TopWBProduct.objects.filter(source='BRAND', brand=brand).delete()
             Brand(brand.main_url, author_object).run()
