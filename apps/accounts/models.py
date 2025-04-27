@@ -11,8 +11,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     subscription = models.CharField(max_length=6, default=Subscription.FREE, choices=Subscription.choices)
     slots = models.IntegerField(default=1000)
-    dest_name = models.CharField(max_length=1000, null=True)
-    dest_id = models.CharField(max_length=100, null=True)
+    dest_name = models.CharField(max_length=1000, default="Москва")
+    dest_id = models.CharField(max_length=100, default="-1257786")
 
     def __str__(self):
         return self.username
