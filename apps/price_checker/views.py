@@ -1,6 +1,6 @@
 import os
 from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 from .forms import ProductForm, SendMailForm, SearchForm
 from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
@@ -80,10 +80,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     
 
 def check_prod_of_user(id_of_prod, user):
-    try:
-        return user.product_set.get(pk=id_of_prod) 
-    except:
-        return None
+    return user.product_set.filter(pk=id_of_prod).first() 
     
 
 
@@ -92,7 +89,7 @@ def price_history(request, id):
     '''Функция для открытия истории цены конкретного продукта'''
     product_to_watch = check_prod_of_user(id, request.user)
     if not product_to_watch:
-        return HttpResponseBadRequest('??? (нет такого продукта)')
+        return Http404('??? (нет такого продукта)')
     prices_of_product = product_to_watch.price_set.all()
     dates = []
     prices = []
@@ -109,7 +106,7 @@ def delete_product(request, id):
     '''Функция представления для удаления конкретного продукта'''
     product_to_delete = check_prod_of_user(id, request.user)
     if not product_to_delete:
-        return HttpResponseBadRequest('??? (нет такого продукта)')
+        return Http404('??? (нет такого продукта)')
     request.user.product_set.remove(Product.objects.get(pk=id))
     return HttpResponseRedirect(reverse('price_checker:all_price_list'))
 
@@ -119,19 +116,24 @@ def delete_product(request, id):
 def delete_price(request, id):
     '''Функция представления для удаления цены конкретного продукта'''
     product_to_redirect = Price.objects.get(id=id).product
-    id_of_product = product_to_redirect.id
+    product_to_redirect = check_prod_of_user(product_to_redirect.id, request.user)
+    if not product_to_redirect:
+        return Http404('??? (нет цены такого продукта)')
     Price.objects.get(id=id).delete()
-    return HttpResponseRedirect(reverse('price_checker:price_history', args=[id_of_product]))
+    return HttpResponseRedirect(reverse('price_checker:price_history', args=[product_to_redirect.id]))
 
 
 
 @time_count
+@login_required
 def update_prices(request):
     '''Функция представления для запуска обновления цен'''
-    p_u = PriceUpdater()
-    p_u.run()
-    del p_u
-    return HttpResponseRedirect(reverse('price_checker:all_price_list'))
+    if request.user.is_staff:
+        p_u = PriceUpdater()
+        p_u.run()
+        del p_u
+        return HttpResponseRedirect(reverse('price_checker:all_price_list'))
+    return Http404('нет доступа')
 
 
 
@@ -140,7 +142,10 @@ class ShareProduct(LoginRequiredMixin, FormView):
     template_name = 'price_checker/share_product.html'
 
     def dispatch(self, request, *args, **kwargs):
-        self.product = Product.enabled_products.get(id=self.kwargs['id']) #первое место прокидывания kwargs из url
+        product_to_share = check_prod_of_user(self.kwargs['id'], request.user)
+        if not product_to_share: #написать миксин
+            return Http404('??? (нет такого продукта)')
+        self.product = product_to_share #первое место прокидывания kwargs из url
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -184,6 +189,7 @@ class ShareProduct(LoginRequiredMixin, FormView):
             self.send_html_mail([form.cleaned_data['email_to']], form.cleaned_data['comment'])
         return super().post(request, *args, **kwargs)
     
+    
 
 
 class SearchView(LoginRequiredMixin, View):
@@ -198,6 +204,6 @@ class SearchView(LoginRequiredMixin, View):
         search_products = None
         form = SearchForm(request.POST)
         if form.is_valid():
-            search_products = Product.enabled_products.annotate(search=SearchVector('name', 'url')).filter(search=form.cleaned_data['query'])
+            search_products = request.user.product_set.annotate(search=SearchVector('name', 'url')).filter(search=form.cleaned_data['query'])
         return render(request, 'price_checker/search.html', context={'form': form,
                                                                      'search_products': search_products})
