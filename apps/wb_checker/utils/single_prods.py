@@ -5,7 +5,7 @@ import json
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Prefetch
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count
 from ..models import WBPrice, WBDetailedInfo, WBProduct
 
@@ -15,7 +15,7 @@ class PriceUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
         self.batch_size = 50
-        self.len_all_authors_list = Author.objects.all().count()
+        self.len_all_authors_list = CustomUser.objects.all().count()
         self.batched_authors_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -29,7 +29,7 @@ class PriceUpdater:
     def run(self):
         '''Запуск процесса обновления цен + батчинг по авторам'''
         for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
-            self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
+            self.batched_authors_list = CustomUser.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
             self.go_through_all_authors()
             self.save_update_prices()
@@ -179,7 +179,7 @@ class AvaliabilityUpdater:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
         self.batch_size = 50
-        self.len_all_authors_list = Author.objects.all().count()
+        self.len_all_authors_list = CustomUser.objects.all().count()
         self.batched_authors_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -194,7 +194,7 @@ class AvaliabilityUpdater:
     def run(self):
         '''Запуск процесса обновления цен + батчинг по авторам'''
         for i in range(math.ceil(self.len_all_authors_list / self.batch_size)):
-            self.batched_authors_list = Author.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
+            self.batched_authors_list = CustomUser.objects.all().prefetch_related(Prefetch('wbdetailedinfo_set', 
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=False).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
             self.go_through_all_authors()     
             self.save_update_avaliability()
