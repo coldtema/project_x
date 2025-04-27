@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count
 from apps.wb_checker.utils.pickpoints import load_dest_to_author
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
@@ -11,22 +11,50 @@ from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_selle
 from .forms import WBProductForm, WBDestForm
 from .models import WBBrand, WBSeller, TopWBProduct
 import re
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-def all_price_list(request):
-    '''Temp view-функция для представления начальной страницы wb_checker'a'''
-    form_parse = WBProductForm()
-    form_get_dest = WBDestForm()
-    author_id = 2 #пока не знаю, как точно передавать author_id в функцию, но это как-то через аунтефикацию надо делать (пока эмулирую)
-    if request.method == 'POST':
+
+
+class WBCheckerMain(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        self.form_parse = WBProductForm()
+        self.form_get_dest = WBDestForm()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'index.html', context={'form_parse': self.form_parse, 'form_get_dest':self.form_get_dest})
+    
+    def post(self, request, *args, **kwargs):
         form = WBProductForm(request.POST)
         if form.is_valid():
-            author_object = Author.objects.get(pk=author_id)
-            url_dispatcher(request.POST['url'], author_object)
-            return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+            author_object = CustomUser.objects.get(pk=request.user.id)
+            self.url_dispatcher(request.POST['url'], author_object)
         elif WBDestForm(request.POST).is_valid():
-            load_dest_to_author(author_id, request.POST['address'])
-    return render(request, 'index.html', context={'form_parse': form_parse, 'form_get_dest':form_get_dest})
+            load_dest_to_author(request.user.id, request.POST['address'])
+        return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+
+    @time_count
+    def url_dispatcher(self, url, author_object):
+        '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
+        if re.search(pattern=r'catalog\/\d+\/detail', string=url):
+            product = wb_products.Product(url, author_object)
+            product.get_product_info()
+            del product
+        elif re.search(pattern=r'\/(seller)\/', string=url):
+            seller = wb_sellers.Seller(url, author_object)
+            seller.run()
+            del seller
+        elif re.search(pattern=r'\/(brands)\/', string=url):
+            brand = wb_brands.Brand(url, author_object)
+            brand.run()
+            del brand
+        elif re.search(pattern=r'catalog\/\D+\/?', string=url):
+            menu_category = wb_menu_categories.MenuCategory(url, author_object)
+            menu_category.run()
+            del menu_category
+
 
 
 
@@ -65,51 +93,15 @@ def update_avaliability(request):
     del avaliability_updater
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
-
-
-@time_count
-def url_dispatcher(url, author_object):
-    '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
-    if re.search(pattern=r'catalog\/\d+\/detail', string=url):
-        product = wb_products.Product(url, author_object)
-        product.get_product_info()
-        del product
-    elif re.search(pattern=r'\/(seller)\/', string=url):
-        seller = wb_sellers.Seller(url, author_object)
-        seller.run()
-        del seller
-    elif re.search(pattern=r'\/(brands)\/', string=url):
-        brand = wb_brands.Brand(url, author_object)
-        brand.run()
-        del brand
-    elif re.search(pattern=r'catalog\/\D+\/?', string=url):
-        menu_category = wb_menu_categories.MenuCategory(url, author_object)
-        menu_category.run()
-        del menu_category
             
 
 
 
 @time_count
 def update_top_prods(request):
-    # author_object = Author.objects.get(pk=4)
-    # with open('wb_links.txt', 'r', encoding='utf-8') as file:
-    #     links_list = file.read().split('\n')
-    #     for link in links_list:
-    #         product = wb_products.Product(link, author_object)
-    #         product.get_product_info()
-    #         del product
     wb_brands.TopWBProductBrandUpdater().run()
     wb_sellers.TopWBProductSellerUpdater().run()
     wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
-    # all_cats = WBMenuCategory.objects.all()
-    # author_object = Author.objects.get(pk=4)
-    # for elem in all_cats:
-    #     url = 'https://www.wildberries.ru' + elem.main_url
-    #     if elem.shard_key != 'blackhole':
-    #         menu_category = wb_menu_categories.MenuCategory(url, author_object)
-    #         menu_category.run()
-    #         del menu_category
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
