@@ -1,11 +1,11 @@
 import os
 import cloudscraper
-from apps.blog.models import Author
+from apps.accounts.models import CustomUser
 
 
 def load_dest_to_author(author_id, address):
     '''Добавление dest_id к автору'''
-    author_object = Author.objects.get(pk=author_id)
+    author_object = CustomUser.objects.get(pk=author_id)
     author_object.dest_id, author_object.dest_name = get_dest(address)
     author_object.save()
 
