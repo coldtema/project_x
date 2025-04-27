@@ -99,7 +99,7 @@ class Parser:
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
         name = soup_engine.find("title").text.strip()
         name = re.search(pattern=r'(.+?)( купить)', string=name).group(1)
-        return {'price_element': int(str(price_element)), 'name': name, 'shop': 'tsum-outlet'}
+        return {'price_element': int(str(price_element)), 'name': name, 'shop': 'tsum'}
 
 
 
@@ -229,7 +229,7 @@ class Parser:
             price_element = price_element[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find("h1", class_='catalog-element__title').text.strip()
-        return {'price_element': price_element, 'name': name, 'shop': 'love republic'}
+        return {'price_element': price_element, 'name': name, 'shop': 'loverepublic'}
 
 
 
