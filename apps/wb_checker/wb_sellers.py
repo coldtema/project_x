@@ -6,6 +6,7 @@ from datetime import datetime
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBBrand, WBSeller, TopWBProduct
 from apps.accounts.models import CustomUser
+from apps.wb_checker.utils.general_utils import get_image_url
 
 
 
@@ -127,7 +128,7 @@ class Seller:
                                                                       name=self.seller_name,
                                                                       main_url=f'https://www.wildberries.ru/seller/{self.seller_artikul}')
         
-        if not was_not_in_db and seller_object.subs.exists() and self.author_id != 4:
+        if not was_not_in_db and seller_object.subs.exists() and self.author_object.is_staff == False:
             self.dest_avaliable = False
             self.author_object.wbseller_set.add(seller_object)
         return seller_object
@@ -161,6 +162,7 @@ class Seller:
         brand_name = product_in_catalog['brand']
 
         brand_object = self.build_raw_brand_object(brand_artikul, brand_name)
+        image_url = get_image_url(product_artikul)
         new_product = TopWBProduct(name=name,
                 artikul=product_artikul,
                 latest_price = price_element,
@@ -171,7 +173,8 @@ class Seller:
                 brand=brand_object,
                 seller=self.seller_object,
                 created=datetime.today(),
-                source='SELLER')
+                source='SELLER',
+                image_url = get_image_url(product_artikul))
         new_product = {product_artikul: new_product}
         self.dict_seller_products_to_add.update(new_product)
         
