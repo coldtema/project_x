@@ -37,7 +37,7 @@
                 {{item}}
                 {%endfor%}
             </td>
-            <td><a href="{{elem.url}}">{{elem.name}}</a></td>
+            <td><a href="{{elem.url}}" target='_blank'>{{elem.name}}</a></td>
             <td>{{elem.latest_price}}</td>
             <td><a href="{%url 'price_checker:price_history' id=elem.id%}">История цены</a></td>
             <td><a href="{%url 'price_checker:delete_product' id=elem.id%}"> Удалить</a></td>
