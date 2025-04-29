@@ -4,6 +4,7 @@ import cloudscraper
 from .models import WBProduct, WBSeller, WBBrand, WBPrice, WBDetailedInfo
 from django.utils import timezone
 from django.db import transaction
+from apps.wb_checker.utils.general_utils import get_image_url
 
 
 
@@ -18,6 +19,7 @@ class Product:
         self.artikul = re.search(r'\/(\d+)\/', product_url).group(1)
         self.product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
         self.product_name, self.product_size, self.product_volume, self.product_price = self.get_product_detailed_info()
+        self.image_url = get_image_url(self.artikul)
 
 
 
@@ -40,7 +42,8 @@ class Product:
                 wb_cosh=True,
                 url=self.product_url.split('?')[0],
                 seller=seller_object,
-                brand=brand_object)
+                brand=brand_object,
+                image_url=self.image_url)
         new_detailed_info = WBDetailedInfo(latest_price=self.product_price,
                                            size=self.product_size,
                                            volume=self.product_volume,
@@ -105,6 +108,7 @@ class Product:
     def add_product_to_db(self, new_product, new_detailed_info, new_price):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
+        print('привет')
         WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
