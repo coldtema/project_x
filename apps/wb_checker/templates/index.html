@@ -31,6 +31,9 @@
 <a href="{%url 'wb_checker:update_top_prods_info'%}">Update Top Prods Info</a>
 <h1></h1>
 <h1></h1>
+<a href="{%url 'wb_checker:recommendations'%}">Recommendations</a>
+<h1></h1>
+<h1></h1>
 <form method="POST">
     {%csrf_token%}
     <table>
@@ -38,4 +41,5 @@
     </table>
     <input type="submit", value="чпоньк">
 </form>
+
 {%endblock content%}
