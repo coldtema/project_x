@@ -23,7 +23,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
         self.form_get_dest = WBDestForm()
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):       
         return render(request, 'index.html', context={'form_parse': self.form_parse, 'form_get_dest':self.form_get_dest})
     
     def post(self, request, *args, **kwargs):
@@ -55,6 +55,13 @@ class WBCheckerMain(LoginRequiredMixin, View):
             menu_category.run()
             del menu_category
 
+
+class RecommentationsList(View):
+
+    def get(self, request, *args, **kwargs):
+        brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
+        prods = list(*map(lambda x: x.topwbproduct_set.all(), brands))
+        return render(request, "recommendations.html", context={'prods': prods})
 
 
 
