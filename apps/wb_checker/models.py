@@ -70,6 +70,7 @@ class WBProduct(models.Model):
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     url = models.URLField(verbose_name='URL')
+    image_url = models.URLField(verbose_name='Ссылка на картинку')
 
     class Meta:
         verbose_name = 'Продукт WB'
@@ -166,6 +167,7 @@ class TopWBProduct(models.Model):
     brand = models.ForeignKey(WBBrand, on_delete = models.CASCADE, verbose_name='Бренд продукта WB')
     menu_category = models.ForeignKey(WBMenuCategory, on_delete=models.CASCADE, verbose_name='Категория продукта WB', null=True)
     url = models.URLField(verbose_name='URL')
+    image_url = models.URLField(verbose_name='URL картинки товара')
     created = models.DateField(verbose_name='Время добавления топ продукта WB')
     source = models.CharField(max_length=8, choices=Source.choices)
 
