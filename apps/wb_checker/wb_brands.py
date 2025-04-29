@@ -6,6 +6,7 @@ from django.db import transaction
 from .models import WBSeller, WBBrand, TopWBProduct
 from apps.wb_checker.utils.top_prods import TopBuilder
 from apps.accounts.models import CustomUser
+from apps.wb_checker.utils.general_utils import get_image_url
 
 
 
@@ -122,7 +123,7 @@ class Brand:
         то просто создается подписка на него у пользователя, вместо конструирования топа'''
         brand_object, was_not_in_db = WBBrand.objects.update_or_create(wb_id=self.brand_artikul, defaults={'name': self.brand_name,  
                                                                                                           'main_url': f'https://www.wildberries.ru/brands/{self.brand_slug_name}'})
-        if not was_not_in_db and brand_object.subs.exists() and self.author_id != 4: #вот здесь надо поменять на админа потом или как то (тк это разграничитель между добавлением нового и обновлением)
+        if not was_not_in_db and brand_object.subs.exists() and self.author_object.is_staff == False: #вот здесь надо поменять на админа потом или как то (тк это разграничитель между добавлением нового и обновлением)
             self.dest_avaliable = False
             self.author_object.wbbrand_set.add(brand_object)
         return brand_object
@@ -150,6 +151,7 @@ class Brand:
         feedbacks = product_in_catalog['feedbacks']
         seller_name = product_in_catalog['supplier']
 
+        image_url = get_image_url(product_artikul)
         seller_object = self.build_raw_seller_object(seller_artikul, seller_name)
         new_product = TopWBProduct(name=name,
                 artikul=product_artikul,
@@ -161,7 +163,8 @@ class Brand:
                 brand=self.brand_object,
                 seller=seller_object,
                 created=datetime.today(),
-                source='BRAND')
+                source='BRAND',
+                image_url=image_url)
         new_product = {product_artikul: new_product}
         self.dict_brand_products_to_add.update(new_product)
         
