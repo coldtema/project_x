@@ -6,6 +6,7 @@ from django.db import transaction
 from apps.wb_checker.utils.top_prods import TopBuilder
 from .models import WBSeller, WBBrand, TopWBProduct, WBMenuCategory
 from apps.accounts.models import CustomUser
+from apps.wb_checker.utils.general_utils import get_image_url
 
 
 
@@ -89,7 +90,7 @@ class MenuCategory:
         category_slug_name = re.search(r'(catalog\/)(.+)', clear_category_url).group(2)
         category_slug_name = '/catalog/' + category_slug_name
         category_object = WBMenuCategory.objects.filter(main_url=category_slug_name).first() #тк есть дубли в БД (дочерняя категория может вставиться в другой blackhole)
-        if category_object.subs.exists() and self.author_id != 4:
+        if category_object.subs.exists() and self.author_object.is_staff == False:
             self.dest_avaliable=False
             self.author_object.wbmenucategory_set.add(category_object)
         return category_object
@@ -160,6 +161,7 @@ class MenuCategory:
 
         seller_object = self.build_raw_seller_object(seller_artikul, seller_name)
         brand_object = self.build_raw_brand_object(brand_artikul, brand_name)
+        image_url = get_image_url(product_artikul)
         new_product = TopWBProduct(name=name,
                 artikul=product_artikul,
                 latest_price = price_element,
@@ -171,7 +173,8 @@ class MenuCategory:
                 seller=seller_object,
                 menu_category=self.category_object,
                 created=datetime.today(),
-                source='CATEGORY')
+                source='CATEGORY',
+                image_url = image_url)
         new_product = {product_artikul: new_product}
         self.dict_category_products_to_add.update(new_product)
 
@@ -181,7 +184,6 @@ class TopWBProductMenuCategoryUpdater():
     def __init__(self):
         self.all_categories = WBMenuCategory.objects.all()
         
-
 
     def run(self):
         author_object = CustomUser.objects.get(pk=1)
