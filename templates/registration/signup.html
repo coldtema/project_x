@@ -1,12 +1,30 @@
-{%extends 'base.html'%}
-{%block title%}SIGN UP{%endblock title%}
-{%block content%}
-<h1>sign_UP</h1>
-<form method="post">
-    {%csrf_token%}
-    <table>
-        {{form.as_table}}
-    </table>
-     <input type="submit" value="Регистрация">
-</form>
-{%endblock content%}
+{% extends 'base.html' %}
+{% block title %}Регистрация{% endblock title %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-3xl font-semibold text-center text-gray-800 mb-6">Создание аккаунта</h1>
+        
+        <!-- Форма регистрации -->
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Поля формы -->
+            <div class="space-y-4">
+                {{ form.as_p }}
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition duration-200 mt-4">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <!-- Ссылка для перехода к логину -->
+        <div class="mt-4 text-center">
+            <a href="{% url 'login' %}" class="text-sm text-blue-600 hover:text-blue-700">Уже есть аккаунт? Войти</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
