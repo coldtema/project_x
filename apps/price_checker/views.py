@@ -4,7 +4,6 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedire
 from .forms import ProductForm, SendMailForm, SearchForm
 from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
-from apps.blog.models import Author
 import time
 from functools import wraps
 from .chart_builder import plot_price_history
