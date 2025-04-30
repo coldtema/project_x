@@ -1,45 +1,58 @@
-{%extends 'base.html'%}
+{% extends 'base.html' %}
 
-{%block title%}wb_checker{%endblock title%}
+{% block title %}WB Checker{% endblock title %}
 
-{%block content%}
-<h1>wb_checker</h1>
-<form method="POST">
-    {%csrf_token%}
-    <table>
-        {{form_parse.as_table}}
-    </table>
-    <input type="submit", value="чпоньк">
-</form>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:clear_db'%}">Clear DB</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:update_prices'%}">Update Prices</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:update_avaliability'%}">Update Avaliability</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:update_all_menu_categories'%}">Update All Menu Categories</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:update_top_prods'%}">update_top_prods</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:update_top_prods_info'%}">Update Top Prods Info</a>
-<h1></h1>
-<h1></h1>
-<a href="{%url 'wb_checker:recommendations'%}">Recommendations</a>
-<h1></h1>
-<h1></h1>
-<form method="POST">
-    {%csrf_token%}
-    <table>
-        {{form_get_dest.as_table}}
-    </table>
-    <input type="submit", value="чпоньк">
-</form>
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8 space-y-8">
 
-{%endblock content%}
+    <h1 class="text-2xl font-bold text-gray-800">WB Checker</h1>
+
+    <!-- Форма 1 -->
+    <form method="POST" class="bg-white p-6 rounded-lg shadow space-y-4 border">
+        {% csrf_token %}
+        <div class="space-y-2">
+            {{ form_parse.as_p }}
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            Чпоньк
+        </button>
+    </form>
+
+    <!-- Ссылки -->
+    <div class="grid gap-4 md:grid-cols-2">
+        <a href="{% url 'wb_checker:clear_db' %}" class="block bg-red-100 text-red-700 font-medium px-4 py-3 rounded hover:bg-red-200 transition text-center">
+            🧹 Очистить базу
+        </a>
+        <a href="{% url 'wb_checker:update_prices' %}" class="block bg-blue-100 text-blue-700 font-medium px-4 py-3 rounded hover:bg-blue-200 transition text-center">
+            💰 Обновить цены
+        </a>
+        <a href="{% url 'wb_checker:update_avaliability' %}" class="block bg-yellow-100 text-yellow-800 font-medium px-4 py-3 rounded hover:bg-yellow-200 transition text-center">
+            📦 Обновить наличие
+        </a>
+        <a href="{% url 'wb_checker:update_all_menu_categories' %}" class="block bg-green-100 text-green-700 font-medium px-4 py-3 rounded hover:bg-green-200 transition text-center">
+            🗂️ Обновить категории меню
+        </a>
+        <a href="{% url 'wb_checker:update_top_prods' %}" class="block bg-purple-100 text-purple-700 font-medium px-4 py-3 rounded hover:bg-purple-200 transition text-center">
+            🔝 Обновить топ продукты
+        </a>
+        <a href="{% url 'wb_checker:update_top_prods_info' %}" class="block bg-indigo-100 text-indigo-700 font-medium px-4 py-3 rounded hover:bg-indigo-200 transition text-center">
+            📝 Обновить инфу о топах
+        </a>
+        <a href="{% url 'wb_checker:recommendations' %}" class="block bg-pink-100 text-pink-700 font-medium px-4 py-3 rounded hover:bg-pink-200 transition text-center">
+            🎯 Перейти к рекомендациям
+        </a>
+    </div>
+
+    <!-- Форма 2 -->
+    <form method="POST" class="bg-white p-6 rounded-lg shadow space-y-4 border">
+        {% csrf_token %}
+        <div class="space-y-2">
+            {{ form_get_dest.as_p }}
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            Чпоньк
+        </button>
+    </form>
+
+</div>
+{% endblock content %}
