@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.blog.apps.BlogConfig',
     'django_extensions',
+    'apps.core.apps.CoreConfig',
     'apps.price_checker.apps.PriceCheckerConfig',
     'apps.test_generator.apps.TestGeneratorConfig',
     'apps.wb_checker.apps.WbCheckerConfig',
