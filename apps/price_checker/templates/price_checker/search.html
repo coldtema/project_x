@@ -1,48 +1,75 @@
-{%extends 'base.html'%}
-{%block title%}Поиск продукта{%endblock title%}
-{%block content%}
-<h2>Найти продукт</h2>
-<form method="post">
-    {%csrf_token%}
-    <table>
-        {{form.as_table}}
-    </table>
-    <input type="submit" value="Поиск">
-</form>
-{%if search_products%}
-<h2>Результаты поиска:</h2>
-<table>
-    <thead align="center">
-        <tr>
-            <th>id</th>
-            <th>shop</th>
-            <th>category</th>
-            <th>name</th>
-            <th>price</th>
-            <th>author_id</th>
-            <th>price_history</th>
-            <th>action</th>
-        </tr>
-    </thead>
-    <tbody align="center">
-        {%for elem in search_products%}
-        <tr>
-            <td>{{elem.id}}</td>
-            <td>{{elem.shop}}</td>
-            <!-- <td>{{elem.shop.tags.all}}</td> -->
-            <td>
-                {%for item in elem.shop.tags.all%}
-                {{item}}
-                {%endfor%}
-            </td>
-            <td><a href="{{elem.url}}">{{elem.name}}</a></td>
-            <td>{{elem.latest_price}}</td>
-            <td>{{elem.author_id}}</td>
-            <td><a href="{%url 'price_checker:price_history' id=elem.id%}">История цены</a></td>
-            <td><a href="{%url 'price_checker:delete_product' id=elem.id%}"> Удалить</a></td>
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
-{%endif%}
-{%endblock content%}
+{% extends 'base.html' %}
+{% block title %}Поиск продукта{% endblock title %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Найти продукт</h2>
+    
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <div class="grid gap-4">
+            {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow">
+            Поиск
+        </button>
+    </form>
+</div>
+
+{% if search_products %}
+<div class="max-w-6xl mx-auto mt-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Результаты поиска:</h2>
+    
+    <div class="overflow-x-auto rounded-lg shadow">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 text-sm">
+            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                <tr>
+                    <th class="px-4 py-2 text-center">ID</th>
+                    <th class="px-4 py-2 text-center">Shop</th>
+                    <th class="px-4 py-2 text-center">Category</th>
+                    <th class="px-4 py-2 text-center">Name</th>
+                    <th class="px-4 py-2 text-center">Price</th>
+                    <th class="px-4 py-2 text-center">Author</th>
+                    <th class="px-4 py-2 text-center">History</th>
+                    <th class="px-4 py-2 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-center text-gray-800 dark:text-white">
+                {% for elem in search_products %}
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-4 py-2">{{ elem.id }}</td>
+                    <td class="px-4 py-2">{{ elem.shop }}</td>
+                    <td class="px-4 py-2">
+                        {% for item in elem.shop.tags.all %}
+                            {{ item }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="px-4 py-2">
+                        <a href="{{ elem.url }}" class="text-blue-600 dark:text-blue-400 hover:underline" target="_blank">{{ elem.name }}</a>
+                    </td>
+                    <td class="px-4 py-2">{{ elem.latest_price }}</td>
+                    <td class="px-4 py-2">{{ elem.author_id }}</td>
+                    <td class="px-4 py-2">
+                        <a href="{% url 'price_checker:price_history' id=elem.id %}" class="text-indigo-600 dark:text-indigo-400 hover:underline">История</a>
+                    </td>
+                    <td class="px-4 py-2">
+                        <a href="{% url 'price_checker:delete_product' id=elem.id %}" class="text-red-600 dark:text-red-400 hover:underline">Удалить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
