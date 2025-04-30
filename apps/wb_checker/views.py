@@ -56,8 +56,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
             del menu_category
 
 
-class RecommentationsList(View):
-
+class RecommentationsList(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         prods = list(*map(lambda x: x.topwbproduct_set.all(), brands))
@@ -107,8 +106,8 @@ def update_avaliability(request):
 @time_count
 def update_top_prods(request):
     wb_brands.TopWBProductBrandUpdater().run()
-    wb_sellers.TopWBProductSellerUpdater().run()
-    wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
+    # wb_sellers.TopWBProductSellerUpdater().run()
+    # wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
