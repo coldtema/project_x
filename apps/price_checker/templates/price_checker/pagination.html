@@ -1,19 +1,33 @@
-<div class="pagination">
-    <span class="step-links">
-        {% if page.has_previous %} 
-            <a href="?page={{ 1 }}"><<<</a> 
-            <a href="?page={{ page.previous_page_number }}">Previous</a> 
+<div class="flex justify-center mt-6">
+    <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+        {% if page.has_previous %}
+            <a href="?page=1" class="px-3 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-md">
+                <<< 
+            </a>
+            <a href="?page={{ page.previous_page_number }}" class="px-3 py-1 border-t border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">
+                Previous
+            </a>
         {% endif %}
-        {%for page_num in page_range%}
-            {%if page_num == page.number%}
-                <a href="?page={{ page_num }}">({{page_num}})</a> 
-            {%else%}
-                <a href="?page={{ page_num }}">{{page_num}}</a> 
-            {%endif%}
-        {%endfor%}
-        {% if page.has_next %} 
-            <a href="?page={{ page.next_page_number }}">Next</a>
-            <a href="?page={{ page.paginator.num_pages }}">>>></a>
+
+        {% for page_num in page_range %}
+            {% if page_num == page.number %}
+                <span class="px-3 py-1 border border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-200 font-semibold">
+                    {{ page_num }}
+                </span>
+            {% else %}
+                <a href="?page={{ page_num }}" class="px-3 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    {{ page_num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page.has_next %}
+            <a href="?page={{ page.next_page_number }}" class="px-3 py-1 border-t border-b border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">
+                Next
+            </a>
+            <a href="?page={{ page.paginator.num_pages }}" class="px-3 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-md">
+                >>>
+            </a>
         {% endif %}
-    </span>
+    </nav>
 </div>
