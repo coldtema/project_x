@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 px-4">
+  <!-- Заголовок -->
+  <div class="text-3xl font-bold mb-6 text-center text-gray-800">
+    Личный кабинет
+  </div>
+
+  <!-- Карточка пользователя -->
+  <div class="bg-white rounded-2xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
+    <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-3xl font-semibold text-blue-600">
+      {{ user.username|first|upper }}
+    </div>
+    <div class="flex-1 text-center md:text-left">
+      <div class="text-xl font-semibold text-gray-800">{{ user.username }}</div>
+      <div class="text-gray-500">Подписка: <span class="font-medium">{{ user.subscription }}</span></div>
+    </div>
+    <div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="text-red-600 hover:text-red-800">Выйти</button>
+        </form>
+    </div>
+  </div>
+
+  <!-- Навигация по разделам -->
+  <div class="grid md:grid-cols-2 gap-6">
+    <a href="#" class="block bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
+      <div class="text-xl font-semibold mb-1">Редактировать профиль</div>
+      <div class="text-sm opacity-80">Изменить имя, почту и другую информацию</div>
+    </a>
+
+    <a href="#" class="block bg-gradient-to-r from-green-500 to-green-600 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
+      <div class="text-xl font-semibold mb-1">Моя подписка</div>
+      <div class="text-sm opacity-80">Посмотреть или изменить текущий тариф</div>
+    </a>
+
+    <a href="#" class="block bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
+      <div class="text-xl font-semibold mb-1">Уведомления</div>
+      <div class="text-sm opacity-80">Настроить email и пуш-оповещения</div>
+    </a>
+
+    <a href="#" class="block bg-gradient-to-r from-red-400 to-red-500 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
+      <div class="text-xl font-semibold mb-1">Безопасность</div>
+      <div class="text-sm opacity-80">Сменить пароль и просмотреть активные сессии</div>
+    </a>
+  </div>
+</div>
+{% endblock %}
