@@ -59,7 +59,11 @@ class WBCheckerMain(LoginRequiredMixin, View):
 class RecommentationsList(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
-        prods = list(*map(lambda x: x.topwbproduct_set.all(), brands))
+        raw_prods = list(map(lambda x: x.topwbproduct_set.all(), brands))
+        prods = []
+        for prod in raw_prods:
+            prods.extend(prod)
+        print(prods)
         return render(request, "recommendations.html", context={'prods': prods})
 
 
