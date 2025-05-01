@@ -21,7 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("apps.core.urls", namespace='core')),
     path('price_checker/', include('apps.price_checker.urls', namespace='price_checker')),
-    path('test_generator/', include('apps.test_generator.urls', namespace='test_generator')),
     path('wb_checker/', include('apps.wb_checker.urls', namespace='wb_checker')),
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),
