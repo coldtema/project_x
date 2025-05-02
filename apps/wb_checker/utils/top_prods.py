@@ -46,7 +46,7 @@ class TopBuilder:
 
 
 
-    def get_score_of_product(self, product_object):
+    def get_score_of_product(self, product_object): #принципы статистики (как честно проверять цену продукта)
         '''Получение внутренней оценки отдельного продукта'''
         prices_median = self.get_prices_median()
         true_discount = (prices_median - product_object.latest_price) / prices_median
