@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv('MAIN_LOCAL_HOST'), os.getenv('LOCAL_HOST_IPV4')]
+ALLOWED_HOSTS = ['*']
 
 LOGIN_REDIRECT_URL  =  "/"
 LOGOUT_REDIRECT_URL  =  "/"
