@@ -1,72 +1,82 @@
 {% extends 'base.html' %}
+{%load static%}
 {% block title %}Главная{% endblock title %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20 px-4">
-  <div class="max-w-4xl mx-auto text-center">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4">Добро пожаловать в наш проект</h1>
-    <p class="text-lg md:text-xl mb-6">Следи за товарами, анализируй цены, получай рекомендации — всё в одном месте.</p>
-    <a href="{% url 'price_checker:all_price_list' %}" class="bg-white text-blue-600 font-semibold py-2 px-6 rounded-full shadow-md hover:bg-gray-100 transition">Посмотреть товары</a>
-  </div>
-</section>
-
-<!-- Новости проекта -->
-<section class="bg-white py-16 px-4">
-  <div class="max-w-5xl mx-auto">
-    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Новости проекта</h2>
-    
-    <div class="grid gap-8 md:grid-cols-2">
-      <!-- Одна новость -->
-      <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">🚀 Запущена новая система рекомендаций</h3>
-        <p class="text-gray-600">Теперь ты можешь получать персональные советы по подбору лучших товаров из маркетплейсов на основе своих интересов.</p>
-        <p class="text-sm text-gray-400 mt-2">28 апреля 2025</p>
-      </div>
-
-      <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">📊 Добавлен анализ динамики цен</h3>
-        <p class="text-gray-600">Мы начали отображать графики изменения цен на товары — удобно для отслеживания скидок!</p>
-        <p class="text-sm text-gray-400 mt-2">25 апреля 2025</p>
-      </div>
-
+<div class="max-w-5xl mx-auto p-4 space-y-8">
+  
+    <!-- Заголовок -->
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Добро пожаловать, {{user.username}}!</h1>
+      <p class="text-gray-600 text-sm mt-1">Где будем искать лучшие предложения?</p>
     </div>
-  </div>
-</section>
-
-<!-- Преимущества -->
-<section class="bg-gray-100 py-16 px-4">
-  <div class="max-w-6xl mx-auto text-center">
-    <h2 class="text-3xl font-bold mb-10 text-gray-800">Почему выбирают нас</h2>
-    <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-3xl text-blue-600 mb-4">⚡</div>
-        <h3 class="font-semibold text-lg">Молниеносный парсинг</h3>
-        <p class="text-sm text-gray-600 mt-2">Обновления данных товаров каждые 10 минут.</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-3xl text-blue-600 mb-4">🎯</div>
-        <h3 class="font-semibold text-lg">Рекомендации с ИИ</h3>
-        <p class="text-sm text-gray-600 mt-2">Алгоритмы подбирают товары по твоим интересам.</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl shadow">
-        <div class="text-3xl text-blue-600 mb-4">📉</div>
-        <h3 class="font-semibold text-lg">Слежение за ценами</h3>
-        <p class="text-sm text-gray-600 mt-2">Получай уведомления, когда цена падает.</p>
+  
+    <!-- Магазины -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Категории</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+        <!-- Карточка магазина -->
+        <a href="{%url 'wb_checker:all_price_list'%}" class="group p-5 border rounded-2xl shadow-sm hover:shadow-md bg-gray-800 hover:ring-2 hover:ring-blue-500 transition-all flex items-center space-x-4">
+          <img src="{% static 'core/wb.png' %}" class="w-10 h-10" alt="Wildberries">
+          <div>
+            <h3 class="text-base font-medium text-white group-hover:text-blue-600">Wildberries</h3>
+            <p class="text-sm text-gray-500 ">Рекомендации + скидки</p>
+          </div>
+        </a>
+        <a href="#" class="group p-5 border rounded-2xl shadow-sm hover:shadow-md bg-gray-800 hover:ring-2 hover:ring-blue-500 transition-all flex items-center space-x-4">
+          <img src="{% static 'core/shops.png' %}" class="w-10 h-10" alt="Ozon">
+          <div>
+            <h3 class="text-base font-medium text-white group-hover:text-blue-600">Интернет-магазины</h3>
+            <p class="text-sm text-gray-500 ">Отслеживание цен</p>
+          </div>
+        </a>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- Подвал -->
-<footer class="bg-gray-800 text-white py-8 mt-16">
-  <div class="max-w-6xl mx-auto px-4 text-center">
-    <p class="text-sm">&copy; {{ now|date:"Y" }} МойПроект. Все права защищены.</p>
-    <div class="mt-2 space-x-4 text-sm">
-      <a href="{% url 'accounts:signup' %}" class="hover:underline">Профиль</a>
-      <a href="{% url 'wb_checker:recommendations' %}" class="hover:underline">Рекомендации</a>
-      <a href="{% url 'wb_checker:clear_db' %}" class="hover:underline">Админка</a>
+  
+    <!-- Отслеживаемые товары -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Отслеживаемые товары</h2>
+      <ul class="space-y-3">
+        <li class="flex justify-between items-center bg-gray-700 p-3 rounded-xl">
+          <span class="text-gray-200">Кроссовки Nike Air Maxdshhh jfhjn rrtn tyrmnhmyrty trbnryt tyrjrumnrter rytehde</span>
+          <span class="font-semibold text-gray-200">3999₽</span>
+        </li>
+      </ul>
+      <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Все товары →</a>
+    </div>
+  
+    <!-- Лучшие находки - сделать, если у пользователя крутой тариф -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Лучшие находки</h2>
+      <ul class="space-y-3">
+        <li class="flex items-center justify-between p-3 bg-gray-800 rounded-xl border dark:border-gray-700">
+          <span class="text-gray-300">WB: Блузка</span>
+          <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded-lg">-60%</span>
+        </li>
+      </ul>
+      <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Все находки →</a>
+    </div>
+  
+    <!-- Новости -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Новости</h2>
+      <div class="bg-blue-900 p-4 rounded-2xl text-sm text-blue-200">
+        Проект в разработо4ке
+      </div>
+      <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Все новости →</a>
+    </div>
+  
+    <!-- Настройки -->
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Настройки</h2>
+      <div class="flex flex-wrap gap-4">
+        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-800 dark:text-white hover:bg-gray-200">Профиль</a>
+        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-800 dark:text-white hover:bg-gray-200">FAQ</a>
+        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-800 dark:text-white hover:bg-gray-200">Поддержка</a>
+      </div>
     </div>
   </div>
-</footer>
+  
+  
+  
 {% endblock content %}
