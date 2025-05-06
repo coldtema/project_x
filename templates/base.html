@@ -12,27 +12,36 @@
 
     <!-- Навигация сверху (для компов) -->
     <nav class="hidden md:flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-700">
-        
         <!-- Меню слева -->
-        <div class="flex items-center space-x-8 text-sm font-medium text-gray-700 dark:text-gray-200">
+        <div class="flex items-center space-x-8 text-sm font-medium text-gray-700 dark:text-gray-200 z-10">
             <a href="{% url 'core:menu' %}" class="hover:text-blue-600 transition">Меню</a>
             <a href="{% url 'wb_checker:recommendations' %}" class="hover:text-blue-600 transition">Подборка</a>
             <a href="{% url 'core:index' %}" class="hover:text-blue-600 transition">Новости</a>
             <a href="{% url 'accounts:profile' %}" class="hover:text-blue-600 transition">Профиль</a>
         </div>
-
-
-        {% if user.is_authenticated %}
-        <a href="{% url 'accounts:profile' %}" class="flex flex-col items-end text-right px-4 py-2 rounded-md hover:bg-gray-50 transition">
-            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ user.username }}</span>
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.subscription }}</span>
-        </a>
-        {% else %}
-        <a href="/accounts/login" class="text-sm font-semibold text-blue-600 hover:underline">
-            Войти
-        </a>
-        {% endif %}
-    </nav>
+    
+        <!-- Логотип по центру -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 z-0">
+            <a href="{% url 'core:index' %}" class="flex items-center space-x-2">
+                <span class="text-xl font-bold text-gray-800 dark:text-white">HeavenDrop</span>
+            </a>
+        </div>
+    
+        <!-- Профиль / вход -->
+        <div class="z-10">
+            {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile' %}" class="z-10 flex flex-col items-end text-right px-4 py-2 rounded-md dark:hover:bg-neutral-700 hover:bg-gray-200 transition">
+                <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ user.username }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.subscription }}</span>
+            </a>
+            {% else %}
+            <a href="/accounts/login" class="text-sm font-semibold text-blue-600 hover:underline">
+                Войти
+            </a>
+            {% endif %}
+        </div>
+        </nav>
+        
 
     {% block header %} {% endblock header %}
     <!-- Контент страницы -->
