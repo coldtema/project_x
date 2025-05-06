@@ -1,6 +1,6 @@
 import os
 import cloudscraper
-from apps.accounts.models import CustomUser
+from .models import CustomUser
 
 
 def load_dest_to_author(author_id, address):
@@ -22,15 +22,16 @@ def get_coordinates(address):
     response = scraper.get(url, params=params)
     json_data = response.json()
     coordinates = json_data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'].split()
+    address = json_data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['metaDataProperty']['GeocoderMetaData']['Address']['formatted']
     latitude = coordinates[1]
     longitude = coordinates[0]
     scraper.close()
-    return latitude, longitude
+    return latitude, longitude, address
 
 
 def get_dest(address):
     '''Получает id широты и долготы на wb'''
-    latitude, longitude = get_coordinates(address)
+    latitude, longitude, address = get_coordinates(address)
     headers = {"User-Agent": "Mozilla/5.0"}
     url = f'https://user-geo-data.wildberries.ru/get-geo-info?currency=RUB&latitude={latitude}&longitude={longitude}&locale=ru&dt=1743520473&currentLocale=ru&b2bMode=false&addressType=self'
     scraper = cloudscraper.create_scraper()
