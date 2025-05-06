@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}PriceChecker{% endblock title %}
 {% block content %}
+{%load custom_math%}
 <div class="max-w-6xl mx-auto px-4 py-8">
 
     <!-- Форма -->
@@ -38,7 +39,7 @@
     <!-- Карточки продуктов -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
         {% for elem in db_products_page %}
-        <div class="bg-white  border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5  hover:shadow-md transition">
+        <div class="bg-white border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5 hover:shadow-md transition">
             <div class="flex justify-between items-start mb-2">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <a href="{{ elem.url }}" target="_blank" class="hover:underline">{{ elem.name|truncatechars:50 }}</a>
@@ -47,7 +48,13 @@
             </div>
 
             <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Магазин:</strong> {{ elem.shop }}</p>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Цена:</strong> {{ elem.latest_price }} ₽</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Цена:</strong> <span>{{ elem.latest_price }} ₽ </span>
+            {%if elem.latest_price < elem.first_price%}
+                (<span class="text-green-500">↓ {{elem.first_price|minus:elem.latest_price}} ₽</span>)
+            {%elif elem.latest_price > elem.first_price%}
+                (<span class="text-red-400">↑ {{elem.latest_price|minus:elem.first_price}} ₽</span>)
+            {%endif%}
+            </p>
 
             <div class="flex flex-wrap gap-1 my-2">
                 {% for item in elem.shop.tags.all %}
