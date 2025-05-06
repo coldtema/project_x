@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {%load static%}
+{%load custom_math%}
 {% block title %}Главная{% endblock title %}
 
 {% block content %}
@@ -40,10 +41,12 @@
     <div>
       <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Отслеживаемые товары</h2>
       <ul class="space-y-3">
-        <li class="flex justify-between items-center bg-white dark:bg-gray-800 border-2 border-gray-400 dark:border-gray-500 p-3 rounded-xl">
-          <span class="text-gray-200">Кроссовки Nike Air Maxdshhh jfhjn rrtn tyrmnhmyrty trbnryt tyrjrumnrter rytehde</span>
-          <span class="font-semibold text-gray-200">3090₽</span>
+        {%for elem in prods_snippet%}
+        <li class="flex justify-between items-center bg-white dark:bg-neutral-900 border-2 border-gray-300 dark:border-neutral-700 p-3 rounded-xl">
+          <span class="text-gray-900 dark:text-gray-200">{{elem.name}}</span>
+          <span class="font-semibold text-gray-900 dark:text-gray-200">{{elem.latest_price}}₽</span>
         </li>
+        {%endfor%}
       </ul>
       <a href="{%url 'price_checker:all_price_list'%}" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Все товары →</a>
     </div>
@@ -63,8 +66,8 @@
     <!-- Новости -->
     <div>
       <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Уведомления</h2>
-      <div class="bg-blue-900 p-4 rounded-2xl text-sm text-blue-200">
-        Проект в разработо4ке
+      <div class="bg-indigo-700 p-4 rounded-2xl text-base text-blue-200 border border-3 border-indigo-400">
+        Проект в разработо4ке jighv8gher ggfrv gffgcnfgy3c cxf34cxfg2n3tgf54 ng4cngu234gcv2umcxf3mfg1y3ur gnrufncgucnvru ng3gucggux3gfi nfgxcuyxg3gfucxqeiungxmq mgiuqgcinumghi
       </div>
       <a href="#" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Все новости →</a>
     </div>
@@ -73,9 +76,9 @@
     <div>
       <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Настройки</h2>
       <div class="flex flex-wrap gap-4">
-        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 dark:text-gray-200 dark:text-white hover:bg-gray-200">Профиль</a>
-        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 dark:text-gray-200 dark:text-white hover:bg-gray-200">FAQ</a>
-        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 dark:text-gray-200 dark:text-white hover:bg-gray-200">Поддержка</a>
+        <a href="{% url 'accounts:profile' %}" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 text-white hover:bg-gray-500">Профиль</a>
+        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 text-white hover:bg-gray-500">FAQ</a>
+        <a href="#" class="px-4 py-2 rounded-xl bg-gray-700 text-sm text-gray-900 text-white hover:bg-gray-500">Поддержка</a>
       </div>
     </div>
   </div>
