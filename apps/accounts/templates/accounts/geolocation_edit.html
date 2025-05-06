@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 px-4">
+  
+  <!-- Заголовок -->
+  <div class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
+    Местоположение
+  </div>
+  
+  <!-- Описание формы -->
+  <details class="mb-4 bg-gray-300 dark:bg-neutral-700 text-gray-900 dark:text-gray-200 border border-gray-300 dark:border-neutral-700 rounded-lg shadow">
+    <summary class="cursor-pointer px-4 py-3 font-medium">
+      Зачем это нужно?
+    </summary>
+    <div class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
+      <ul class="list-disc pl-5 space-y-1">
+        <li class="mb-4">На этой странице вы можете обновить информацию о вашем текущем местоположении.</p>
+        <li class="mb-4">Укажите новый адрес (можно приблизительный, например, адрес ближайшего пункта выдачи WB или населенного пункта, в котором вы находитесь), чтобы мы могли предоставить более точные рекомендации и предложения для Вас.</p>
+        <li class="mb-4">Если Вы хотите изменить местоположение, введите новый адрес в поле ниже и нажмите кнопку "Изменить".</p>
+        <li class="mb-4">Это поможет нам сделать наши предложения и рекомендации для Вас ещё более релевантными!</p>
+      </ul>
+    </div>
+  </details>
+  
+  <!-- Форма -->
+  <form method="POST" class="bg-white dark:bg-neutral-900 p-6 rounded-lg shadow space-y-4 border border-gray-400 dark:border-neutral-700">
+    {% csrf_token %}
+    
+    <div class="space-y-4 text-gray-800 dark:text-white">
+      <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Текущее местоположение</h1>
+      
+      {% for field in form %}
+        <div class="mb-4">
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="flex text-right justify-between px-4 py-2 rounded-md transition">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
+        Изменить
+      </button>
+      <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex">{{ success }}</span>
+    </div>
+  </form>
+  <br>
+  <div class="text-lg text-gray-800 dark:text-gray-200 mb-8 space-y-6">
+    <div class="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg border border-gray-300 dark:border-neutral-700 space-y-4">
+      <p class="text-sm text-gray-600 dark:text-gray-400">После изменения местоположения вы получите подтверждение о сохранении, и ваше новое местоположение будет использовано в наших сервисах.</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+{% comment %} потом переделать с htmx чтобы не перегружать форму {% endcomment %}
