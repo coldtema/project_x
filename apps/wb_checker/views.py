@@ -3,12 +3,11 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count
-from apps.wb_checker.utils.pickpoints import load_dest_to_author
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
 from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
-from .forms import WBProductForm, WBDestForm
+from .forms import WBProductForm
 from .models import WBBrand, WBSeller, TopWBProduct
 import re
 from django.views import View
@@ -20,7 +19,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class WBCheckerMain(LoginRequiredMixin, View):
     def dispatch(self, request, *args, **kwargs):
         self.form_parse = WBProductForm()
-        self.form_get_dest = WBDestForm()
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):       
@@ -31,8 +29,6 @@ class WBCheckerMain(LoginRequiredMixin, View):
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
             self.url_dispatcher(request.POST['url'], author_object)
-        elif WBDestForm(request.POST).is_valid():
-            load_dest_to_author(request.user.id, request.POST['address'])
         return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
     @time_count
