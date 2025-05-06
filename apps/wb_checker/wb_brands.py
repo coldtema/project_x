@@ -177,7 +177,7 @@ class TopWBProductBrandUpdater():
         
 
     def run(self):
-        author_object = CustomUser.objects.get(pk=1)
+        author_object = CustomUser.objects.get(username='coldtema')
         for brand in self.brands_with_subs:
             TopWBProduct.objects.filter(source='BRAND', brand=brand).delete()
             Brand(brand.main_url, author_object).run()

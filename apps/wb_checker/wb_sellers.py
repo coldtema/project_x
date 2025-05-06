@@ -186,7 +186,7 @@ class TopWBProductSellerUpdater():
         
 
     def run(self):
-        author_object = CustomUser.objects.get(pk=1)
+        author_object = CustomUser.objects.get(username='coldtema')
         TopWBProduct.objects.filter(source='SELLER').delete()
         for seller in self.sellers_with_subs:
             TopWBProduct.objects.filter(source='SELLER', seller=seller).delete()

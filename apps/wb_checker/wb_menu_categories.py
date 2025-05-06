@@ -90,7 +90,8 @@ class MenuCategory:
         category_slug_name = re.search(r'(catalog\/)(.+)', clear_category_url).group(2)
         category_slug_name = '/catalog/' + category_slug_name
         category_object = WBMenuCategory.objects.filter(main_url=category_slug_name).first() #тк есть дубли в БД (дочерняя категория может вставиться в другой blackhole)
-        if category_object.subs.exists() and self.author_object.is_staff == False:
+
+        if category_object.subs.exists() and self.author_object.is_superuser == False:
             self.dest_avaliable=False
             self.author_object.wbmenucategory_set.add(category_object)
         return category_object
@@ -186,7 +187,7 @@ class TopWBProductMenuCategoryUpdater():
         
 
     def run(self):
-        author_object = CustomUser.objects.get(pk=1)
+        author_object = CustomUser.objects.get(username='coldtema')
         for category in self.all_categories:
             if category.shard_key != 'blackhole':
                 TopWBProduct.objects.filter(source='CATEGORY', menu_category=category).delete()
