@@ -70,9 +70,8 @@ class RecommentationsList(LoginRequiredMixin, View):
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
-    WBSeller.objects.all().delete()
-    WBBrand.objects.all().delete()
     TopWBProduct.objects.all().delete()
+    
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
@@ -110,8 +109,8 @@ def update_avaliability(request):
 @time_count
 def update_top_prods(request):
     wb_brands.TopWBProductBrandUpdater().run()
-    # wb_sellers.TopWBProductSellerUpdater().run()
-    # wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
+    wb_sellers.TopWBProductSellerUpdater().run()
+    wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
