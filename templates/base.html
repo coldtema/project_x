@@ -8,25 +8,24 @@
     <title>{% block title %}{% endblock title %}</title>
     {% tailwind_css %}
 </head>
-<body class="bg-gray-200">
+<body class="bg-gray-100 dark:bg-neutral-800">
 
     <!-- Навигация сверху (для компов) -->
-    <nav class="hidden md:flex items-center justify-between px-6 py-4 bg-white shadow-sm border-b border-gray-200">
+    <nav class="hidden md:flex items-center justify-between px-6 py-4 bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-700">
         
         <!-- Меню слева -->
-        <div class="flex items-center space-x-8 text-sm font-medium text-gray-700">
+        <div class="flex items-center space-x-8 text-sm font-medium text-gray-700 dark:text-gray-200">
             <a href="{% url 'core:menu' %}" class="hover:text-blue-600 transition">Меню</a>
-            <a href="{% url 'wb_checker:recommendations' %}" class="hover:text-blue-600 transition">Товары</a>
-            <a href="{% url 'price_checker:all_price_list' %}" class="hover:text-blue-600 transition">Новости</a>
-            <a href="{% url 'wb_checker:all_price_list' %}" class="hover:text-blue-600 transition">WB Чекер</a> <!-- Удалить потом -->
+            <a href="{% url 'wb_checker:recommendations' %}" class="hover:text-blue-600 transition">Подборка</a>
+            <a href="{% url 'core:index' %}" class="hover:text-blue-600 transition">Новости</a>
             <a href="{% url 'accounts:profile' %}" class="hover:text-blue-600 transition">Профиль</a>
         </div>
 
 
         {% if user.is_authenticated %}
         <a href="{% url 'accounts:profile' %}" class="flex flex-col items-end text-right px-4 py-2 rounded-md hover:bg-gray-50 transition">
-            <span class="text-sm font-semibold text-gray-800">{{ user.username }}</span>
-            <span class="text-xs text-gray-500">{{ user.subscription }}</span>
+            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ user.username }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ user.subscription }}</span>
         </a>
         {% else %}
         <a href="/accounts/login" class="text-sm font-semibold text-blue-600 hover:underline">
@@ -43,7 +42,7 @@
     </main>
     <!-- Нижнее мобильное меню -->  
     <div class="block md:hidden">
-        <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
+        <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-neutral-900 dark:border-neutral-700">
             <div class="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
 
                 <a href="{%url 'core:menu'%}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group
