@@ -1,29 +1,111 @@
-{%extends "base.html"%}
-{%load static%}
-{%block title%}PriceHistory{%endblock title%}
-{%block content%}
-<h1>История цены</h1>
-<h2>Продукт: {{product_to_watch.name}}     <a href="{%url 'price_checker:share_product' id=product_to_watch.id%}">Поделиться Продуктом</a></h2>
-<h1></h1>
-<table>
-    <thead>
-        <tr>
-            <th style="width: 40%;">price</th>
-            <th style="width: 60%;">added</th>
-            <th>action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {%for elem in prices_of_product%}
-        <tr align="center">
-            <td>{{elem.price}}</td>
-            <td>{{elem.added_time}}</td>
-            <td><a href="{%url 'price_checker:delete_price' id=elem.id%}">Удалить</a></td>
-        </tr>
-        {%endfor%}
-    </tbody>
-</table>
-<h1></h1>
-<h1>График</h1>
-<img src="{%static 'price_checker/chart.png' %}" alt="График цены">
-{%endblock content%}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}История цены — {{ product_to_watch.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">История цены</h1>
+
+    <div class="flex justify-between items-center flex-wrap gap-2 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
+            {{ product_to_watch.name }}
+        </h2>
+        <a href="{% url 'price_checker:share_product' id=product_to_watch.id %}" class="text-blue-600 dark:text-blue-500 hover:underline text-sm">
+            🔗 Поделиться продуктом
+        </a>
+    </div>
+
+    <div class="overflow-x-auto mb-10 rounded-2xl border-2 border-gray-300 dark:border-neutral-600">
+        <table class="min-w-full divide-y divide-gray-300 dark:divide-neutral-600 text-sm">
+            <thead class="bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-gray-200">
+                <tr>
+                    <th class="px-4 py-2 text-left">Цена</th>
+                    <th class="px-4 py-2 text-left">Дата добавления</th>
+                    <th class="px-4 py-2 text-left">Действие</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-300 dark:divide-neutral-700 dark:text-gray-200">
+                {% for elem in prices_of_product %}
+                <tr class="hover:bg-gray-800 dark:bg-neutral-900 bg-white">
+                    <td class="px-4 py-2 font-medium">{{ elem.price }}</td>
+                    <td class="px-4 py-2">{{ elem.added_time|date:"d.m.Y H:i" }}</td>
+                    <td class="px-4 py-2">
+                        <a href="{% url 'price_checker:delete_price' id=elem.id %}" class="text-red-600 hover:underline">Удалить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-200">📈 График цены</h3>
+
+    {% if svg_data %}
+    <div class="w-full max-w-4xl mx-auto bg-white  border border-gray-300 dark:border-neutral-700 dark:bg-neutral-900 rounded-2xl p-6 shadow">
+        <svg id="price-chart" viewBox="-5 -5 120 40" class="w-full h-32 text-blue-500 relative">
+            <polyline
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-dasharray="1000"
+                stroke-dashoffset="1000"
+                points="{% for p in svg_data %}{{ p.0.0 }},{{ p.0.1 }} {% endfor %}">
+                <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="4s" fill="freeze" />
+            </polyline>
+        
+            <!-- Точки с тултипами -->
+            {% for point, price in svg_data %}
+                <circle 
+                    class="tooltip-point"
+                    cx="{{ point.0 }}" cy="{{ point.1 }}" r="3" 
+                    fill="currentColor"
+                    data-price="{{ price }} ₽ (c 15 мар по 15 апр)" />
+            {% endfor %}
+        </svg>
+        <div id="tooltip" class="absolute hidden bg-gray-900 text-sm text-gray-200 border border-gray-300 rounded shadow px-2 py-1 pointer-events-none z-50 break-words"></div>
+    </div>
+        
+    {% else %}
+        <p class="text-gray-500">Нет данных для графика.</p>
+    {% endif %}
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tooltip = document.getElementById('tooltip');
+        const svg = document.getElementById('price-chart');
+    
+        svg.querySelectorAll('.tooltip-point').forEach(point => {
+            point.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tooltip.textContent = point.dataset.price;
+                tooltip.classList.remove('hidden');
+                tooltip.style.left = (e.pageX + 10) + 'px';
+                tooltip.style.top = (e.pageY - 30) + 'px';
+            });
+    
+            point.addEventListener('mouseenter', (e) => {
+                tooltip.textContent = point.dataset.price;
+                tooltip.classList.remove('hidden');
+            });
+    
+            point.addEventListener('mouseleave', () => {
+                tooltip.classList.add('hidden');
+            });
+    
+            point.addEventListener('mousemove', (e) => {
+                tooltip.style.left = (e.pageX + 10) + 'px';
+                tooltip.style.top = (e.pageY - 30) + 'px';
+            });
+        });
+    
+        document.addEventListener('click', () => {
+            tooltip.classList.add('hidden');
+        });
+    });
+    </script>
+    
+    
+{% endblock %}
+
