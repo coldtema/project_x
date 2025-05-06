@@ -7,9 +7,11 @@
     <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">История цены</h1>
 
     <div class="flex justify-between items-center flex-wrap gap-2 mb-6">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
-            {{ product_to_watch.name }}
-        </h2>
+        <a class="text-gray-900 dark:text-gray-200 underline" href="{{product_to_watch.url}}">
+            <h2 class="text-xl font-semibold ">
+                {{ product_to_watch.name }}
+            </h2>
+        </a>
         <a href="{% url 'price_checker:share_product' id=product_to_watch.id %}" class="text-blue-600 dark:text-blue-500 hover:underline text-sm">
             🔗 Поделиться продуктом
         </a>
@@ -26,7 +28,7 @@
             </thead>
             <tbody class="divide-y divide-gray-300 dark:divide-neutral-700 dark:text-gray-200">
                 {% for elem in prices_of_product %}
-                <tr class="hover:bg-gray-800 dark:bg-neutral-900 bg-white">
+                <tr class="hover:bg-gray-300 dark:hover:bg-neutral-700 dark:bg-neutral-900 bg-white">
                     <td class="px-4 py-2 font-medium">{{ elem.price }}</td>
                     <td class="px-4 py-2">{{ elem.added_time|date:"d.m.Y H:i" }}</td>
                     <td class="px-4 py-2">
