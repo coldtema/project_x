@@ -48,6 +48,7 @@ class Product(models.Model):
     name = models.CharField(max_length=150, verbose_name='Имя продукта')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
+    first_price = models.IntegerField(verbose_name='Первая цена')
     url = models.URLField(verbose_name='URL')
     ref_url = models.URLField(verbose_name='Ref-URL')
     enabled = models.BooleanField(default=True)
@@ -86,7 +87,7 @@ class Price(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Имя продукта')
 
     class Meta:
-        ordering = ['added_time']
+        ordering = ['-added_time']
         verbose_name = 'Цена'
         verbose_name_plural = 'Цены'
         indexes = [
