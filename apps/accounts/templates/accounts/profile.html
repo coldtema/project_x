@@ -4,18 +4,18 @@
 {% block content %}
 <div class="max-w-4xl mx-auto mt-10 px-4">
   <!-- Заголовок -->
-  <div class="text-3xl font-bold mb-6 text-center text-gray-800">
+  <div class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
     Личный кабинет
   </div>
 
   <!-- Карточка пользователя -->
-  <div class="bg-white rounded-2xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
+  <div class="bg-white  border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900 rounded-2xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
     <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-3xl font-semibold text-blue-600">
       {{ user.username|first|upper }}
     </div>
     <div class="flex-1 text-center md:text-left">
-      <div class="text-xl font-semibold text-gray-800">{{ user.username }}</div>
-      <div class="text-gray-500">Подписка: <span class="font-medium">{{ user.subscription }}</span></div>
+      <div class="text-xl font-semibold text-gray-800 dark:text-gray-200">{{ user.username }}</div>
+      <div class="text-gray-500 dark:text-gray-400">Подписка: <span class="font-medium">{{ user.subscription }}</span></div>
     </div>
     <div>
         <form action="{% url 'logout' %}" method="post">
