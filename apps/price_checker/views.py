@@ -6,10 +6,9 @@ from .models import Product, Price, Shop
 from .site_explorer import get_shop_of_product
 import time
 from functools import wraps
-from .chart_builder import plot_price_history
 from django.urls import reverse, reverse_lazy
 from apps.price_checker.utils import PriceUpdater
-from apps.price_checker.utils import time_count
+from apps.price_checker.utils import time_count, get_sparkline_points
 from django.core.paginator import Paginator
 from django.views.generic import FormView
 from django.views import View
@@ -28,7 +27,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         product_form = ProductForm()
         db_products = request.user.product_set.filter(enabled=True)
-        paginator = Paginator(db_products, 10)
+        paginator = Paginator(db_products, 12)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
         page_range = self.get_page_range(db_products_page, paginator)
@@ -46,16 +45,17 @@ class PriceCheckerMain(LoginRequiredMixin, View):
 
     def get_product_info_and_save(self, request):
         try:
+            
             product_data = get_shop_of_product(request.POST.get('url'))
         except:
             return False
         if len(product_data['name']) > 150:
             product_data['name'] = product_data['name'][:147]+'...'
         new_product, was_not_in_db = Product.objects.get_or_create(name=product_data['name'],
-                                                                   url=request.POST.get('url'),
-                                                                   shop=Shop.objects.get(regex_name=product_data['shop']),  
-                                                                   ref_url=request.POST.get('url'),
-                                                                   defaults={'latest_price':product_data['price_element']})
+                                                                url=request.POST.get('url'),
+                                                                shop=Shop.objects.get(regex_name=product_data['shop']),  
+                                                                ref_url=request.POST.get('url'),
+                                                                defaults={'latest_price':product_data['price_element']})
         if was_not_in_db:
             Price.objects.create(product=new_product, price=product_data['price_element'])
         CustomUser.objects.get(id=request.user.id).product_set.add(new_product)
@@ -67,14 +67,14 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     def get_page_range(db_products_page, paginator):
         page_number = db_products_page.number
         number_of_pages = paginator.num_pages
-        if page_number - 3 < 1:
+        if page_number - 2 < 1:
             lowest_page = 1
         else:
-            lowest_page = page_number - 3
-        if page_number + 3 > number_of_pages:
+            lowest_page = page_number - 2
+        if page_number + 2 > number_of_pages:
             highest_page = number_of_pages
         else:
-            highest_page = page_number + 3
+            highest_page = page_number + 2
         return list(range(lowest_page, highest_page+1))
     
 
@@ -95,9 +95,10 @@ def price_history(request, id):
     for elem in prices_of_product:
         dates.append(elem.added_time)
         prices.append(elem.price)
-    plot_price_history(dates, prices)
+    svg_data = get_sparkline_points(prices)
     return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
-                                                                        'prices_of_product': prices_of_product})
+                                                                        'prices_of_product': prices_of_product,
+                                                                        'svg_data': svg_data})
 
 
 @login_required
