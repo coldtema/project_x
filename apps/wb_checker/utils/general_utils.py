@@ -23,13 +23,13 @@ def get_image_url(artikul):
         basket_num = f'0{basket_num}'
     img_url = ''
     if len(artikul) == 9:
-        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:4]}/part{artikul[:6]}/{artikul}/images/big/1.webp'
+        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:4]}/part{artikul[:6]}/{artikul}/images/c516x688/1.webp'
     elif len(artikul) == 8:
-        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:3]}/part{artikul[:5]}/{artikul}/images/big/1.webp'
+        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:3]}/part{artikul[:5]}/{artikul}/images/c516x688/1.webp'
     elif len(artikul) == 7:
-        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/images/big/1.webp'
+        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:2]}/part{artikul[:4]}/{artikul}/images/c516x688/1.webp'
     elif len(artikul) == 6:
-        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:1]}/part{artikul[:3]}/{artikul}/images/big/1.webp'
+        img_url = f'https://basket-{basket_num}.wbbasket.ru/vol{artikul[:1]}/part{artikul[:3]}/{artikul}/images/c516x688/1.webp'
     return img_url
 
 
