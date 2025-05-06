@@ -6,5 +6,5 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('menu/', views.menu, name='menu'),
+    path('menu/', views.MenuView.as_view(), name='menu'),
 ]
