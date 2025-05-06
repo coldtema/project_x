@@ -55,6 +55,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                                                                 url=request.POST.get('url'),
                                                                 shop=Shop.objects.get(regex_name=product_data['shop']),  
                                                                 ref_url=request.POST.get('url'),
+                                                                first_price=product_data['price_element'],
                                                                 defaults={'latest_price':product_data['price_element']})
         if was_not_in_db:
             Price.objects.create(product=new_product, price=product_data['price_element'])
@@ -89,7 +90,7 @@ def price_history(request, id):
     product_to_watch = check_prod_of_user(id, request.user)
     if not product_to_watch:
         return Http404('??? (нет такого продукта)')
-    prices_of_product = product_to_watch.price_set.all()
+    prices_of_product = product_to_watch.price_set.all().order_by('added_time')
     dates = []
     prices = []
     for elem in prices_of_product:
