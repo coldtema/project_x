@@ -11,4 +11,5 @@ urlpatterns = [
     path('subscription_edit/', views.subscription_edit, name='subscription_edit'),
     path('geolocation_edit/', views.GeolocationEditView.as_view(), name='geolocation_edit'),
     path('change_password/', views.change_password, name='change_password'),
+    path('update_discount_balance/', views.update_discount_balance, name='update_discount_balance')
 ]
