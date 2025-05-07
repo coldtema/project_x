@@ -7,7 +7,7 @@
   
   <div class="grid gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
     {% for elem in prods %}
-    <div class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col h-full">
+    <div class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col h-full pb-2">
 
       <!-- Стикер скидки -->
       {% if elem.discount %}
@@ -24,22 +24,23 @@
 
       <!-- Контент -->
       <div class="p-2 flex flex-col flex-1 space-y-1">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 leading-tight">
-          {{ elem.name }}
-        </h3>
-
-        {% if elem.rating %}
-        <div class="flex items-center text-yellow-400 text-xs gap-0.5 mt-1">
+        <a href="{{ elem.product.url }}" target="_blank">
+          <h3 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 leading-tight">
+            {{ elem.name }}
+          </h3>
+        </a>
+      </div>
+      {% if elem.rating %}
+        <div class="flex items-center text-yellow-400 text-xs gap-0.5 mt-1 px-2">
           <span class="text-sm leading-none">★</span>
           <span>{{ elem.rating }}</span>
           {% if elem.feedbacks %}
           <span class="text-[10px] text-gray-500 dark:text-gray-400">({{ elem.feedbacks }})</span>
           {% endif %}
-        </div>
         {% endif %}
-
-        <div class="text-sm font-bold text-red-600 dark:text-red-400 mt-1">{{ elem.latest_price }} ₽</div>
-
+        </div>
+      <div class="text-sm px-2 font-bold text-red-600 dark:text-red-400 mt-1">{{ elem.latest_price }} ₽</div>
+      <div class="text-sm px-2 font-bold text-gray-900 dark:text-gray-300 mt-1">
         <a href="{{ elem.url }}" target="_blank"
            class="mt-2 inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded transition text-xs">
           Подробнее
