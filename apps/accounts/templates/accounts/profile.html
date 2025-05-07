@@ -8,22 +8,55 @@
     Личный кабинет
   </div>
 
-  <!-- Карточка пользователя -->
-  <div class="bg-white  border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900 rounded-2xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
+  <div class="bg-white border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900 rounded-2xl shadow-md p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
+    <!-- Аватар -->
     <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-3xl font-semibold text-blue-600">
       {{ user.username|first|upper }}
     </div>
+  
+    <!-- Информация о пользователе -->
     <div class="flex-1 text-center md:text-left">
-      <div class="text-xl font-semibold text-gray-800 dark:text-gray-200">{{ user.username }}</div>
-      <div class="text-gray-500 dark:text-gray-400">Подписка: <span class="font-medium">{{ user.subscription }}</span></div>
+      <div class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+        {{ user.username }}
+      </div>
+      <div class="text-gray-500 dark:text-gray-400">
+        Подписка: <span class="font-medium">{{ user.subscription }}</span>
+      </div>
+  
+      <!-- Статистика -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2 text-sm">
+        <div class="bg-gray-100 dark:bg-neutral-800 p-2 rounded-lg flex flex-col justify-between h-16">
+          <div class="text-gray-500 dark:text-gray-400 text-xs">Товаров:</div>
+          <div class="font-semibold text-gray-800 dark:text-white text-sm mt-auto">
+            {{ used_slots }}
+          </div>
+        </div>
+  
+        <div class="bg-gray-100 dark:bg-neutral-800 p-2 rounded-lg flex flex-col justify-between h-16">
+          <div class="text-gray-500 dark:text-gray-400 text-xs">Осталось мест:</div>
+          <div class="font-semibold text-gray-800 dark:text-white text-sm mt-auto">
+            {{ user.slots }}
+          </div>
+        </div>
+  
+        <div class="bg-gray-100 dark:bg-neutral-800 p-2 rounded-lg flex flex-col justify-between h-16">
+          <div class="text-gray-500 dark:text-gray-400 text-xs">Баланс скидок:</div>
+          <div class="font-semibold text-sm mt-auto {% if user.saving_balance >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
+            {{ user.discount_balance }} ₽
+          </div>
+        </div>
+      </div>
     </div>
+  
+    <!-- Кнопка выхода -->
     <div>
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="text-red-600 hover:text-red-800">Выйти</button>
-        </form>
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="text-red-600 hover:text-red-800">Выйти</button>
+      </form>
     </div>
   </div>
+  
 
   <!-- Навигация по разделам -->
   <div class="grid md:grid-cols-2 gap-6">
