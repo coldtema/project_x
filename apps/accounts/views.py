@@ -19,6 +19,24 @@ def profile(request):
     return render(request, 'accounts/profile.html')
 
 
+def update_discount_balance(request):
+    all_users = CustomUser.objects.all()
+    for user in all_users:
+        balance_prods = user.product_set.all().annotate(discount_delta=ExpressionWrapper(F('first_price') - F('latest_price'), output_field=IntegerField())).aggregate(Sum('discount_delta'))['discount_delta__sum']
+        balance_wb_prods = user.wbdetailedinfo_set.all().annotate(discount_delta=ExpressionWrapper(F('first_price') - F('latest_price'), output_field=IntegerField())).aggregate(Sum('discount_delta'))['discount_delta__sum']
+        if balance_prods is None: balance_prods = 0
+        if balance_wb_prods is None: balance_wb_prods = 0
+        balance = balance_prods + balance_wb_prods
+        user.discount_balance = balance
+        user.save()
+    # all_shops = Shop.objects.all()
+    # for shop in all_shops:
+    #     tag = shop_to_category.get(shop.regex_name, None)
+    #     if tag:
+    #         tag, _ = Tag.objects.get_or_create(name=tag)
+    #         tag.shop_set.add(shop)
+    return redirect('accounts:profile')
+
 def profile_edit(request):
 
     return(render(request, 'accounts/profile_edit.html'))
