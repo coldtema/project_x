@@ -2,7 +2,7 @@ import os
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
 from .forms import ProductForm, SendMailForm, SearchForm
-from .models import Product, Price, Shop
+from .models import Product, Price, Shop, Tag
 from .site_explorer import get_shop_of_product
 import time
 from functools import wraps
@@ -31,9 +31,14 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
         page_range = self.get_page_range(db_products_page, paginator)
+        all_categories = Tag.objects.all().prefetch_related('shop_set')
+        all_categories_dict = dict()
+        for category in all_categories:
+            all_categories_dict.setdefault(category, category.shop_set.all().values('name', 'main_url'))
         return render(request, 'price_checker/index.html', context={'form': product_form, 
                                                                     'db_products_page': db_products_page,
-                                                                    'page_range': page_range})
+                                                                    'page_range': page_range,
+                                                                    'all_categories_dict': all_categories_dict})
     
 
     def post(self, request, *args, **kwargs):
