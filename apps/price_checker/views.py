@@ -59,7 +59,10 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                                                                 defaults={'latest_price':product_data['price_element']})
         if was_not_in_db:
             Price.objects.create(product=new_product, price=product_data['price_element'])
-        CustomUser.objects.get(id=request.user.id).product_set.add(new_product)
+        user = CustomUser.objects.get(id=request.user.id)
+        user.product_set.add(new_product)
+        user.slots-=1
+        user.save()
         return True
 
 
