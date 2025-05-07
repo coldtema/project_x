@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from apps.accounts.models import CustomUser
-from apps.wb_checker.utils.general_utils import time_count
+from apps.wb_checker.utils.general_utils import time_count, check_detailed_info_of_user, get_sparkline_points
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
 from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
@@ -11,6 +11,7 @@ from .forms import WBProductForm
 from .models import WBBrand, WBSeller, TopWBProduct
 import re
 from django.views import View
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -21,8 +22,10 @@ class WBCheckerMain(LoginRequiredMixin, View):
         self.form_parse = WBProductForm()
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):       
-        return render(request, 'index.html', context={'form_parse': self.form_parse, 'form_get_dest':self.form_get_dest})
+    def get(self, request, *args, **kwargs):
+        prods = request.user.wbdetailedinfo_set.all().select_related('product', 'author') 
+        return render(request, 'index.html', context={'form': self.form_parse,
+                                                      'prods': prods})
     
     def post(self, request, *args, **kwargs):
         form = WBProductForm(request.POST)
