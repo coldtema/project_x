@@ -14,4 +14,6 @@ urlpatterns = [
     path('update_top_prods/', views.update_top_prods, name='update_top_prods'),
     path('update_top_prods_info/', views.update_top_prods_info, name='update_top_prods_info'),
     path('recommendations/', views.RecommentationsList.as_view(), name='recommendations'),
+    path('wb_product_details/<int:id>', views.wbproduct_details, name='wb_product_details'),
+    path('delete_price/', views.delete_price, name='delete_price')
 ]
