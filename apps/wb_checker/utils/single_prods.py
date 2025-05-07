@@ -150,6 +150,7 @@ class PriceUpdater:
             print(f'Цена изменилась!\nПродукт: {self.current_detail_to_check.product.url}\nБыло: {self.current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
             flag_change = True
             self.current_detail_to_check.latest_price = price_of_detail
+            self.current_detail_to_check.updated = timezone.now()
             self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
@@ -163,7 +164,7 @@ class PriceUpdater:
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД обновления наличия'''
-        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
+        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated'])
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
 
@@ -300,6 +301,7 @@ class AvaliabilityUpdater:
         self.current_detail_to_check.latest_price = price_of_detail
         self.current_detail_to_check.volume = volume
         self.current_detail_to_check.enabled = True
+        self.current_detail_to_check.updated = timezone.now()
         self.updated_details.append(self.current_detail_to_check)
         self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
@@ -312,6 +314,6 @@ class AvaliabilityUpdater:
     @transaction.atomic
     def save_update_avaliability(self):
         '''Занесение в БД обновления наличия'''
-        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled'])
+        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated'])
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
