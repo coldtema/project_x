@@ -64,6 +64,33 @@ class RecommentationsList(LoginRequiredMixin, View):
 
 
 
+
+@login_required
+def wbproduct_details(request, id):
+    '''Функция для открытия истории цены конкретного продукта'''
+    detailed_info_to_watch = check_detailed_info_of_user(id, request.user)
+    if not detailed_info_to_watch:
+        return Http404('??? (нет такого продукта)')
+    prices_of_detailed_info = detailed_info_to_watch.wbprice_set.all().order_by('added_time')
+    dates = []
+    prices = []
+    for elem in prices_of_detailed_info:
+        dates.append(elem.added_time)
+        prices.append(elem.price)
+    svg_data = get_sparkline_points(prices)
+    svg_data = list(map(lambda x: list(x), svg_data))
+    for i in range(len(svg_data)):
+        svg_data[i].append(dates[i])
+    return render(request, 'product_details.html', context={'product_to_watch': detailed_info_to_watch, 
+                                                            'prices_of_product': prices_of_detailed_info,
+                                                            'svg_data': svg_data})
+
+
+
+def delete_price(request):
+    pass
+
+
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
     TopWBProduct.objects.all().delete()
