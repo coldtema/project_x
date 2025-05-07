@@ -108,16 +108,16 @@ class Product:
     def add_product_to_db(self, new_product, new_detailed_info, new_price):
         '''Функция добавления всех изменений в БД атомарной транзакцией'''
         #сохраняем элемент
-        print('привет')
         WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
         new_detailed_info, was_not_in_db = WBDetailedInfo.objects.get_or_create(latest_price=self.product_price,
-                                           size=self.product_size,
-                                           volume=self.product_volume,
-                                           enabled=new_detailed_info.enabled,
-                                           author_id=self.author_id,
-                                           product=new_product)
+                                                                                first_price=self.product_price,
+                                                                                size=self.product_size,
+                                                                                volume=self.product_volume,
+                                                                                enabled=new_detailed_info.enabled,
+                                                                                author_id=self.author_id,
+                                                                                product=new_product) #возможно в defaults убрать volume из за постоянных изменений
         if was_not_in_db:
             new_price.detailed_info = new_detailed_info
             new_price.save()
