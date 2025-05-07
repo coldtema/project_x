@@ -13,6 +13,23 @@ def time_count(func):
         return result
     return wrapper
 
+def get_sparkline_points(prices, width=100, height=30):
+    if not prices:
+        return []
+
+    n = len(prices)
+    min_p, max_p = min(prices), max(prices)
+    spread = max_p - min_p or 1
+    step_x = width / max(n - 1, 1)
+
+    return [
+        ((round(i * step_x, 2), round(height - ((p - min_p) / spread * height), 2)), p)
+        for i, p in enumerate(prices)
+    ]
+
+
+def check_detailed_info_of_user(id_of_detailed_info, user):
+    return user.wbdetailedinfo_set.filter(pk=id_of_detailed_info).select_related('product').first()
 
 
 def get_image_url(artikul):
