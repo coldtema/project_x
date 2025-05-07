@@ -82,25 +82,17 @@ class WBProduct(models.Model):
     
     def __str__(self):
         return self.name
-    
-
-    # def save(self, *args, **kwargs):
-    #     if self.pk:  # Проверяем, что объект уже существует (не новый)
-    #         original = WBProduct.objects.get(pk=self.pk)
-    #         if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
-    #             self.updated = timezone.now()  # Обновляем вручную
-    #         else:
-    #             self.updated = original.updated
-    #     super().save(*args, **kwargs)
 
 
 
 class WBDetailedInfo(models.Model):
     product = models.ForeignKey(WBProduct, on_delete=models.CASCADE, verbose_name='Продукт WB')
     latest_price = models.IntegerField(verbose_name='Цена продукта WB')
+    first_price = models.IntegerField(verbose_name='Первая цена продукта WB')
     size = models.CharField(max_length=20, null=True, verbose_name='Размер')
     volume = models.IntegerField(verbose_name='Количество')
     enabled = models.BooleanField(default=True, verbose_name='Есть в наличии')
+    updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор продукта')
     
     enabled_products = EnabledManager()
@@ -109,12 +101,21 @@ class WBDetailedInfo(models.Model):
     class Meta:
         verbose_name = 'Информация о продукте'
         verbose_name_plural = 'Информация о продуктах'
+        ordering = ['-updated']
         indexes = [
             models.Index(fields=['product', 'author'])
         ]
         constraints = [
-            models.UniqueConstraint(fields=['product', 'latest_price', 'size', 'volume', 'enabled', 'author'], name='total_repetition')
+            models.UniqueConstraint(fields=['product', 'latest_price', 'first_price', 'size', 'volume', 'enabled', 'updated', 'author'], name='total_repetition')
         ]
+    # def save(self, *args, **kwargs):
+    #     if self.pk:  # Проверяем, что объект уже существует (не новый)
+    #         original = WBProduct.objects.get(pk=self.pk)
+    #         if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
+    #             self.updated = timezone.now()  # Обновляем вручную
+    #         else:
+    #             self.updated = original.updated
+        # super().save(*args, **kwargs)
 
     def __str__(self):
         return str((self.product, self.latest_price, self.size, self.volume, self.enabled, self.author))
