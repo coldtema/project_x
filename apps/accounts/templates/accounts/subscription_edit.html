@@ -7,4 +7,89 @@
   <div class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
     Управление подпиской
   </div>
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center mb-12">
+      <p class="text-lg text-gray-600 dark:text-gray-400 mt-4">Выберите план, который подходит именно вам, и начните получать лучшие предложения прямо сейчас!</p>
+    </div>
+  
+    <!-- Информация о текущей подписке пользователя -->
+    <div class="max-w-2xl mx-auto mb-12">
+      <div class="bg-white dark:bg-neutral-900 border border-blue-500 dark:border-blue-400 rounded-2xl shadow p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">Текущая подписка:</h3>
+            <p class="text-xl font-bold text-blue-600 dark:text-blue-400">Премиум</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Действует до: <span class="font-medium">25 июня 2025</span></p>
+          </div>
+          <form method="POST" action="/cancel-subscription/">
+            {% csrf_token %}
+            <button type="submit" class="mt-2 sm:mt-0 inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-medium text-sm">
+              Отменить подписку
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex items-center bg-gray-200 dark:bg-neutral-700 rounded-full p-1 text-sm font-medium">
+        <input type="radio" name="plan-toggle" id="monthly" class="hidden peer/monthly" checked>
+        <label for="monthly" class="px-4 py-2 cursor-pointer rounded-full peer-checked/monthly:bg-blue-600 peer-checked/monthly:text-white text-gray-800 dark:text-gray-200 transition">
+          1 месяц
+        </label>
+    
+        <input type="radio" name="plan-toggle" id="halfyear" class="hidden peer/halfyear">
+        <label for="halfyear" class="px-4 py-2 cursor-pointer rounded-full peer-checked/halfyear:bg-blue-600 peer-checked/halfyear:text-white text-gray-800 dark:text-gray-200 transition">
+          6 месяцев
+        </label>
+      </div>
+    </div>
+    
+  
+    <!-- Card container -->
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Basic Plan -->
+      <div class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center">
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Базовый</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-lg mb-6">Идеально для людей, которым нужно только основное.</p>
+        <p class="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">Бесплатно</p>
+        <ul class="text-left text-gray-600 dark:text-gray-400 mb-6 space-y-2">
+          <li>Доступ к основным рекомендациям</li>
+          <li>2 предложения в неделю</li>
+          <li>Без поддержки 24/7</li>
+        </ul>
+      </div>
+  
+      <!-- Premium Plan -->
+      <div class="bg-blue-600 dark:bg-blue-700 border border-blue-500 dark:border-blue-500 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center text-white">
+        <h3 class="text-2xl font-semibold mb-4">Премиум</h3>
+        <p class="text-lg mb-6">Для тех, кто хочет больше возможностей и дополнительных преимуществ.</p>
+        <p class="text-4xl font-bold mb-4">₽99/мес</p>
+        <ul class="text-left mb-6 space-y-2">
+          <li>Доступ ко всем рекомендациям</li>
+          <li>10 предложений в неделю</li>
+          <li>Приоритетная поддержка 24/7</li>
+          <li>Эксклюзивные предложения</li>
+        </ul>
+        <button class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50 transition">Выбрать</button>
+      </div>
+  
+      <!-- Ultimate Plan -->
+      <div class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center">
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ультра</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-lg mb-6">Для настоящих ценителей, которым нужно всё и сразу.</p>
+        <p class="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">₽199/мес</p>
+        <ul class="text-left text-gray-600 dark:text-gray-400 mb-6 space-y-2">
+          <li>Доступ ко всем эксклюзивным материалам</li>
+          <li>Неограниченное количество предложений</li>
+          <li>Персональный менеджер</li>
+          <li>Доступ к закрытым вебинарам и мероприятиям</li>
+        </ul>
+        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Выбрать</button>
+      </div>
+    </div>
+  </div>
+  
+  
 {% endblock %}
