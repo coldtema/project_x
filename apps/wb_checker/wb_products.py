@@ -114,10 +114,10 @@ class Product:
         new_detailed_info, was_not_in_db = WBDetailedInfo.objects.get_or_create(latest_price=self.product_price,
                                                                                 first_price=self.product_price,
                                                                                 size=self.product_size,
-                                                                                volume=self.product_volume,
                                                                                 enabled=new_detailed_info.enabled,
                                                                                 author_id=self.author_id,
-                                                                                product=new_product) #возможно в defaults убрать volume из за постоянных изменений
+                                                                                product=new_product,
+                                                                                defaults={'volume':self.product_volume}) #возможно в defaults убрать volume из за постоянных изменений (убрал - посмотреть, как ведет)
         if was_not_in_db:
             new_price.detailed_info = new_detailed_info
             new_price.save()
