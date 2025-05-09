@@ -11,12 +11,12 @@ from apps.wb_checker.utils.general_utils import get_image_url
 class Product:
     def __init__(self, product_url, author_object):
         '''Инициализация необходимых атрибутов'''
-        self.product_url = product_url
         self.author_object = author_object
         self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.artikul = re.search(r'\/(\d+)\/', product_url).group(1)
+        self.product_url = f'https://www.wildberries.ru/catalog/{self.artikul}/detail.aspx'
         self.product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
         self.product_name, self.product_size, self.product_volume, self.product_price = self.get_product_detailed_info()
         self.image_url = get_image_url(self.artikul)
