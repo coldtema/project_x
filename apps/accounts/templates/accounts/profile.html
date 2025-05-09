@@ -41,9 +41,15 @@
   
         <div class="bg-gray-100 dark:bg-neutral-800 p-2 rounded-lg flex flex-col justify-between h-16">
           <div class="text-gray-500 dark:text-gray-400 text-xs">Баланс скидок:</div>
-          <div class="font-semibold text-sm mt-auto {% if user.saving_balance >= 0 %}text-green-600{% else %}text-red-500{% endif %}">
-            {{ user.discount_balance }} ₽
-          </div>
+          {% if user.discount_balance >= 0 %}
+            <div class="font-semibold text-sm mt-auto text-green-600 ">
+              + {{ user.discount_balance }} ₽
+            </div>
+          {% else %}
+            <div class="font-semibold text-sm mt-auto text-red-500">
+              - {{ user.discount_balance }} ₽
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>
