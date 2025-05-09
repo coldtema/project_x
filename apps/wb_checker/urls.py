@@ -15,5 +15,6 @@ urlpatterns = [
     path('update_top_prods_info/', views.update_top_prods_info, name='update_top_prods_info'),
     path('recommendations/', views.RecommentationsList.as_view(), name='recommendations'),
     path('wb_product_details/<int:id>', views.wbproduct_details, name='wb_product_details'),
-    path('delete_price/', views.delete_price, name='delete_price')
+    path('delete_price/<int:id>', views.delete_price, name='delete_price'),
+    path('delete_wb_product/<int:id>', views.delete_wb_product, name='delete_wb_product')
 ]
