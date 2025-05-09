@@ -117,6 +117,8 @@ def delete_product(request, id):
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
     request.user.product_set.remove(Product.objects.get(pk=id))
+    request.user.slots += 1
+    request.user.save()
     return HttpResponseRedirect(reverse('price_checker:all_price_list'))
 
 
