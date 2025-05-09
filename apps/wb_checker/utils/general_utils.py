@@ -29,7 +29,7 @@ def get_sparkline_points(prices, width=100, height=30):
 
 
 def check_detailed_info_of_user(id_of_detailed_info, user):
-    return user.wbdetailedinfo_set.filter(pk=id_of_detailed_info).select_related('product').first()
+    return user.wbdetailedinfo_set.filter(pk=id_of_detailed_info).select_related('product').first() #переписать, тк detailed_info - foreign key
 
 
 def get_image_url(artikul):
