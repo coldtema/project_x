@@ -8,7 +8,7 @@ from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm
-from .models import WBBrand, WBSeller, TopWBProduct
+from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice
 import re
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -89,15 +89,35 @@ def wbproduct_details(request, id):
                                                             'svg_data': svg_data})
 
 
+@login_required
+def delete_wb_product(request, id):
+    '''Функция представления для удаления конкретного продукта'''
+    product_to_delete = check_detailed_info_of_user(id, request.user)
+    if not product_to_delete:
+        return Http404('??? (нет такого продукта)')
+    WBDetailedInfo.objects.get(pk=id).delete() #сделать доп функцию у продукта, что если он нигде не фигурирует в качестве Foreign Key, то его нужно удалить
+    request.user.slots += 1
+    request.user.save()
+    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
-def delete_price(request):
-    pass
+
+
+@login_required
+def delete_price(request, id):
+    '''Функция представления для удаления цены конкретного продукта'''
+    product_to_redirect = WBPrice.objects.get(id=id).detailed_info
+    product_to_redirect = check_detailed_info_of_user(product_to_redirect.id, request.user)
+    if not product_to_redirect:
+        return Http404('??? (нет цены такого продукта)')
+    WBPrice.objects.get(id=id).delete()
+    return HttpResponseRedirect(reverse('wb_checker:wb_product_details', args=[product_to_redirect.id]))
+
+
 
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
     TopWBProduct.objects.all().delete()
-    
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
