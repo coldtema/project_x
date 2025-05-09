@@ -7,7 +7,7 @@
     <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">Информация о продукте</h1>
 
     <div class="flex justify-between items-center flex-wrap gap-2 mb-6">
-        <a class="text-gray-900 dark:text-gray-200 underline" href="{{product_to_watch.product.url}}">
+        <a class="text-gray-900 dark:text-gray-200 underline" href={{product_to_watch.product.url}}>
             <h2 class="text-xl font-semibold ">
                 {{ product_to_watch.product.name }}
             </h2>
@@ -29,7 +29,7 @@
                     <td class="px-4 py-2 font-medium">{{ elem.price }}</td>
                     <td class="px-4 py-2">{{ elem.added_time|date:"d.m.Y H:i" }}</td>
                     <td class="px-4 py-2">
-                        <a href="{% url 'price_checker:delete_price' id=elem.id %}" class="text-red-600 hover:underline">Удалить</a>
+                        <a href={%url 'wb_checker:delete_price' id=elem.pk%} class="text-red-600 hover:underline">Удалить</a>
                     </td>
                 </tr>
                 {% endfor %}
