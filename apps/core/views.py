@@ -18,5 +18,12 @@ def index(request):
 class MenuView(LoginRequiredMixin, View):
     def get(self, request):
         prods_snippet = request.user.product_set.all()[:3]
-        print(prods_snippet)
-        return render(request, 'core/menu.html', context={'prods_snippet': prods_snippet})
+        brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
+        raw_prods = list(map(lambda x: x.topwbproduct_set.all(), brands))
+        prods = []
+        for prod in raw_prods:
+            prods.extend(prod)
+        prods = list(filter(lambda x: True if x.source == 'BRAND' else False, prods))
+        recs_snippet = sorted(prods, key=lambda x: x.true_discount)[-3:]
+        return render(request, 'core/menu.html', context={'prods_snippet': prods_snippet,
+                                                          'recs_snippet': recs_snippet})
