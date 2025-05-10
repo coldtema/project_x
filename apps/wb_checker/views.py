@@ -13,6 +13,7 @@ import re
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 
 
@@ -23,9 +24,14 @@ class WBCheckerMain(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        prods = request.user.wbdetailedinfo_set.all().select_related('product', 'author') 
-        return render(request, 'index.html', context={'form': self.form_parse,
-                                                      'prods': prods})
+        prods = request.user.wbdetailedinfo_set.all().select_related('product', 'author')
+        paginator = Paginator(prods, 12)
+        page_number = request.GET.get('page', 1)
+        db_products_page = paginator.get_page(page_number)
+        page_range = self.get_page_range(db_products_page, paginator)
+        return render(request, 'wb_checker/index.html', context={'form': self.form_parse,
+                                                      'prods': db_products_page,
+                                                      'page_range': page_range})
     
     def post(self, request, *args, **kwargs):
         form = WBProductForm(request.POST)
@@ -33,6 +39,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
             author_object = CustomUser.objects.get(pk=request.user.id)
             self.url_dispatcher(request.POST['url'], author_object)
         return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+
 
     @time_count
     def url_dispatcher(self, url, author_object):
@@ -55,6 +62,21 @@ class WBCheckerMain(LoginRequiredMixin, View):
             del menu_category
 
 
+    @staticmethod
+    def get_page_range(db_products_page, paginator):
+        page_number = db_products_page.number
+        number_of_pages = paginator.num_pages
+        if page_number - 2 < 1:
+            lowest_page = 1
+        else:
+            lowest_page = page_number - 2
+        if page_number + 2 > number_of_pages:
+            highest_page = number_of_pages
+        else:
+            highest_page = page_number + 2
+        return list(range(lowest_page, highest_page+1))
+
+
 class RecommentationsList(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
@@ -62,8 +84,9 @@ class RecommentationsList(LoginRequiredMixin, View):
         prods = []
         for prod in raw_prods:
             prods.extend(prod)
+        prods = list(filter(lambda x: True if x.source == 'BRAND' else False, prods))
         print(prods)
-        return render(request, "recommendations.html", context={'prods': prods})
+        return render(request, "wb_checker/recommendations.html", context={'prods': prods})
 
 
 
@@ -84,7 +107,7 @@ def wbproduct_details(request, id):
     svg_data = list(map(lambda x: list(x), svg_data))
     for i in range(len(svg_data)):
         svg_data[i].append(dates[i])
-    return render(request, 'product_details.html', context={'product_to_watch': detailed_info_to_watch, 
+    return render(request, 'wb_checker/product_details.html', context={'product_to_watch': detailed_info_to_watch, 
                                                             'prices_of_product': prices_of_detailed_info,
                                                             'svg_data': svg_data})
 
