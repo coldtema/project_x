@@ -162,6 +162,7 @@ class TopWBProduct(models.Model):
     score = models.FloatField(verbose_name='Внутренний рейтинг топ продукта WB')
     wb_cosh = models.BooleanField(default=True)
     latest_price = models.IntegerField(verbose_name='Цена топ продукта WB')
+    true_discount = models.IntegerField(verbose_name='Честная скидка топ продукта WB')
     rating = models.FloatField(verbose_name='Рейтинг')
     feedbacks = models.IntegerField(verbose_name='Отзывы')
     seller = models.ForeignKey(WBSeller, on_delete=models.CASCADE, verbose_name='Продавец продукта WB')
