@@ -1,0 +1,27 @@
+<div class="flex justify-center mt-6">
+    <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
+        {% if page.has_previous %}
+            <a href="?page=1" class="px-3 py-1 border border-gray-300 dark:border-neutral-500 text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-600 hover:bg-gray-100 dark:hover:bg-neutral-500 rounded-l-md">
+                <<< 
+            </a>
+        {% endif %}
+
+        {% for page_num in page_range %}
+            {% if page_num == page.number %}
+                <span class="px-3 py-1 border border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-200 font-semibold">
+                    {{ page_num }}
+                </span>
+            {% else %}
+                <a href="?page={{ page_num }}" class="px-3 py-1 border border-gray-300 dark:border-neutral-500 text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-700 hover:bg-gray-100 dark:hover:bg-neutral-600">
+                    {{ page_num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page.has_next %}
+            <a href="?page={{ page.paginator.num_pages }}" class="px-3 py-1 border border-gray-300 dark:border-neutral-500 text-gray-700 dark:text-gray-200 bg-white dark:bg-neutral-600 hover:bg-gray-100 dark:hover:bg-neutral-500 rounded-r-md">
+                >>>
+            </a>
+        {% endif %}
+    </nav>
+</div>
