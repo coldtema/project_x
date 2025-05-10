@@ -78,14 +78,21 @@ class WBCheckerMain(LoginRequiredMixin, View):
 
 
 class RecommentationsList(LoginRequiredMixin, View):
+    @time_count
     def get(self, request, *args, **kwargs):
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
-        raw_prods = list(map(lambda x: x.topwbproduct_set.all(), brands))
+        sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
+        menu_categories = request.user.wbmenucategory_set.all().prefetch_related('topwbproduct_set')
+        raw_prods_brands = list(map(lambda x: x.topwbproduct_set.all(), brands))
+        raw_prods_sellers = list(map(lambda x: x.topwbproduct_set.all(), sellers))
+        raw_prods_menu_categories = list(map(lambda x: x.topwbproduct_set.all(), menu_categories))
+        raw_prods_brands.extend(raw_prods_sellers)
+        raw_prods_brands.extend(raw_prods_menu_categories)
         prods = []
-        for prod in raw_prods:
+        for prod in raw_prods_brands:
             prods.extend(prod)
-        prods = list(filter(lambda x: True if x.source == 'BRAND' else False, prods))
-        print(prods)
+        prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
+        print(len(prods))
         return render(request, "wb_checker/recommendations.html", context={'prods': prods})
 
 
@@ -108,8 +115,8 @@ def wbproduct_details(request, id):
     for i in range(len(svg_data)):
         svg_data[i].append(dates[i])
     return render(request, 'wb_checker/product_details.html', context={'product_to_watch': detailed_info_to_watch, 
-                                                            'prices_of_product': prices_of_detailed_info,
-                                                            'svg_data': svg_data})
+                                                                       'prices_of_product': prices_of_detailed_info,
+                                                                       'svg_data': svg_data})
 
 
 @login_required
