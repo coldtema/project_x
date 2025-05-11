@@ -91,9 +91,40 @@ class RecommentationsList(LoginRequiredMixin, View):
         prods = []
         for prod in raw_prods_brands:
             prods.extend(prod)
-        prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
+        sort = request.GET.get('sort', '')
+        if sort == 'price':
+            prods = sorted(prods, key=lambda x: x.latest_price)
+        if sort == 'discount':
+            prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
+        if sort == '':
+            prods = sorted(prods, key=lambda x: x.score, reverse=True)
+        if sort == 'rating':
+            prods = sorted(prods, key=lambda x: x.rating, reverse=True)
+        if sort == 'feedbacks':
+            prods = sorted(prods, key=lambda x: x.feedbacks, reverse=True)
+        
+        paginator = Paginator(prods, 24)
+        page_number = request.GET.get('page', 1)
+        db_products_page = paginator.get_page(page_number)
+        page_range = self.get_page_range(db_products_page, paginator)
+
         print(len(prods))
-        return render(request, "wb_checker/recommendations.html", context={'prods': prods})
+        return render(request, "wb_checker/recommendations.html", context={'prods': db_products_page,
+                                                                           'page_range': page_range})
+    
+    @staticmethod
+    def get_page_range(db_products_page, paginator):
+        page_number = db_products_page.number
+        number_of_pages = paginator.num_pages
+        if page_number - 2 < 1:
+            lowest_page = 1
+        else:
+            lowest_page = page_number - 2
+        if page_number + 2 > number_of_pages:
+            highest_page = number_of_pages
+        else:
+            highest_page = page_number + 2
+        return list(range(lowest_page, highest_page+1))
 
 
 
