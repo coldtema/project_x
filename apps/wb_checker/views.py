@@ -8,7 +8,7 @@ from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm
-from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice
+from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice, WBMenuCategory
 import re
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -79,7 +79,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
 
 class RecommentationsList(LoginRequiredMixin, View):
     @time_count
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs): #по факту можно все в кэш вынести
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
         menu_categories = request.user.wbmenucategory_set.all().prefetch_related('topwbproduct_set')
@@ -229,3 +229,22 @@ def update_top_prods_info(request):
     updater_info_of_top.run()
     del updater_info_of_top
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+
+
+@time_count
+def recommendations_settings(request):
+    subs_brand = request.user.wbbrand_set.all()
+    subs_seller = request.user.wbbrand_set.all()
+    subs_cats = request.user.wbmenucategory_set.all()
+    subs_cats_ids = list(map(lambda x: x.id, subs_cats))
+    all_cats = WBMenuCategory.objects.all()
+    all_cats_dict = dict()
+    for cat in all_cats:
+        if cat.parent and cat.shard_key != 'blackhole':
+            all_cats_dict.setdefault(all_cats.get(wb_id=cat.parent).name, []).append(cat)
+    return render(request, 'wb_checker/recommendation_settings.html', context={'subs_brand':subs_brand,
+                                                                               'subs_seller':subs_seller,
+                                                                               'subs_cats': subs_cats,
+                                                                               'subs_cats_ids':subs_cats_ids,
+                                                                               'all_cats': all_cats,
+                                                                               'parent_to_children': all_cats_dict})
