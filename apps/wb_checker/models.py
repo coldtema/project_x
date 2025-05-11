@@ -8,12 +8,13 @@ class EnabledManager(models.Manager):
     
 
 class WBMenuCategory(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Имя категории WB')
-    shard_key = models.CharField(max_length=50, verbose_name='Ключ шардирования категории WB')
+    name = models.CharField(max_length=1000, verbose_name='Имя категории WB')
+    shard_key = models.CharField(null=True, max_length=1000, verbose_name='Ключ шардирования категории WB')
     wb_id =  models.IntegerField(unique=True, verbose_name='WB ID категории WB')
-    query = models.CharField(max_length=300, verbose_name='Строка запроса к api')
-    main_url = models.URLField(blank=True, verbose_name='URL категории')
+    query = models.CharField(null=True, max_length=1000, verbose_name='Строка запроса к api')
+    main_url = models.URLField(null=True, verbose_name='URL категории')
     subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики категории')
+    parent = models.IntegerField(null=True, verbose_name='ID родительской категории')
 
     class Meta:
         verbose_name = 'Категория меню WB'
