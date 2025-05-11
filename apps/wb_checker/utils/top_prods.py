@@ -37,7 +37,10 @@ class TopBuilder:
             except:
                 self.price_history = [(timezone.now(), product_object.latest_price)]
             if len(self.price_history) < 4: #вот здесь брать немного по другому в плане если даже истории цены нет,Ю 
-                product_object.score, product_object.true_discount =  min(1.0, product_object.feedbacks / self.feedbacks_median) * (product_object.rating / 5), 0
+                if product_object.feedbacks < 100 or product_object.rating < 4.8:
+                    product_object.score, product_object.true_discount = 0, 0
+                else:
+                    product_object.score, product_object.true_discount =  min(1.0, product_object.feedbacks / self.feedbacks_median) * (product_object.rating / 5), 0
             else:
                 self.prices_duration = self.get_duration_of_prices()
                 score_of_product, true_discount = self.get_score_of_product(product_object)
@@ -54,6 +57,8 @@ class TopBuilder:
         trust_score = min(1.0, product_object.feedbacks / self.feedbacks_median) * (product_object.rating / 5)
         score_of_product = true_discount + trust_score
         true_discount = int(((prices_median - product_object.latest_price) / prices_median) * 100)
+        if product_object.feedbacks < 100 or product_object.rating < 4.8:
+            return 0, true_discount
         return score_of_product, true_discount
 
 
