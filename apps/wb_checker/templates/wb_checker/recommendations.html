@@ -3,22 +3,33 @@
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-6">
-  <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Товары</h1>
+  <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Подборка</h1>
   <!-- Блок фильтров -->
-  <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Сортировать по:</h2>
+  <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+  <!-- Левая часть: кнопка -->
+  <div>
+    <a href= {%url 'wb_checker:recommendations_settings'%} class="inline-block  text-center text-sm hover:text-blue-600 text-gray-900 dark:text-white font-semibold px-4 py-2 border-2 border-gray-300 dark:border-neutral-700 rounded-2xl bg-white dark:bg-neutral-900 hover:ring-2 hover:ring-blue-500 shadow transition">
+      ⚙️ Настроить подборку
+    </a>
+  </div>
 
-    <form method="get" class="flex flex-wrap gap-2">
+  <!-- Правая часть: сортировка -->
+  <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white sm:mr-2">Сортировать по:</h2>
+
+    <form method="get" class="flex gap-2">
       <select name="sort" onchange="this.form.submit()" class="text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-700 dark:text-gray-200 px-3 py-1 focus:ring-blue-500 focus:border-blue-500 transition">
         <option value="">По умолчанию</option>
         <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>💸 Цене</option>
         <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>📉 Скидке</option>
         <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>⭐ Рейтингу</option>
         <option value="feedbacks" {% if request.GET.sort == 'feedbacks' %}selected{% endif %}>💬 Отзывам</option>
-        <option value="internal" {% if request.GET.sort == 'internal' %}selected{% endif %}>🔥 Внутреннему рейтингу</option>
       </select>
+      <input type="hidden" name="page" value="{{ request.GET.page }}">
     </form>
   </div>
+</div>
+
 
   <div class="grid gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
     {% for elem in prods %}
@@ -39,7 +50,7 @@
 
       <!-- Контент -->
       <div class="p-2 flex flex-col flex-1 space-y-1">
-        <a href="{{ elem.product.url }}" target="_blank">
+        <a href="{{ elem.url }}" target="_blank">
           <h3 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 leading-tight">
             {{ elem.name }}
           </h3>
@@ -58,11 +69,11 @@
 
         <!-- Причина рекомендации -->
          {% if elem.true_discount %}
-          <div class="text-[10px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             📉 Цена упала на {{ elem.true_discount }}%
           </div>
           {%endif%}
-        <div class="text-[10px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
           📦 Из подписки: {{ elem.get_source_display }} — 
           <span class="italic">
             {%if elem.source == 'BRAND'%}
@@ -105,5 +116,9 @@
     </div>
     {% endfor %}
   </div>
+  <!-- Пагинация -->
+        <div class="mt-10">
+            {% include "wb_checker/pagination.html" with page=prods page_range=page_range request=request.GET%}
+        </div>
 </div>
 {% endblock content %}
