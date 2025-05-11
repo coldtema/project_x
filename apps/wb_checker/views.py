@@ -234,7 +234,7 @@ def update_top_prods_info(request):
 @time_count
 def recommendations_settings(request):
     subs_brand = request.user.wbbrand_set.all()
-    subs_seller = request.user.wbbrand_set.all()
+    subs_seller = request.user.wbseller_set.all()
     subs_cats = request.user.wbmenucategory_set.all()
     subs_cats_ids = list(map(lambda x: x.id, subs_cats))
     all_cats = WBMenuCategory.objects.all()
