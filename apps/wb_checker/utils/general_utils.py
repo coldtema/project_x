@@ -1,6 +1,9 @@
 import time
 from functools import wraps
-
+import re
+import cloudscraper
+import json
+from apps.wb_checker.models import WBBrand, WBSeller
 
 def time_count(func):
     '''Декоратор определения времени работы функции'''
@@ -146,6 +149,8 @@ def get_basket_num(artikul: int):
 #             menu_category = wb_menu_categories.MenuCategory(url, author_object)
 #             menu_category.run()
 #             del menu_category
+
+
 def get_brand_and_seller_from_prod(product_artikul):
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
@@ -167,6 +172,8 @@ def get_brand_and_seller_from_prod(product_artikul):
         seller_in_db, _ = WBSeller.objects.get_or_create(wb_id=seller_artikul, defaults={'name': seller_name,  
                                                                                        'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
         return {'seller': seller_in_db}
+
+
 
 def get_seller_from_link(seller_url):
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -191,3 +198,23 @@ def get_seller_from_link(seller_url):
                                                                                     'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
     scraper.close()
     return {'seller': seller_in_db}
+
+
+def get_brand_from_link(brand_url):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    brand_slug_name = re.search(r'(brands\/)([a-z\-\d]+)(\?)?(\/)?(\#)?', brand_url).group(2)
+    if brand_slug_name.isdigit(): #если пришла редиректная ссылка
+        brand_artikul = brand_slug_name
+    else:
+        final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
+        response = scraper.get(final_url, headers=headers)
+        json_data = json.loads(response.text)
+        brand_artikul = json_data['id']
+    final_url = f'https://catalog.wb.ru/brands/v2/catalog?ab_testing=false&appType=1&curr=rub&dest={-1257786}&hide_dtype=13&lang=ru&spp=30&uclusters=3&page=1&brand={brand_artikul}&sort='
+    response = scraper.get(final_url, headers=headers)
+    json_data = json.loads(response.text)
+    brand_name = json_data['data']['products'][0]['brand']
+    brand_in_db, _ = WBBrand.objects.get_or_create(wb_id=brand_artikul, defaults={'name': brand_name,  
+                                                                                    'main_url': f'https://www.wildberries.ru/brands/{brand_artikul}'})
+    return {'brand': brand_in_db}
