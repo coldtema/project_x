@@ -243,6 +243,7 @@ class RecommendationSettings(View):
         self.subs_cats_ids = list(map(lambda x: x.id, self.subs_cats))
         self.search_products = None
         self.form = SearchForm()
+        self.form_add = WBProductForm()
         self.context = {'subs_brand':self.subs_brand,
                         'subs_brand_ids':self.subs_brand_ids,
                         'subs_seller':self.subs_seller,
@@ -250,7 +251,8 @@ class RecommendationSettings(View):
                         'subs_cats':self.subs_cats,
                         'subs_cats_ids':self.subs_cats_ids,
                         'form':self.form,
-                        'search_products': self.search_products}
+                        'search_products': self.search_products,
+                        'form_add': self.form_add}
         return super().dispatch(request, *args, **kwargs)
     
 
