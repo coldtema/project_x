@@ -6,3 +6,6 @@ front_attrs = {'class': 'w-full px-3 py-2 rounded-md border border-gray-300 dark
 class WBProductForm(forms.Form):
     url = forms.CharField(max_length=1000, required=True, widget=forms.TextInput(attrs=front_attrs))
     
+
+class SearchForm(forms.Form):
+    query = forms.CharField(max_length=100, label='', help_text='Введите сюда текст поиска', widget=forms.TextInput(attrs=front_attrs))
