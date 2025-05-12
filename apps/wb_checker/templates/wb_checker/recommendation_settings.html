@@ -85,16 +85,26 @@
 
   <!-- Форма добавления ссылки -->
   <div class="mb-10">
-    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">➕ Добавить бренд или селлера по ссылке</h2>
-    <form method="post" class="space-y-4">
+    <form method="POST" class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
       {% csrf_token %}
-      <input type="url" name="url" required placeholder="Вставьте ссылку на бренд или селлера"
-             class="w-full border border-gray-300 dark:border-neutral-700 rounded-md px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-gray-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 transition">
-      <button type="submit"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition">
-        🔍 Добавить в подписку
+      <div class="space-y-4 text-gray-800 dark:text-white">
+          <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
+          {% for field in form_add %}
+              <div>
+                  {{ field }}
+                  {% if field.help_text %}
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
+                  {% endif %} 
+                  {% if field.errors %}
+                      <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+                  {% endif %}
+              </div>
+          {% endfor %}
+      </div>
+      <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
+          ➕ Добавить товар
       </button>
-    </form>
+  </form>
   </div>
   <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Найти продукт</h2>
