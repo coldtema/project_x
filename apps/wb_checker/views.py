@@ -279,12 +279,12 @@ class RecommendationSettings(View):
             self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
 
         if request.POST.get('form_type', None) == 'search_categories':
-        self.form = SearchForm(request.POST)
-        self.context['form'] = self.form
-        if self.form.is_valid():
-            self.search_products = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
-            self.search_products = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_products))
-            self.context['search_products'] = self.search_products
+            self.form = SearchForm(request.POST)
+            self.context['form'] = self.form
+            if self.form.is_valid():
+                self.search_products = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
+                self.search_products = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_products))
+                self.context['search_products'] = self.search_products
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
                                                                                 
     
