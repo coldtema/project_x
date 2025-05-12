@@ -308,6 +308,30 @@ class RecommendationSettings(View):
             self.context.setdefault('search_brand_seller', self.url_dispatcher(request))
         
 
+        if request.POST.get('form_type', None) == 'search_brand_seller_submit_changes':
+            brand_sub = request.POST.get('brand_sub', None)
+            seller_sub = request.POST.get('seller_sub', None)
+            old_brand_sub = request.POST.get('old_brand_sub', None)
+            old_seller_sub = request.POST.get('old_seller_sub', None)
+            if old_brand_sub and not brand_sub:
+                request.user.wbbrand_set.remove(old_brand_sub)
+            if old_seller_sub and not seller_sub:
+                request.user.wbseller_set.remove(old_seller_sub)
+            if brand_sub:
+                brand = wb_brands.Brand(WBBrand.objects.get(pk=int(brand_sub)).main_url, request.user)
+                brand.run()
+                del brand
+                self.context['subs_brand'] = request.user.wbbrand_set.all()
+                self.context['subs_brand_ids'] = list(map(lambda x: x.id, self.context['subs_brand']))
+            if seller_sub:
+                seller = wb_sellers.Seller(WBSeller.objects.get(pk=int(seller_sub)).main_url, request.user)
+                seller.run()
+                del seller
+                self.context['subs_seller'] = request.user.wbseller_set.all()
+                self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.context['subs_seller']))
+
+
+                                                                    
     @time_count
     def url_dispatcher(self, request):
         '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
