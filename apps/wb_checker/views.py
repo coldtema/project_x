@@ -285,6 +285,19 @@ class RecommendationSettings(View):
                 self.search_products = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
                 self.search_products = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_products))
                 self.context['search_products'] = self.search_products
-        return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
+        
+        if request.POST.get('form_type', None) == 'old_submit_changes':
+            categories = request.POST.getlist('categories', [])
+            brands = request.POST.getlist('brands', [])
+            sellers = request.POST.getlist('sellers', [])
+            request.user.wbmenucategory_set.set(map(lambda x: int(x), categories))
+            request.user.wbbrand_set.set(map(lambda x: int(x), brands))
+            request.user.wbseller_set.set(map(lambda x: int(x), sellers))
+            self.context['subs_cats'] = request.user.wbmenucategory_set.all()
+            self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
+            self.context['subs_brand'] = request.user.wbbrand_set.all()
+            self.context['subs_brand_ids'] = list(map(lambda x: x.id, self.subs_brand))
+            self.context['subs_seller'] = request.user.wbseller_set.all()
+            self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.subs_seller))
                                                                                 
     
