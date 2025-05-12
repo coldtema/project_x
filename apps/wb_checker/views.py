@@ -301,5 +301,22 @@ class RecommendationSettings(View):
             self.context['subs_brand_ids'] = list(map(lambda x: x.id, self.subs_brand))
             self.context['subs_seller'] = request.user.wbseller_set.all()
             self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.subs_seller))
-                                                                                
-    
+
+
+        if request.POST.get('form_type', None) == 'search_brand_seller':
+            self.context['form_add'] =  WBProductForm(request.POST)
+            self.context.setdefault('search_brand_seller', self.url_dispatcher(request))
+        
+
+    @time_count
+    def url_dispatcher(self, request):
+        '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
+        if re.search(pattern=r'catalog\/\d+\/detail', string=request.POST['url']):
+            product_artikul = re.search(r'\/(\d+)\/', request.POST['url']).group(1)
+            return get_brand_and_seller_from_prod(product_artikul)
+        elif request.POST['url'].isdigit():
+            return get_brand_and_seller_from_prod(request.POST['url'])
+        elif re.search(pattern=r'\/(seller)\/', string=request.POST['url']):
+            return get_seller_from_link(request.POST['url'])
+        elif re.search(pattern=r'\/(brands)\/', string=request.POST['url']):
+            return get_brand_from_link(request.POST['url'])
