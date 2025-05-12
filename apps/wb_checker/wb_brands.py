@@ -83,6 +83,8 @@ class Brand:
     def get_brand_artikul_and_slug_name(self):
         '''Получение артикула (wb_id) бренда + id мини-сайта этого бренда'''
         brand_slug_name = re.search(r'(brands\/)([a-z\-\d]+)(\?)?(\/)?(\#)?', self.brand_url).group(2)
+        if brand_slug_name.isdigit(): #если пришла редиректная ссылка
+            return brand_slug_name, brand_slug_name
         final_url = f'https://static-basket-01.wbbasket.ru/vol0/data/brands/{brand_slug_name}.json'
         response = self.scraper.get(final_url, headers=self.headers)
         json_data = json.loads(response.text)
@@ -177,7 +179,7 @@ class TopWBProductBrandUpdater():
         
 
     def run(self):
-        author_object = CustomUser.objects.get(username='coldtema')
+        author_object = CustomUser.objects.get(username='coldtema') #переделать
         for brand in self.brands_with_subs:
             TopWBProduct.objects.filter(source='BRAND', brand=brand).delete()
             Brand(brand.main_url, author_object).run()
