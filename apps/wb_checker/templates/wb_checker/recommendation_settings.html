@@ -9,49 +9,70 @@
   <div class="mb-8">
     <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">🔔 Ваши подписки</h2>
     <div class="space-y-4">
+    <form method="post" class="space-y-4">
+       {% csrf_token %}
       <!-- Категории -->
-      <div>
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Категории:</h3>
-        <div class="flex flex-wrap gap-2">
+       <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Категории:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
           {% for cat in subs_cats %}
-            <span class="inline-block bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100 text-xs px-3 py-1 rounded-full">
-              {{ cat.name }}
-            </span>
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="categories" value="{{ cat.id }}"
+                     {% if cat.id in subs_cats_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ cat.name }}</span>
+            </label>
           {% empty %}
             <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на категории.</p>
           {% endfor %}
         </div>
-      </div>
+      </details>
 
       <!-- Бренды -->
-      <div>
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Бренды:</h3>
-        <div class="flex flex-wrap gap-2">
+      <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Бренды:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
           {% for brand in subs_brand %}
-            <span class="inline-block bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 text-xs px-3 py-1 rounded-full">
-              {{ brand.name }}
-            </span>
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="brands" value="{{ brand.id }}"
+                     {% if brand.id in subs_brand_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ brand.name }}</span>
+            </label>
           {% empty %}
             <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на бренды.</p>
           {% endfor %}
         </div>
-      </div>
+      </details>
 
       <!-- Селлеры -->
-      <div>
-        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Селлеры:</h3>
-        <div class="flex flex-wrap gap-2">
+      <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Продавцы:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
           {% for seller in subs_seller %}
-            <span class="inline-block bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100 text-xs px-3 py-1 rounded-full">
-              {{ seller.name }}
-            </span>
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="sellers" value="{{ seller.id }}"
+                     {% if seller.id in subs_seller_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ seller.name }}</span>
+            </label>
           {% empty %}
-            <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на селлеров.</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на продавцов.</p>
           {% endfor %}
         </div>
-      </div>
+      </details>
+      <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition">
+        💾 Сохранить категории
+      </button>
     </div>
-  </div>
+  </form>
 
   <!-- Форма добавления ссылки -->
   <div class="mb-10">
@@ -66,38 +87,38 @@
       </button>
     </form>
   </div>
-
- <div>
-  <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">📂 Выберите категории для отслеживания</h2>
-  <form method="post" class="space-y-4">
-    {% csrf_token %}
-    
-    {% for parent, children in parent_to_children.items %}
-      <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
-        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
-          {{ parent }}
-        </summary>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
-          {% for category in children %}
-            <label class="flex items-center space-x-2">
-              <input type="checkbox" name="categories" value="{{ category.id }}"
-                     {% if category.id in subs_cats_ids %}checked{% endif %}
-                     class="accent-indigo-600 dark:accent-indigo-400">
-              <span class="text-sm text-gray-900 dark:text-gray-100">{{ category.name }}</span>
+  <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Найти продукт</h2>
+  
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div class="grid gap-4">
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {{ field.label }}
             </label>
-          {% endfor %}
-        </div>
-      </details>
-    {% endfor %}
-
-    <div class="mt-4">
-      <button type="submit"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition">
-        💾 Сохранить категории
+  
+            {{field}}
+  
+            {% if field.help_text %}
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
+            {% endif %}
+  
+            {% if field.errors %}
+              <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+  
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        Поиск
       </button>
-    </div>
-  </form>
-</div>
-
+    </form>
+  </div>
+  {%for prod in search_products%}
+    <h5>{{prod.ru_path}}</h5>
+  {%endfor%}
 </div>
 {% endblock %}
