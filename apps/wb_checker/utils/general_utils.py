@@ -167,3 +167,27 @@ def get_brand_and_seller_from_prod(product_artikul):
         seller_in_db, _ = WBSeller.objects.get_or_create(wb_id=seller_artikul, defaults={'name': seller_name,  
                                                                                        'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
         return {'seller': seller_in_db}
+
+def get_seller_from_link(seller_url):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    '''Получение артикула (wb_id) селлера'''
+    seller_artikul = re.search(r'(seller)\/([a-z]+?\-)?(\d+)(\?)?', seller_url)
+    #если артикул селлера указан сразу в url
+    if seller_artikul:
+        seller_artikul = seller_artikul.group(3)
+    else:
+        #если в url указано имя селлера в виде slug'a
+        seller_slug_name = re.search(r'(seller\/)([a-z\-]+)(\?)?', seller_url).group(2)
+        final_url = f'https://static-basket-01.wbbasket.ru/vol0/constructor-api/shops/{seller_slug_name}.json'
+        response = scraper.get(final_url, headers=headers)
+        json_data = json.loads(response.text)
+        seller_artikul = json_data['supplierID']
+    final_url = f'https://catalog.wb.ru/sellers/v2/catalog?ab_testing=false&appType=1&curr=rub&dest=-1257786&hide_dtype=13&lang=ru&page=1&sort=popular&spp=30&supplier={seller_artikul}'
+    response = scraper.get(final_url, headers=headers)
+    json_data = json.loads(response.text)
+    seller_name = json_data['data']['products'][0]['supplier']
+    seller_in_db, _ = WBSeller.objects.get_or_create(wb_id=seller_artikul, defaults={'name': seller_name,  
+                                                                                    'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
+    scraper.close()
+    return {'seller': seller_in_db}
