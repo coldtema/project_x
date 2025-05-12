@@ -39,9 +39,9 @@ def update_menu_cats():
         new_categories_list.append(WBMenuCategory(wb_id=elem[0], main_url=elem[1], shard_key=elem[2], name=elem[3], query=elem[4], parent=elem[5]))
     for elem in new_categories_list:
         list_path = elem.main_url.split('/')
-        if len(list_path) == 3 and list_path[1] == 'catalog' or elem.shard_key == 'blackhole':
+        if len(list_path) == 3 and list_path[1] == 'catalog' and  elem.shard_key == 'blackhole':
             continue
-        elif len(list_path) > 3 and list_path[1] == 'catalog':
+        elif len(list_path) >= 3 and list_path[1] == 'catalog':
             list_ru_path_part = []
             for path_part in list_path[2:-1]:
                 ru_path_part = get_ru_path(path_part, new_categories_list)
@@ -121,6 +121,7 @@ def get_ru_path(path_part, prods):
             list_path = elem.main_url.split('/')
             if list_path[1] == 'catalog' and list_path[-1] == path_part:
                 return elem.name
+        print(path_part) #если вдруг какая то категория не нашлась
     else:
         return result
 
