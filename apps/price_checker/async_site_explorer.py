@@ -679,7 +679,7 @@ class Parser:
         '''Функция для парсинга товара из zarina'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find('div', class_='product__price-current').text.strip()
+        price_element = soup_engine.find('div', class_='text-app-m uppercase').text.strip()
         price_element = price_element.split('руб.')[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find('h1').text.strip()

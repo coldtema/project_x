@@ -662,7 +662,7 @@ def get_product_zarina(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('div', class_='product__price-current').text.strip()
+    price_element = soup_engine.find('div', class_='text-app-m uppercase').text.strip()
     price_element = price_element.split('руб.')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
