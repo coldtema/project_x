@@ -31,7 +31,7 @@
               <input type="checkbox" name="categories" value="{{ cat.id }}"
                      {% if cat.id in subs_cats_ids %}checked{% endif %}
                      class="accent-indigo-600 dark:accent-indigo-400">
-              <span class="text-sm text-gray-900 dark:text-gray-100">{{ cat.name }}</span>
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ cat.ru_path }}</span>
             </label>
           {% empty %}
             <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на категории.</p>
@@ -89,11 +89,12 @@
 
 
   <!-- Форма добавления ссылки -->
-  <div class="mb-10">
+  <div class="mb-10 py-6">
     <form method="POST" class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
       {% csrf_token %}
+      <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
+      <input type="hidden" name="form_type" value="search_brand_seller">
       <div class="space-y-4 text-gray-800 dark:text-white">
-          <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
           {% for field in form_add %}
               <div>
                   {{ field }}
@@ -107,9 +108,9 @@
           {% endfor %}
       </div>
       <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
-          ➕ Добавить товар
+          Добавить
       </button>
-  </form>
+    </form>
   </div>
 
   {% if search_brand_seller %}
@@ -163,9 +164,9 @@
   </div>
 
   <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Найти продукт</h2>
+    <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Найти категорию</h1>
   
-    <form method="post" class="space-y-6">
+    <form method="post" class="space-y-4">
       {% csrf_token %}
       <input type="hidden" name="form_type" value="search_categories">
       <div class="grid gap-4">
@@ -191,7 +192,7 @@
     </form>
   </div>
   
-  {% if search_products %}
+  {% if search_categories %}
     <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
       <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
   
@@ -199,7 +200,7 @@
         {% csrf_token %}
         <input type="hidden" name="form_type" value="search_submit_changes">
         <ul class="space-y-4">
-          {% for category in search_products %}
+          {% for category in search_categories %}
             <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
               <span class="text-gray-900 dark:text-white">{{ category.ru_path }}</span>
               <label class="inline-flex items-center">
