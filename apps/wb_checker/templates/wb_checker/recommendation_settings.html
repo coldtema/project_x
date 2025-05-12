@@ -19,6 +19,7 @@
     <div class="space-y-4">
     <form method="post" class="space-y-4">
        {% csrf_token %}
+       <input type="hidden" name="form_type" value="old_submit_changes">
       <!-- Категории -->
        <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
         <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
@@ -100,6 +101,7 @@
   
     <form method="post" class="space-y-4">
       {% csrf_token %}
+      <input type="hidden" name="form_type" value="search_categories">
       <div class="grid gap-4">
         {% for field in form %}
           <div>
@@ -125,8 +127,18 @@
       </button>
     </form>
   </div>
-  {%for prod in search_products%}
-    <h5>{{prod.ru_path}}</h5>
+  
+  {% if search_products %}
+    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
+  
+      <form method="post" action="{% url 'wb_checker:recommendations_settings' %}">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="search_submit_changes">
+        <ul class="space-y-4">
+          {% for category in search_products %}
+            <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+              <span class="text-gray-900 dark:text-white">{{prod.ru_path}}</h5>
   {%endfor%}
 </div>
 {% endblock %}
