@@ -2,13 +2,13 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect, Http404
 from apps.accounts.models import CustomUser
-from apps.wb_checker.utils.general_utils import time_count, check_detailed_info_of_user, get_sparkline_points
+from apps.wb_checker.utils.general_utils import time_count, check_detailed_info_of_user, get_sparkline_points, get_brand_and_seller_from_prod, get_seller_from_link, get_brand_from_link
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
 from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
 from .forms import WBProductForm, SearchForm
-from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice, WBMenuCategory
+from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice, WBMenuCategory, WBProduct
 import re
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -179,8 +179,12 @@ def delete_price(request, id):
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
-    # TopWBProduct.objects.all().delete()
+    TopWBProduct.objects.all().delete()
     WBMenuCategory.objects.all().delete()
+    WBBrand.objects.all().delete()
+    WBSeller.objects.all().delete()
+    WBProduct.objects.all().delete()
+    WBDetailedInfo.objects.all().delete()
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
@@ -241,7 +245,7 @@ class RecommendationSettings(View):
         self.subs_seller_ids = list(map(lambda x: x.id, self.subs_seller))
         self.subs_cats = request.user.wbmenucategory_set.all()
         self.subs_cats_ids = list(map(lambda x: x.id, self.subs_cats))
-        self.search_products = None
+        self.search_categories = None
         self.form = SearchForm()
         self.form_add = WBProductForm()
         self.context = {'subs_brand':self.subs_brand,
@@ -251,7 +255,7 @@ class RecommendationSettings(View):
                         'subs_cats':self.subs_cats,
                         'subs_cats_ids':self.subs_cats_ids,
                         'form':self.form,
-                        'search_products': self.search_products,
+                        'search_categories': self.search_categories,
                         'form_add': self.form_add}
         return super().dispatch(request, *args, **kwargs)
     
@@ -266,6 +270,7 @@ class RecommendationSettings(View):
     
     @time_count
     def post_dispatcher(self, request):
+
         if request.POST.get('form_type', None) == 'search_submit_changes':
             search_subs = request.POST.getlist('search_subs', [])
             old_search_subs = request.POST.getlist('old_search_subs', None)
@@ -280,14 +285,16 @@ class RecommendationSettings(View):
             self.context['subs_cats'] = request.user.wbmenucategory_set.all()
             self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
 
+
         if request.POST.get('form_type', None) == 'search_categories':
             self.form = SearchForm(request.POST)
             self.context['form'] = self.form
             if self.form.is_valid():
-                self.search_products = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
-                self.search_products = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_products))
-                self.context['search_products'] = self.search_products
+                self.search_categories = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
+                self.search_categories = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_categories))
+                self.context['search_categories'] = self.search_categories
         
+
         if request.POST.get('form_type', None) == 'old_submit_changes':
             categories = request.POST.getlist('categories', [])
             brands = request.POST.getlist('brands', [])
