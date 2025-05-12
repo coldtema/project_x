@@ -146,3 +146,24 @@ def get_basket_num(artikul: int):
 #             menu_category = wb_menu_categories.MenuCategory(url, author_object)
 #             menu_category.run()
 #             del menu_category
+def get_brand_and_seller_from_prod(product_artikul):
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&spp=30&ab_testing=false&lang=ru&nm={product_artikul}'
+    response = scraper.get(product_url_api, headers=headers)
+    json_data = json.loads(response.text)
+    seller_name = json_data['data']['products'][0]['supplier'] #имя продавца
+    seller_artikul = json_data['data']['products'][0]['supplierId'] #id продавца
+    brand_name = json_data['data']['products'][0]['brand'] #имя бренда
+    brand_artikul = json_data['data']['products'][0]['brandId'] #id бренда
+    scraper.close()
+    if brand_artikul != 0:
+        seller_in_db, _ = WBSeller.objects.get_or_create(wb_id=seller_artikul, defaults={'name': seller_name,  
+                                                                                       'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
+        brand_in_db, _ = WBBrand.objects.get_or_create(wb_id=brand_artikul, defaults={'name': brand_name,  
+                                                                                       'main_url': f'https://www.wildberries.ru/brands/{brand_artikul}'})
+        return {'seller': seller_in_db, 'brand': brand_in_db}
+    else:
+        seller_in_db, _ = WBSeller.objects.get_or_create(wb_id=seller_artikul, defaults={'name': seller_name,  
+                                                                                       'main_url': f'https://www.wildberries.ru/seller/{seller_artikul}'})
+        return {'seller': seller_in_db}
