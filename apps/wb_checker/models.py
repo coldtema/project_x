@@ -15,6 +15,7 @@ class WBMenuCategory(models.Model):
     main_url = models.URLField(null=True, verbose_name='URL категории')
     subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики категории')
     parent = models.IntegerField(null=True, verbose_name='ID родительской категории')
+    ru_path = models.CharField(max_length=1000, null=True, verbose_name='RU путь с родительскими категориями')
 
     class Meta:
         verbose_name = 'Категория меню WB'
