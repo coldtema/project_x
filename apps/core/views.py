@@ -17,7 +17,7 @@ def index(request):
 
 class MenuView(LoginRequiredMixin, View):
     def get(self, request):
-        prods_snippet = request.user.product_set.all()[:5]
+        prods_snippet = request.user.product_set.filter(enabled=True)[:5]
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
         menu_categories = request.user.wbmenucategory_set.all().prefetch_related('topwbproduct_set')
