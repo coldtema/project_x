@@ -67,6 +67,11 @@ class Product:
     @staticmethod
     def build_raw_brand_object(brand_name, brand_artikul):
         '''Создание объекта бренда без лишнего обращения в БД'''
+        if brand_artikul == 0:
+            return WBBrand(wb_id=brand_artikul,
+                    name='Без бренда',
+                    main_url=f'https://www.wildberries.ru/')
+        
         return WBBrand(wb_id=brand_artikul,
                     name=brand_name,
                     main_url=f'https://www.wildberries.ru/brands/{brand_artikul}')
