@@ -258,6 +258,27 @@ class RecommendationSettings(View):
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
     def post(self, request, *args, **kwargs):
+        print(request.POST)
+        self.post_dispatcher(request)
+        return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
+    
+    @time_count
+    def post_dispatcher(self, request):
+        if request.POST.get('form_type', None) == 'search_submit_changes':
+            search_subs = request.POST.getlist('search_subs', [])
+            old_search_subs = request.POST.getlist('old_search_subs', None)
+            print(search_subs)
+            if search_subs:
+                request.user.wbmenucategory_set.add(*map(lambda x: int(x), search_subs))
+            if old_search_subs:
+                for old_sub in old_search_subs:
+                    if old_sub not in search_subs:
+                        request.user.wbmenucategory_set.remove(WBMenuCategory.objects.all().get(pk=int(old_sub)))
+            self.context['form'] = self.form
+            self.context['subs_cats'] = request.user.wbmenucategory_set.all()
+            self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
+
+        if request.POST.get('form_type', None) == 'search_categories':
         self.form = SearchForm(request.POST)
         self.context['form'] = self.form
         if self.form.is_valid():
