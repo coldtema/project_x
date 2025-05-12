@@ -7,13 +7,14 @@ from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
 from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
-from .forms import WBProductForm
+from .forms import WBProductForm, SearchForm
 from .models import WBBrand, WBSeller, TopWBProduct, WBDetailedInfo, WBPrice, WBMenuCategory
 import re
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.contrib.postgres.search import SearchVector
 
 
 
@@ -178,7 +179,8 @@ def delete_price(request, id):
 
 def clear_db(request):
     '''Полная очистка таблиц, связанных с вб'''
-    TopWBProduct.objects.all().delete()
+    # TopWBProduct.objects.all().delete()
+    WBMenuCategory.objects.all().delete()
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
@@ -231,20 +233,37 @@ def update_top_prods_info(request):
     return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
-@time_count
-def recommendations_settings(request):
-    subs_brand = request.user.wbbrand_set.all()
-    subs_seller = request.user.wbseller_set.all()
-    subs_cats = request.user.wbmenucategory_set.all()
-    subs_cats_ids = list(map(lambda x: x.id, subs_cats))
-    all_cats = WBMenuCategory.objects.all()
-    all_cats_dict = dict()
-    for cat in all_cats:
-        if cat.parent and cat.shard_key != 'blackhole':
-            all_cats_dict.setdefault(all_cats.get(wb_id=cat.parent).name, []).append(cat)
-    return render(request, 'wb_checker/recommendation_settings.html', context={'subs_brand':subs_brand,
-                                                                               'subs_seller':subs_seller,
-                                                                               'subs_cats': subs_cats,
-                                                                               'subs_cats_ids':subs_cats_ids,
-                                                                               'all_cats': all_cats,
-                                                                               'parent_to_children': all_cats_dict})
+class RecommendationSettings(View):
+    def dispatch(self, request, *args, **kwargs):
+        self.subs_brand = request.user.wbbrand_set.all()
+        self.subs_brand_ids = list(map(lambda x: x.id, self.subs_brand))
+        self.subs_seller = request.user.wbseller_set.all()
+        self.subs_seller_ids = list(map(lambda x: x.id, self.subs_seller))
+        self.subs_cats = request.user.wbmenucategory_set.all()
+        self.subs_cats_ids = list(map(lambda x: x.id, self.subs_cats))
+        self.search_products = None
+        self.form = SearchForm()
+        self.context = {'subs_brand':self.subs_brand,
+                        'subs_brand_ids':self.subs_brand_ids,
+                        'subs_seller':self.subs_seller,
+                        'subs_seller_ids':self.subs_seller_ids,
+                        'subs_cats':self.subs_cats,
+                        'subs_cats_ids':self.subs_cats_ids,
+                        'form':self.form,
+                        'search_products': self.search_products}
+        return super().dispatch(request, *args, **kwargs)
+    
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
+    
+    def post(self, request, *args, **kwargs):
+        self.form = SearchForm(request.POST)
+        self.context['form'] = self.form
+        if self.form.is_valid():
+            self.search_products = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
+            self.search_products = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_products))
+            self.context['search_products'] = self.search_products
+        return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
+                                                                                
+    
