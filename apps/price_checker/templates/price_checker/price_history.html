@@ -4,7 +4,8 @@
 
 {% block content %}
 <div class="sticky top-4 z-40">
-  <a href="{% url 'price_checker:all_price_list' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+  <a href={%if product_to_watch.enabled == True%} "{% url 'price_checker:all_price_list' %}" {%else%} "{% url 'price_checker:disabled_prods' %}" {%endif%}
+   class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
     <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
     </svg>
@@ -13,19 +14,50 @@
 </div>
   
 <div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200">История цены</h1>
+    <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200 pb-4 px-4 border-gray-300 dark:border-neutral-700">
+    Детали продукта
+  </h1>
+    <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-700 rounded-xl shadow p-6 mb-6">
+  
+  <div class="space-y-3 text-gray-700 dark:text-gray-200">
+    <h2 class="text-xl font-semibold">
+      <a href="{{ product_to_watch.url }}" class="hover:underline text-blue-700 dark:text-blue-400">
+        {{ product_to_watch.name }}
+      </a>
+    </h2>
 
-    <div class="flex justify-between items-center flex-wrap gap-2 mb-6">
-        <a class="text-gray-900 dark:text-gray-200 underline" href="{{product_to_watch.url}}">
-            <h2 class="text-xl font-semibold ">
-                {{ product_to_watch.name }}
-            </h2>
-        </a>
-        <a href="{% url 'price_checker:share_product' id=product_to_watch.id %}" class="text-blue-600 dark:text-blue-500 hover:underline text-sm">
-            🔗 Поделиться продуктом
-        </a>
-    </div>
+    {% if product_to_watch.shop %}
+    <p> 
+      <span class="font-medium text-gray-800 dark:text-gray-300">Магазин:</span>
+      <a href="{{ product_to_watch.shop.main_url }}" target='_blank' class='hover:underline'>
+      {{ product_to_watch.shop.name }}
+      </a>
+    </p>
+    {% endif %}
 
+    {% if product_to_watch.enabled == True %}
+    <p>
+      <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span>
+      <span class="text-green-600 font-semibold">В наличии</span>
+    </p>
+    {% elif product_to_watch.enabled == False %}
+    <p>
+      <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span>
+      <span class="text-red-500 font-semibold">Нет в наличии</span>
+    </p>
+    {% endif %}
+
+    {% if product_to_watch.latest_price %}
+    <p>
+      <span class="font-medium text-gray-800 dark:text-gray-300">Последняя цена:</span>
+      {{ product_to_watch.latest_price }} ₽
+    </p>
+    {% endif %}
+  </div>
+</div>
+
+    
+    <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-200 py-6 pb-2">📋 История цены</h3>
     <div class="overflow-x-auto mb-10 rounded-2xl border-2 border-gray-300 dark:border-neutral-600">
         <table class="min-w-full divide-y divide-gray-300 dark:divide-neutral-600 text-sm">
             <thead class="bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-gray-200">
