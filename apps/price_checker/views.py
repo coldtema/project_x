@@ -20,14 +20,23 @@ from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
+from django.db.models import ExpressionWrapper, F, IntegerField
 
 
 
 class PriceCheckerMain(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         product_form = ProductForm()
-        db_products = request.user.product_set.filter(enabled=True)
-        paginator = Paginator(db_products, 12)
+        sort = request.GET.get('sort', '')
+        if sort == '':
+            db_products = request.user.product_set.filter(enabled=True)
+        if sort == 'price_asc':
+            db_products =  request.user.product_set.filter(enabled=True).order_by('latest_price')
+        if sort == 'price_desc':
+            db_products =  request.user.product_set.filter(enabled=True).order_by('-latest_price')
+        if sort == 'discount':
+            db_products =  request.user.product_set.filter(enabled=True).annotate(delta=ExpressionWrapper(F('first_price')-F('latest_price'), output_field=IntegerField())).order_by('-delta')
+        paginator = Paginator(db_products, 24)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
         page_range = self.get_page_range(db_products_page, paginator)
@@ -35,10 +44,12 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         all_categories_dict = dict()
         for category in all_categories:
             all_categories_dict.setdefault(category, category.shop_set.all().values('name', 'main_url'))
+        disabled_prod_count = request.user.product_set.filter(enabled=False).count()
         return render(request, 'price_checker/index.html', context={'form': product_form, 
                                                                     'db_products_page': db_products_page,
                                                                     'page_range': page_range,
-                                                                    'all_categories_dict': all_categories_dict})
+                                                                    'all_categories_dict': all_categories_dict,
+                                                                    'disabled_prod_count': disabled_prod_count})
     
 
     def post(self, request, *args, **kwargs):
