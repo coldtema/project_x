@@ -48,7 +48,11 @@ class WBCheckerMain(LoginRequiredMixin, View):
         form = WBProductForm(request.POST)
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
-            self.url_dispatcher(request.POST['url'], author_object)
+            try:
+                self.url_dispatcher(request.POST['url'], author_object)
+            except:
+                print('отловленное уведомление об исключении')
+                messages.error(request, 'Ошибка..')
         return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
