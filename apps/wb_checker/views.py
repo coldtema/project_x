@@ -63,18 +63,12 @@ class WBCheckerMain(LoginRequiredMixin, View):
             product = wb_products.Product(url, author_object)
             product.get_product_info()
             del product
-        elif re.search(pattern=r'\/(seller)\/', string=url):
-            seller = wb_sellers.Seller(url, author_object)
-            seller.run()
-            del seller
-        elif re.search(pattern=r'\/(brands)\/', string=url):
-            brand = wb_brands.Brand(url, author_object)
-            brand.run()
-            del brand
-        elif re.search(pattern=r'catalog\/\D+\/?', string=url):
-            menu_category = wb_menu_categories.MenuCategory(url, author_object)
-            menu_category.run()
-            del menu_category
+        elif url.isdigit():
+            product = wb_products.Product(f'https://www.wildberries.ru/catalog/{url}/detail.aspx', author_object)
+            product.get_product_info()
+            del product
+        else:
+            raise Exception
 
 
     @staticmethod
