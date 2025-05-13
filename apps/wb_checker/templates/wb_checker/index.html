@@ -12,7 +12,6 @@
   </a>
 </div>
     <div class="max-w-6xl mx-auto py-8">
-        <!-- Форма -->
         <form method="POST" class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
             {% csrf_token %}
             <div class="space-y-4 text-gray-800 dark:text-white">
@@ -159,7 +158,7 @@
     
         <!-- Пагинация -->
         <div class="mt-10">
-            {% include "wb_checker/pagination.html" with page=prods page_range=page_range %}
+            {% include "wb_checker/pagination.html" with page=prods page_range=page_range request=request.GET%}
         </div>
     </div>
 
