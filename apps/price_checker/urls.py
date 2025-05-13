@@ -7,6 +7,7 @@ app_name = 'price_checker'
 
 urlpatterns = [
     path('', views.PriceCheckerMain.as_view(), name='all_price_list'),
+    path('disabled_prods/', views.DisabledProds.as_view(), name='disabled_prods'),
     path('update_prices/', views.update_prices, name='update_prices'),
     path('price_history/<int:id>', views.price_history, name='price_history'),
     path('delete_product/<int:id>', views.delete_product, name='delete_product'),
