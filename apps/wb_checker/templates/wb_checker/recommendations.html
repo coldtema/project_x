@@ -6,29 +6,29 @@
   <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Подборка</h1>
   <!-- Блок фильтров -->
   <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-  <!-- Левая часть: кнопка -->
-  <div>
-    <a href= {%url 'wb_checker:recommendations_settings'%} class="inline-block  text-center text-sm hover:text-blue-600 text-gray-900 dark:text-white font-semibold px-4 py-2 border-2 border-gray-300 dark:border-neutral-700 rounded-2xl bg-white dark:bg-neutral-900 hover:ring-2 hover:ring-blue-500 shadow transition">
-      ⚙️ Настроить подборку
-    </a>
-  </div>
+    <!-- Левая часть: кнопка -->
+    <div>
+      <a href= {%url 'wb_checker:recommendations_settings'%} class="inline-block  text-center text-sm hover:text-blue-600 text-gray-900 dark:text-white font-semibold px-4 py-2 border-2 border-gray-300 dark:border-neutral-700 rounded-2xl bg-white dark:bg-neutral-900 hover:ring-2 hover:ring-blue-500 shadow transition">
+        ⚙️ Настроить подборку
+      </a>
+    </div>
 
-  <!-- Правая часть: сортировка -->
-  <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-    <h2 class="text-lg font-semibold text-gray-800 dark:text-white sm:mr-2">Сортировать по:</h2>
+    <!-- Правая часть: сортировка -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white sm:mr-2">Сортировать по:</h2>
 
-    <form method="get" class="flex gap-2">
-      <select name="sort" onchange="this.form.submit()" class="text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-700 dark:text-gray-200 px-3 py-1 focus:ring-blue-500 focus:border-blue-500 transition">
-        <option value="">По умолчанию</option>
-        <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>💸 Цене</option>
-        <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>📉 Скидке</option>
-        <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>⭐ Рейтингу</option>
-        <option value="feedbacks" {% if request.GET.sort == 'feedbacks' %}selected{% endif %}>💬 Отзывам</option>
-      </select>
-      <input type="hidden" name="page" value="{{ request.GET.page }}">
-    </form>
+      <form method="get" class="flex gap-2">
+        <select name="sort" onchange="this.form.submit()" class="text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-700 dark:text-gray-200 px-3 py-1 focus:ring-blue-500 focus:border-blue-500 transition">
+          <option value="" {% if request.GET.sort == '' %} selected {% endif %}>По умолчанию</option>
+          <option value="price" {% if request.GET.sort == 'price' %} selected {% endif %}>💸 Цене</option>
+          <option value="discount" {% if request.GET.sort == 'discount' %} selected {% endif %}>📉 Скидке</option>
+          <option value="rating" {% if request.GET.sort == 'rating' %} selected {% endif %}>⭐ Рейтингу</option>
+          <option value="feedbacks" {% if request.GET.sort == 'feedbacks' %} selected {% endif %}>💬 Отзывам</option>
+        </select>
+        {% comment %} <input type="hidden" name="page" value="{{ request.GET.page }}"> {% endcomment %}
+      </form>
+    </div>
   </div>
-</div>
 
 
   <div class="grid gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
