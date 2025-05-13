@@ -7,6 +7,7 @@ app_name = 'wb_checker'
 
 urlpatterns = [
     path('', views.WBCheckerMain.as_view(), name='all_price_list'),
+    path('disabled_prods/', views.WBDisabledProds.as_view(), name='disabled_prods'),
     path('clear_db/', views.clear_db, name='clear_db'),
     path('update_prices/', views.update_prices, name='update_prices'),
     path('update_avaliability/', views.update_avaliability, name='update_avaliability'),
