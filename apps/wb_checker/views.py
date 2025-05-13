@@ -25,14 +25,24 @@ class WBCheckerMain(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        prods = request.user.wbdetailedinfo_set.all().select_related('product', 'author')
-        paginator = Paginator(prods, 12)
+        sort = request.GET.get('sort', '')
+        if sort == '':
+            prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
+        if sort == 'price_asc':
+            prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').order_by('latest_price')
+        if sort == 'price_desc':
+            prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').order_by('-latest_price')
+        if sort == 'discount':
+            prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').annotate(delta=ExpressionWrapper(F('first_price')-F('latest_price'), output_field=IntegerField())).order_by('-delta')
+        paginator = Paginator(prods, 24)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
         page_range = self.get_page_range(db_products_page, paginator)
+        disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
         return render(request, 'wb_checker/index.html', context={'form': self.form_parse,
-                                                      'prods': db_products_page,
-                                                      'page_range': page_range})
+                                                                 'prods': db_products_page,
+                                                                 'page_range': page_range,
+                                                                 'disabled_prod_count': disabled_prod_count})
     
     def post(self, request, *args, **kwargs):
         form = WBProductForm(request.POST)
