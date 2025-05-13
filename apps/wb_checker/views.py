@@ -119,9 +119,9 @@ class RecommentationsList(LoginRequiredMixin, View):
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
         menu_categories = request.user.wbmenucategory_set.all().prefetch_related('topwbproduct_set')
-        raw_prods_brands = list(map(lambda x: x.topwbproduct_set.all(), brands))
-        raw_prods_sellers = list(map(lambda x: x.topwbproduct_set.all(), sellers))
-        raw_prods_menu_categories = list(map(lambda x: x.topwbproduct_set.all(), menu_categories))
+        raw_prods_brands = list(map(lambda x: x.topwbproduct_set.filter(source='BRAND'), brands))
+        raw_prods_sellers = list(map(lambda x: x.topwbproduct_set.filter(source='SELLER'), sellers))
+        raw_prods_menu_categories = list(map(lambda x: x.topwbproduct_set.filter(source='CATEGORY'), menu_categories))
         raw_prods_brands.extend(raw_prods_sellers)
         raw_prods_brands.extend(raw_prods_menu_categories)
         prods = []
