@@ -97,8 +97,6 @@ class WBDetailedInfo(models.Model):
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор продукта')
     
-    enabled_products = EnabledManager()
-    objects = models.Manager()
 
     class Meta:
         verbose_name = 'Информация о продукте'
