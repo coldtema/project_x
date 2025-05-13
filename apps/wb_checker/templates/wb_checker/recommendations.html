@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Товары{% endblock title %}
-
+{%load custom_math%}
 {% block content %}
 <div class="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-6">
   <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Подборка</h1>
@@ -36,9 +36,13 @@
     <div class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col h-full pb-2">
 
       <!-- Стикер скидки -->
-      {% if elem.true_discount %}
+      {% if elem.true_discount > 0 %}
       <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] sm:text-xs md:text-sm lg:text-sm font-bold px-1.5 py-0.5 rounded z-10">
         -{{ elem.true_discount }}%
+      </div>
+      {%elif elem.true_discount < 0%}
+      <div class="absolute top-2 right-2 bg-red-500 text-white text-[10px] sm:text-xs md:text-sm lg:text-sm font-bold px-1.5 py-0.5 rounded z-10">
+        +{{ elem.true_discount|abs_tag }}%
       </div>
       {% endif %}
 
@@ -68,9 +72,17 @@
         {% endif %}
 
         <!-- Причина рекомендации -->
-         {% if elem.true_discount %}
+         {% if elem.true_discount > 0 %}
           <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             📉 Цена упала на {{ elem.true_discount }}%
+          </div>
+          {%elif elem.true_discount < 0%}
+          <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            📉 Цена поднялась на {{ elem.true_discount|abs_tag}}%
+          </div>
+          {%else%}
+          <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            📉 Цена близка к средней
           </div>
           {%endif%}
         <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
