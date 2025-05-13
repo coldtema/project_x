@@ -175,11 +175,11 @@ class Brand:
 
 class TopWBProductBrandUpdater():
     def __init__(self):
-        self.brands_with_subs = WBBrand.objects.filter(subs__isnull=False)
+        self.brands_with_subs = WBBrand.objects.filter(subs__isnull=False).values('pk', 'main_url')
         
 
     def run(self):
         author_object = CustomUser.objects.get(username='coldtema') #переделать
         for brand in self.brands_with_subs:
-            TopWBProduct.objects.filter(source='BRAND', brand=brand).delete()
-            Brand(brand.main_url, author_object).run()
+            TopWBProduct.objects.filter(source='BRAND', brand_id=brand['pk']).delete()
+            Brand(brand['main_url'], author_object).run()
