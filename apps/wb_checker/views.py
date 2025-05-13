@@ -86,6 +86,33 @@ class WBCheckerMain(LoginRequiredMixin, View):
         return list(range(lowest_page, highest_page+1))
 
 
+class WBDisabledProds(View):
+    @time_count
+    def get(self, request, *args, **kwargs):
+        prods = request.user.wbdetailedinfo_set.filter(enabled=False).select_related('product', 'author')
+        paginator = Paginator(prods, 12)
+        page_number = request.GET.get('page', 1)
+        db_products_page = paginator.get_page(page_number)
+        page_range = self.get_page_range(db_products_page, paginator)
+        return render(request, 'wb_checker/disabled_prods.html', context={'prods': db_products_page,
+                                                                          'page_range': page_range})
+    
+    @staticmethod
+    def get_page_range(db_products_page, paginator):
+        page_number = db_products_page.number
+        number_of_pages = paginator.num_pages
+        if page_number - 2 < 1:
+            lowest_page = 1
+        else:
+            lowest_page = page_number - 2
+        if page_number + 2 > number_of_pages:
+            highest_page = number_of_pages
+        else:
+            highest_page = page_number + 2
+        return list(range(lowest_page, highest_page+1))
+
+
+
 class RecommentationsList(LoginRequiredMixin, View):
     @time_count
     def get(self, request, *args, **kwargs): #по факту можно все в кэш вынести
