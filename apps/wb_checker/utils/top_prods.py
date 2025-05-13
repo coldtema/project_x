@@ -176,7 +176,9 @@ class UpdaterInfoOfTop:
             if products_on_page[i]['id'] == self.batched_top_wb_products_list[i].artikul:
                 flag_change = False 
                 if products_on_page[i]['sizes'][0]['price']['product'] // 100 != self.batched_top_wb_products_list[i].latest_price:
+                    orig_median = ((self.batched_top_wb_products_list[i].latest_price) / ((100 - self.batched_top_wb_products_list[i].true_discount) / 100))
                     self.batched_top_wb_products_list[i].latest_price = products_on_page[i]['sizes'][0]['price']['product'] // 100
+                    self.batched_top_wb_products_list[i].true_discount = int((orig_median - products_on_page[i]['sizes'][0]['price']['product'] // 100) / orig_median * 100)
                     flag_change = True
                 if products_on_page[i]['feedbacks'] != self.batched_top_wb_products_list[i].feedbacks:
                     self.batched_top_wb_products_list[i].feedbacks = products_on_page[i]['feedbacks']
@@ -191,5 +193,5 @@ class UpdaterInfoOfTop:
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД всех обновлений после полного батчевого прохода'''
-        TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks'])
+        TopWBProduct.objects.bulk_update(self.updated_top_prods, ['latest_price', 'feedbacks', 'true_discount'])
         TopWBProduct.objects.filter(artikul__in=self.top_prods_artikuls_to_delete).delete()
