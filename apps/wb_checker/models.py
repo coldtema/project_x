@@ -178,11 +178,7 @@ class TopWBProduct(models.Model):
         verbose_name_plural = 'Топ продукты WB'
         ordering = ['artikul']
         indexes = [
-            models.Index(fields=['artikul']),
-            ]
-        constraints = [
-            models.UniqueConstraint(fields=['artikul', 'source', 'menu_category'], name='source_repetition')
-        ]
+            models.Index(fields=['artikul'])]
     
     def __str__(self):
         return str(self.artikul)
