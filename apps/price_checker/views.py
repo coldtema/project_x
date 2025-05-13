@@ -96,7 +96,35 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         else:
             highest_page = page_number + 2
         return list(range(lowest_page, highest_page+1))
+
+
+class DisabledProds(View):
+    @time_count
+    def get(self, request, *args, **kwargs):
+        db_products =  request.user.product_set.filter(enabled=False)
+        paginator = Paginator(db_products, 24)
+        page_number = request.GET.get('page', 1)
+        db_products_page = paginator.get_page(page_number)
+        page_range = self.get_page_range(db_products_page, paginator)
+        return render(request, 'price_checker/disabled_prods.html', context={'db_products_page': db_products_page,
+                                                                    'page_range': page_range})
     
+    
+    @staticmethod
+    def get_page_range(db_products_page, paginator):
+        page_number = db_products_page.number
+        number_of_pages = paginator.num_pages
+        if page_number - 2 < 1:
+            lowest_page = 1
+        else:
+            lowest_page = page_number - 2
+        if page_number + 2 > number_of_pages:
+            highest_page = number_of_pages
+        else:
+            highest_page = page_number + 2
+        return list(range(lowest_page, highest_page+1))
+
+
 
 def check_prod_of_user(id_of_prod, user):
     return user.product_set.filter(pk=id_of_prod).first() 
