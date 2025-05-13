@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.contrib.postgres.search import SearchVector
+from django.contrib import messages
+from django.db.models import ExpressionWrapper, IntegerField, F
 
 
 
@@ -143,8 +145,6 @@ class RecommentationsList(LoginRequiredMixin, View):
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
         page_range = self.get_page_range(db_products_page, paginator)
-
-        print(len(prods))
         return render(request, "wb_checker/recommendations.html", context={'prods': db_products_page,
                                                                            'page_range': page_range})
     
@@ -192,10 +192,13 @@ def delete_wb_product(request, id):
     product_to_delete = check_detailed_info_of_user(id, request.user)
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
+    enabled = WBDetailedInfo.objects.get(pk=id).enabled
     WBDetailedInfo.objects.get(pk=id).delete() #сделать доп функцию у продукта, что если он нигде не фигурирует в качестве Foreign Key, то его нужно удалить
     request.user.slots += 1
     request.user.save()
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+    if enabled == True:
+        return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+    return HttpResponseRedirect(reverse('wb_checker:disabled_prods'))
 
 
 
