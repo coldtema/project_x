@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}PriceChecker{% endblock title %}
+{% block content %}
+{%load custom_math%}
+<div class="sticky top-4 z-40">
+  <a href="{% url 'price_checker:all_price_list' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+    <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Назад
+  </a>
+</div>   
+<div class="max-w-6xl mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200 px-4 border-gray-300 dark:border-neutral-700">
+    Нет в наличии
+    </h1>
+
+    <!-- Карточки продуктов -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+        {% for elem in db_products_page %}
+        <div class="bg-white border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5 hover:shadow-md transition">
+            <div class="flex justify-between items-start mb-2">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    <a href="{{ elem.url }}" target="_blank" class="hover:underline">{{ elem.name|truncatechars:50 }}</a>
+                </h2>
+                <span class="text-xs text-gray-400">#{{ elem.id }}</span>
+            </div>
+
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Магазин:</strong> {{ elem.shop }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Последняя цена:</strong> <span>{{ elem.latest_price }} ₽ </span></p>
+
+            <div class="flex flex-wrap gap-1 my-2">
+                {% for item in elem.shop.tags.all %}
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-200">
+                        {{ item }}
+                    </span>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-between items-center mt-4">
+                <a href="{% url 'price_checker:price_history' id=elem.id %}" class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
+                    📈 История
+                </a>
+                <a href="{% url 'price_checker:delete_product' id=elem.id %}" class="text-red-600 dark:text-red-400 hover:underline text-sm">
+                    🗑 Удалить
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    <div class="mt-10">
+        {% include "price_checker/pagination.html" with page=db_products_page page_range=page_range request=request.GET%}
+    </div>
+</div>
+{% endblock content %}
