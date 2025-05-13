@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}WB Checker{% endblock title %}
+{%load custom_math%}
+{% block content %}
+<div class="sticky top-4 z-40">
+  <a href="{% url 'wb_checker:all_price_list' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+    <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Назад
+  </a>
+</div>
+<div class="max-w-6xl mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200 px-4 border-gray-300 dark:border-neutral-700">
+    Нет в наличии
+    </h1>
+    <!-- Карточки продуктов -->
+    <div class="grid py-5 gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
+        {% for elem in prods %}
+        <div id={{elem.pk}} class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col flex-1 h-full pb-2">
+            <a href={%url 'wb_checker:delete_wb_product' id=elem.pk%}>
+                <button class="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs z-10">✕</button>
+            </a>
+            <!-- Стикер скидки -->
+            {% if elem.discount %}
+            <div class="absolute top-1 left-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded z-10">
+            -{{ elem.discount }}%
+            </div>
+            {% endif %}
+    
+            <!-- Изображение -->
+            <div class="aspect-[4/5] w-full overflow-hidden">
+            <img src="{{ elem.product.image_url }}" alt="{{ elem.product.name }}"
+                    class="w-full h-full object-cover object-center" />
+            </div>
+    
+            <!-- Контент -->
+            <div class="p-2 flex flex-col flex-1 space-y-1">
+            <a href="{{ elem.product.url }}" target="_blank">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white line-clamp-3 leading-tight">
+                {{ elem.product.name }}
+                </h3>
+            </a>
+            {% if elem.product.rating %}
+            <div class="flex items-center text-yellow-400 text-xs gap-0.5 mt-1">
+                <span class="text-sm leading-none">★</span>
+                <span>{{ elem.product.rating }}</span>
+                {% if elem.product.feedbacks %}
+                <span class="text-[10px] text-gray-500 dark:text-gray-400">({{ elem.product.feedbacks }})</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="text-sm px-2 font-bold text-gray-900 dark:text-gray-300 mt-1">{{ elem.latest_price }} ₽ 
+            {%if elem.latest_price < elem.first_price%}
+                (<span class="text-green-500 text-xs">↓ {{elem.first_price|minus:elem.latest_price}} ₽</span>)
+            {%elif elem.latest_price > elem.first_price%}
+                (<span class="text-red-400 text-xs">↑ {{elem.latest_price|minus:elem.first_price}} ₽</span>)
+            {%endif%}
+        </div>
+        <div class="text-sm px-2 font-bold text-gray-900 dark:text-gray-300 mt-1">
+            <a href={%url 'wb_checker:wb_product_details' id=elem.id%}
+                class="mt-2 inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded transition text-xs">
+                Подробнее
+            </a>
+        </div>
+        </div>
+        {% endfor %}
+        </div>
+</div>
+
+    <!-- Пагинация -->
+    <div class="mt-10">
+        {% include "wb_checker/pagination.html" with page=prods page_range=page_range request=request.GET%}
+    </div>
+</div>
+</div>
+</div>
+{% endblock content %}
