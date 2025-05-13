@@ -162,7 +162,6 @@ class Seller:
         brand_name = product_in_catalog['brand']
 
         brand_object = self.build_raw_brand_object(brand_artikul, brand_name)
-        image_url = get_image_url(product_artikul)
         new_product = TopWBProduct(name=name,
                 artikul=product_artikul,
                 latest_price = price_element,
