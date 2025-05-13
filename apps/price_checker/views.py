@@ -105,6 +105,9 @@ def price_history(request, id):
         dates.append(elem.added_time)
         prices.append(elem.price)
     svg_data = get_sparkline_points(prices)
+    svg_data = list(map(lambda x: list(x), svg_data))
+    for i in range(len(svg_data)):
+        svg_data[i].append(dates[i])
     return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
                                                                         'prices_of_product': prices_of_product,
                                                                         'svg_data': svg_data})

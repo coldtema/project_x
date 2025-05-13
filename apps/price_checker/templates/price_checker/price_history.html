@@ -65,12 +65,12 @@
             </polyline>
         
             <!-- Точки с тултипами -->
-            {% for point, price in svg_data %}
+            {% for point, price, date in svg_data %}
                 <circle 
                     class="tooltip-point"
                     cx="{{ point.0 }}" cy="{{ point.1 }}" r="3" 
                     fill="currentColor"
-                    data-price="{{ price }} ₽ (c 15 мар по 15 апр)" />
+                    data-price="{{ price }} ₽ ({{date|date:"d.m.Y H:i"}})" />
             {% endfor %}
         </svg>
         <div id="tooltip" class="absolute hidden bg-gray-900 text-sm text-gray-200 border border-gray-300 rounded shadow px-2 py-1 pointer-events-none z-50 break-words"></div>
