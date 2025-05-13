@@ -33,6 +33,35 @@
                 ➕ Добавить товар
             </button>
         </form>
+
+
+  <!-- Блок "Нет в наличии" + сортировка -->
+  <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 py-6">
+    {% if disabled_prod_count > 0 %}
+    <!-- Левая часть: "Нет в наличии" -->
+        <a href="{%url 'wb_checker:disabled_prods'%}" class="relative inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 gap-1">
+        🚫 Нет в наличии
+            <span
+            class=" bg-red-600 text-white text-xs font-semibold rounded-full px-1.5 py-0.5 leading-none shadow">
+            {{ disabled_prod_count }}
+            </span>
+        </a>
+    {% endif %}
+
+    <!-- Правая часть: сортировка -->
+    <div class="flex items-center gap-2">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Сортировать по:</h2>
+      <form method="get" class="flex gap-2">
+        <select name="sort" onchange="this.form.submit()"
+                class="text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-700 dark:text-gray-200 px-3 py-1 focus:ring-blue-500 focus:border-blue-500 transition">
+          <option value="" {% if request.GET.sort == '' %}selected{% endif %}>По умолчанию</option>
+          <option value="price_asc" {% if request.GET.sort == 'price_asc'%}selected{% endif %}>💸 Цене ↑</option>
+          <option value="price_desc" {% if request.GET.sort == 'price_desc'%}selected{% endif %}>💸 Цене ↓</option>
+          <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>📉 Скидке</option>
+        </select>
+      </form>
+    </div>
+  </div>
     
         <!-- Быстрые ссылки -->
         <div class="mt-8 flex flex-wrap gap-4">
