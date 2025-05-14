@@ -48,8 +48,10 @@
 
       <!-- Изображение -->
       <div class="aspect-[4/5] w-full overflow-hidden">
+        <a href="{{ elem.url }}" target="_blank">
         <img src="{{ elem.image_url }}" alt="{{ elem.name }}"
              class="w-full h-full object-cover object-center" />
+        </a>
       </div>
 
       <!-- Контент -->
@@ -78,7 +80,7 @@
           </div>
           {%elif elem.true_discount < 0%}
           <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            📉 Цена поднялась на {{ elem.true_discount|abs_tag}}%
+            📈 Цена поднялась на {{ elem.true_discount|abs_tag}}%
           </div>
           {%else%}
           <div class="text-[11px] sm:text-xs md:text-sm lg:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -118,12 +120,16 @@
         </div>
 
         <!-- Кнопка -->
-        <div class="mt-1">
-          <a href="{{ elem.url }}" target="_blank"
-             class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded transition text-xs">
-            Подробнее
-          </a>
-        </div>
+        <form action="{%url 'wb_checker:all_price_list'%}" method='post'>
+           {% csrf_token %}
+          <div class="mt-1">
+            <button action='this.form.submit()'
+              class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded transition text-xs">
+              Добавить
+          </button>
+            <input type="hidden" name="url" value="{{elem.artikul}}">
+          </div>
+        </form>
       </div>
     </div>
     {% endfor %}
