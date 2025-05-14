@@ -157,6 +157,15 @@ def price_history(request, id):
                                                                         'svg_data': svg_data})
 
 
+def update_avaliability(request):
+    if request.user.is_staff:
+        p_u = PriceUpdater(False)
+        p_u.run()
+        del p_u
+        return HttpResponseRedirect(reverse('price_checker:all_price_list'))
+    return Http404('нет доступа')
+
+
 @login_required
 def delete_product(request, id):
     '''Функция представления для удаления конкретного продукта'''
@@ -190,7 +199,7 @@ def delete_price(request, id):
 def update_prices(request):
     '''Функция представления для запуска обновления цен'''
     if request.user.is_staff:
-        p_u = PriceUpdater()
+        p_u = PriceUpdater(True)
         p_u.run()
         del p_u
         return HttpResponseRedirect(reverse('price_checker:all_price_list'))
