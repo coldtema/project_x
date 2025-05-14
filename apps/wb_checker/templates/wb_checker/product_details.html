@@ -22,7 +22,7 @@
 
       <!-- Картинка -->
       <div class="flex-shrink-0 w-full md:w-48">
-        <a href="{{ product_to_watch.product.image_url }}" target="_blank">
+        <a href="{{ product_to_watch.product.url }}" target="_blank">
           <img src="{{ product_to_watch.product.image_url }}" alt="{{ product_to_watch.product.name }}"
                class="w-full h-auto rounded-xl border border-gray-300 dark:border-neutral-700 hover:opacity-90 transition">
         </a>
@@ -31,7 +31,7 @@
       <!-- Инфо -->
       <div class="flex-1 space-y-2">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
-          <a href="{{ product_to_watch.product.url }}" class="hover:underline">
+          <a href="{{ product_to_watch.product.url }}" class="hover:underline text-blue-700 dark:text-blue-400">
             {{ product_to_watch.product.name }}
           </a>
         </h2>
@@ -64,13 +64,24 @@
           <span class="font-medium text-gray-800 dark:text-gray-300">Остаток:</span> {{ product_to_watch.volume }} шт.
         </p>
         {% endif %}
-        <div class="text-lg font-bold text-gray-900 dark:text-gray-300 mt-1 py-2">{{ product_to_watch.latest_price }} ₽ 
+
+        {% if product_to_watch.enabled == True %}
+          <p class="text-green-600 dark:text-green-400 text-sm">
+          <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span> В наличии
+          </p>
+          <div class="text-lg font-bold text-gray-900 dark:text-gray-300 mt-1 py-2">{{ product_to_watch.latest_price }} ₽ 
             {%if product_to_watch.latest_price < product_to_watch.first_price%}
                 (<span class="text-green-500 text-sm">↓ {{product_to_watch.first_price|minus:product_to_watch.latest_price}} ₽</span>)
             {%elif product_to_watch.latest_price > product_to_watch.first_price%}
                 (<span class="text-red-400 text-sm">↑ {{product_to_watch.latest_price|minus:product_to_watch.first_price}} ₽</span>)
             {%endif%}
         </div>
+        {% elif product_to_watch.enabled == False %}
+          <p class="text-red-500 text-sm">
+          <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span> Нет в наличии
+          </p>
+          <div class="text-lg font-bold text-gray-900 dark:text-gray-300 mt-1 py-2">{{ product_to_watch.latest_price }} ₽ 
+        {% endif %}
       </div>
     </div>
   </div>
