@@ -21,6 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import ExpressionWrapper, F, IntegerField
+from django.contrib import messages
 
 
 
@@ -55,16 +56,20 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         product_form = ProductForm(request.POST)
         if product_form.is_valid():
-            self.get_product_info_and_save(request)
+            try:
+                self.get_product_info_and_save(request)
+                messages.success(request, 'Успех!')
+            except:
+                print('отлов ошибки')
+                messages.success(request, 'Ошибка..')
+        else:
+            print('отлов ошибки')
+            messages.success(request, 'Ошибка..')
         return redirect('price_checker:all_price_list')
     
 
     def get_product_info_and_save(self, request):
-        try:
-            
-            product_data = get_shop_of_product(request.POST.get('url'))
-        except:
-            return False
+        product_data = get_shop_of_product(request.POST.get('url'))
         if len(product_data['name']) > 150:
             product_data['name'] = product_data['name'][:147]+'...'
         new_product, was_not_in_db = Product.objects.get_or_create(name=product_data['name'],
