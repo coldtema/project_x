@@ -39,11 +39,11 @@ def get_sparkline_points(prices, width=100, height=30):
 
 
 class PriceUpdater:
-
-    def __init__(self):
+    def __init__(self, enabled):
         '''Инициализация всех необходимых атрибутов'''
         self.batch_size = 1000
-        self.len_all_prod = Product.enabled_products.all().count()
+        self.enabled = enabled
+        self.len_all_prod = Product.objects.filter(enabled=self.enabled).count()
         self.batched_prods = None
         self.batched_shop_prod_dict = None
         self.prods_to_go = ['']
@@ -58,7 +58,7 @@ class PriceUpdater:
     def run(self):
         '''Запуск процесса обновления продуктов (на цену и наличие)'''
         for i in range(math.ceil(self.len_all_prod / self.batch_size)):
-            self.batched_prods=Product.enabled_products.all()[i*self.batch_size:(i+1)*self.batch_size]
+            self.batched_prods=Product.objects.filter(enabled=self.enabled)[i*self.batch_size:(i+1)*self.batch_size]
             self.batched_shop_prod_dict = self.build_all_shop_prod_dict()
             self.async_update_prices()
             if self.async_exeption_prods:
@@ -106,8 +106,13 @@ class PriceUpdater:
                 if isinstance(async_results[i], tuple):
                     self.async_exeption_prods.append(self.prods_to_go[i])
                     continue
-                if async_results[i]['price_element'] != self.prods_to_go[i].latest_price:
+                if async_results[i]['price_element'] != self.prods_to_go[i].latest_price and self.enabled==True:
                     self.updating_plus_notification(async_results[i]['price_element'], self.prods_to_go[i])
+                elif self.enabled==False:
+                    self.disabled_updating_plus_notification(async_results[i]['price_element'], self.prods_to_go[i])
+					
+
+
 
 
 
@@ -122,8 +127,10 @@ class PriceUpdater:
             except:
                 self.exception_prods.append(product)
                 continue
-            if maybe_new_price != product.latest_price:
+            if maybe_new_price != product.latest_price and self.enabled == True:
                 self.updating_plus_notification(maybe_new_price, product)
+            elif self.enabled==False:
+                self.disabled_updating_plus_notification(maybe_new_price, product)
 
 
 
@@ -138,15 +145,19 @@ class PriceUpdater:
                 try:
                     maybe_new_price = get_shop_of_product(product.url)['price_element']
                 except:
-                    self.broken_prods.append(product)
+                    if self.enabled == True:
+                        self.broken_prods.append(product)
                     continue
-                if maybe_new_price != product.latest_price:
+                if maybe_new_price != product.latest_price and self.enabled == True:
                     self.updating_plus_notification(maybe_new_price, product)
+                elif self.enabled==False:
+                    self.disabled_updating_plus_notification(maybe_new_price, product)
+
 
 
 
     def updating_plus_notification(self, maybe_new_price, product):
-        '''Функция-точка входа для уведомления пользователя + изменения продукта (при изменении его цены)'''
+        '''Функция-точка входа для уведомления пользователя об изменении цены отслеживаемого продукта который в наличии + изменения продукта (при изменении его цены)'''
         print(f'''
 Цена изменилась!
 Продукт: {product.url}
@@ -158,6 +169,21 @@ class PriceUpdater:
         self.new_prices.append(Price(price=maybe_new_price, product=product))
         self.products_to_update.append(product)
 
+
+
+    def disabled_updating_plus_notification(self, maybe_new_price, product):
+        '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
+        print(f'''
+Продукт снова в наличии!
+Продукт: {product.url}
+Цена: {maybe_new_price}
+''')
+        if product.latest_price != maybe_new_price:
+            product.latest_price = maybe_new_price
+            self.new_prices.append(Price(price=maybe_new_price, product=product))
+        product.updated = timezone.now()
+        product.enabled = True
+        self.products_to_update.append(product)
 
 
     def change_enable_of_broken_prods(self):
@@ -176,6 +202,6 @@ class PriceUpdater:
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''
-        Product.enabled_products.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated'])
+        Product.objects.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated', 'enabled'])
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
