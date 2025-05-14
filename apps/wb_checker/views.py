@@ -52,6 +52,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
             author_object = CustomUser.objects.get(pk=request.user.id)
             try:
                 self.url_dispatcher(request.POST['url'], author_object)
+                messages.success(request, 'Успех!')
             except:
                 print('отловленное уведомление об исключении')
                 messages.error(request, 'Ошибка..')
