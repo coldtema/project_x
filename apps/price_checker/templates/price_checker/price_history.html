@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{%load custom_math%}
 {% block title %}История цены — {{ product_to_watch.name }}{% endblock %}
 
 {% block content %}
@@ -13,7 +14,7 @@
   </a>
 </div>
   
-<div class="max-w-4xl mx-auto px-4 py-8">
+<div class="max-w-4xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-200 pb-4 px-4 border-gray-300 dark:border-neutral-700">
     Детали продукта
   </h1>
@@ -29,7 +30,7 @@
     {% if product_to_watch.shop %}
     <p> 
       <span class="font-medium text-gray-800 dark:text-gray-300">Магазин:</span>
-      <a href="{{ product_to_watch.shop.main_url }}" target='_blank' class='hover:underline'>
+      <a href="{{ product_to_watch.shop.main_url }}" target='_blank' class='hover:underline text-blue-700 dark:text-blue-400'>
       {{ product_to_watch.shop.name }}
       </a>
     </p>
@@ -40,14 +41,20 @@
       <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span>
       <span class="text-green-600 font-semibold">В наличии</span>
     </p>
+    <p>
+      <span class="font-medium text-gray-800 dark:text-gray-300">Цена:</span>
+      {{ product_to_watch.latest_price }} ₽
+      {%if product_to_watch.latest_price < product_to_watch.first_price%}
+                (<span class="text-green-500">↓ {{product_to_watch.first_price|minus:product_to_watch.latest_price}} ₽</span>)
+        {%elif product_to_watch.latest_price > product_to_watch.first_price%}
+                (<span class="text-red-400">↑ {{product_to_watch.latest_price|minus:product_to_watch.first_price}} ₽</span>)
+        {%endif%}
+    </p>
     {% elif product_to_watch.enabled == False %}
     <p>
       <span class="font-medium text-gray-800 dark:text-gray-300">Статус:</span>
       <span class="text-red-500 font-semibold">Нет в наличии</span>
     </p>
-    {% endif %}
-
-    {% if product_to_watch.latest_price %}
     <p>
       <span class="font-medium text-gray-800 dark:text-gray-300">Последняя цена:</span>
       {{ product_to_watch.latest_price }} ₽
