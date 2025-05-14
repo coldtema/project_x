@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{%load custom_math%}
 {% block title %}Личный кабинет{% endblock %}
 
 {% block content %}
@@ -47,7 +48,7 @@
             </div>
           {% else %}
             <div class="font-semibold text-sm mt-auto text-red-500">
-              - {{ user.discount_balance }} ₽
+              - {{ user.discount_balance|abs_tag }} ₽
             </div>
           {% endif %}
         </div>
