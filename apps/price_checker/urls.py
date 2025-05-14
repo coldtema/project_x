@@ -14,4 +14,5 @@ urlpatterns = [
     path('price_history/delete_price/<int:id>', views.delete_price, name='delete_price'),
     path('share_product/<int:id>', views.ShareProduct.as_view(), name='share_product'),
     path('search_product/', views.SearchView.as_view(), name='search_product'),
+    path('update_avaliability/', views.update_avaliability, name='update_avaliability')
 ]
