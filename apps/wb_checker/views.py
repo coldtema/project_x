@@ -303,8 +303,10 @@ class RecommendationSettings(View):
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
     def post(self, request, *args, **kwargs):
-        print(request.POST)
-        self.post_dispatcher(request)
+        try:
+            self.post_dispatcher(request)
+        except:
+            print('отлов ошибки')
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
     @time_count
@@ -390,3 +392,5 @@ class RecommendationSettings(View):
             return get_seller_from_link(request.POST['url'])
         elif re.search(pattern=r'\/(brands)\/', string=request.POST['url']):
             return get_brand_from_link(request.POST['url'])
+        else:
+            raise Exception
