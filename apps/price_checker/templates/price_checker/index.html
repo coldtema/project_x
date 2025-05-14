@@ -29,9 +29,19 @@
                 </div>
             {% endfor %}
         </div>
-        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
-            Добавить товар
-        </button>
+        <div class="flex text-right justify-between py-2 rounded-md transition">
+            <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
+                Добавить товар
+            </button>
+            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex">
+                {%if messages%}
+                    {%for message in messages%}
+                        <h1>{{message}}</h1>
+                    {%endfor%}
+                    <!-- Форма -->
+                {%endif%}
+            </span>
+            </div>
     </form>
 
     <!-- Кнопка-переключатель -->
