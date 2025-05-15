@@ -10,7 +10,7 @@
     Назад
   </a>
 </div> 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-6">
   <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подписки</h1>
 
   <!-- Текущие подписки -->
@@ -166,7 +166,11 @@
   <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
     <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Найти категорию</h1>
   
-    <form method="post" class="space-y-4">
+    <form method="get" 
+          class="space-y-4" 
+          hx-get={%url 'wb_checker:recommendations_settings'%}
+          hx-trigger="submit"
+          hx-target="#category_list">
       {% csrf_token %}
       <input type="hidden" name="form_type" value="search_categories">
       <div class="grid gap-4">
@@ -186,42 +190,13 @@
         {% endfor %}
       </div>
   
-      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <button type='submit'
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
         Поиск
       </button>
     </form>
   </div>
-  
-  {% if search_categories %}
-    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
-      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
-  
-      <form method="post" action="{% url 'wb_checker:recommendations_settings' %}">
-        {% csrf_token %}
-        <input type="hidden" name="form_type" value="search_submit_changes">
-        <ul class="space-y-4">
-          {% for category in search_categories %}
-            <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
-              <span class="text-gray-900 dark:text-white">{{ category.ru_path }}</span>
-              <label class="inline-flex items-center">
-                <input type="checkbox" name="search_subs" value="{{ category.id }}"
-                       class="form-checkbox h-5 w-5 text-blue-600"
-                       {% if category.id in subs_cats_ids %}checked{% endif %}>
-              </label>
-              {% if category.id in subs_cats_ids %}
-              <input type="hidden" name="old_search_subs" value="{{ category.id }}">
-              {% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-  
-        <div class="mt-6 text-right">
-          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
-            Сохранить изменения
-          </button>
-        </div>
-      </form>
-    </div>
-  {% endif %}
+  {% include "wb_checker/partials/category_list.html"%}
   
 {% endblock %}
