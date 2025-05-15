@@ -103,10 +103,19 @@
         <!-- Карточки продуктов -->
         <div class="grid py-8 gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4">
             {% for elem in prods %}
-            <div id={{elem.pk}} class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col flex-1 h-full pb-2">
-                <a href={%url 'wb_checker:delete_wb_product' id=elem.pk%}>
-                    <button class="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs z-10">✕</button>
-                </a>
+            <div id='prod_card_{{elem.pk}}' class="relative bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-200 dark:border-neutral-700 hover:shadow transition flex flex-col flex-1 h-full pb-2">
+                <form method='post'>
+                    {% csrf_token %}
+                    <button class="absolute top-2 right-2 flex items-center justify-center w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs z-10"
+                            hx-post={%url 'wb_checker:delete_wb_product' id=elem.pk%}
+                            hx-swap='delete'
+                            hx-trigger='click'
+                            hx-target='closest #prod_card_{{elem.pk}}'
+                            name='delete_product'
+                            value='1'
+                            >✕
+                    </button>
+                </form>
               <!-- Стикер скидки -->
               {% if elem.discount %}
               <div class="absolute top-1 left-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded z-10">
