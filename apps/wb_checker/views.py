@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count, check_detailed_info_of_user, get_sparkline_points, get_brand_and_seller_from_prod, get_seller_from_link, get_brand_from_link
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater
@@ -47,6 +47,9 @@ class WBCheckerMain(LoginRequiredMixin, View):
                                                                  'disabled_prod_count': disabled_prod_count})
     
     def post(self, request, *args, **kwargs):
+        # if request.POST.get('delete_product'):
+        #     print('dasdaad')
+        #     return HttpResponse()
         form = WBProductForm(request.POST)
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
@@ -193,13 +196,10 @@ def delete_wb_product(request, id):
     product_to_delete = check_detailed_info_of_user(id, request.user)
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
-    enabled = WBDetailedInfo.objects.get(pk=id).enabled
     WBDetailedInfo.objects.get(pk=id).delete() #сделать доп функцию у продукта, что если он нигде не фигурирует в качестве Foreign Key, то его нужно удалить
     request.user.slots += 1
     request.user.save()
-    if enabled == True:
-        return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-    return HttpResponseRedirect(reverse('wb_checker:disabled_prods'))
+    HttpResponse(status=204)
 
 
 
