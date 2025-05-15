@@ -277,6 +277,7 @@ def update_top_prods_info(request):
 
 
 class RecommendationSettings(View):
+    @time_count
     def dispatch(self, request, *args, **kwargs):
         self.subs_brand = request.user.wbbrand_set.all()
         self.subs_brand_ids = list(map(lambda x: x.id, self.subs_brand))
@@ -300,6 +301,13 @@ class RecommendationSettings(View):
     
 
     def get(self, request, *args, **kwargs):
+        if request.GET.get('form_type', None) == 'search_categories':
+            search_categories = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=request.GET.get('query'))
+            search_categories = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, search_categories))
+            subs_cats_ids = request.user.wbmenucategory_set.all().values('pk')
+            subs_cats_ids = list(map(lambda x: x['pk'], subs_cats_ids))
+            return render(request, 'wb_checker/partials/category_list.html', context={'search_categories': search_categories,
+                                                                                      'subs_cats_ids': subs_cats_ids})
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
     def post(self, request, *args, **kwargs):
