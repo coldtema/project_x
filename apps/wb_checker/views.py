@@ -212,23 +212,25 @@ def delete_wb_product(request, id):
     '''Функция представления для удаления конкретного продукта'''
     product_to_delete = check_detailed_info_of_user(id, request.user)
     if not product_to_delete:
-        return Http404('??? (нет такого продукта)')
+        return HttpResponse()
     WBDetailedInfo.objects.get(pk=id).delete() #сделать доп функцию у продукта, что если он нигде не фигурирует в качестве Foreign Key, то его нужно удалить
     request.user.slots += 1
     request.user.save()
-    HttpResponse(status=204)
+    return HttpResponse()
 
 
 
 @login_required
 def delete_price(request, id):
     '''Функция представления для удаления цены конкретного продукта'''
-    product_to_redirect = WBPrice.objects.get(id=id).detailed_info
-    product_to_redirect = check_detailed_info_of_user(product_to_redirect.id, request.user)
+    detailed_info_to_watch = WBPrice.objects.get(id=id).detailed_info
+    product_to_redirect = check_detailed_info_of_user(detailed_info_to_watch.id, request.user)
     if not product_to_redirect:
-        return Http404('??? (нет цены такого продукта)')
+        return HttpResponse()
     WBPrice.objects.get(id=id).delete()
-    return HttpResponseRedirect(reverse('wb_checker:wb_product_details', args=[product_to_redirect.id]))
+    prices_of_detailed_info = detailed_info_to_watch.wbprice_set.all().order_by('added_time')
+    return render(request, 'wb_checker/partials/price_table.html', context={'prices_of_product': prices_of_detailed_info,
+                                                                            'product_to_watch': detailed_info_to_watch})
 
 
 
