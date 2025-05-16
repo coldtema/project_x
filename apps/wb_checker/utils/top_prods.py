@@ -125,7 +125,7 @@ async def group_all_histories(artikuls_urls):
 class UpdaterInfoOfTop:
     def __init__(self):
         '''Инициализация необходимых атрибутов'''
-        self.batch_size = 200
+        self.batch_size = 200 #из-за маленького батчинга начинает бд захлебываться под конец (если много изменений)
         self.len_all_top_wb_products_list = TopWBProduct.objects.all().count()
         self.batched_top_wb_products_list = []
         self.scraper = cloudscraper.create_scraper()
