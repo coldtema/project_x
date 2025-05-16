@@ -1,0 +1,76 @@
+{% if svg_data %}
+      <div class="w-full max-w-4xl mx-auto bg-white  border border-gray-300 dark:border-neutral-700 dark:bg-neutral-900 rounded-2xl p-6 shadow">
+          <svg id="price-chart" viewBox="-5 -5 120 40" class="w-full h-32 text-blue-500 relative">
+              <polyline
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-dasharray="1000"
+                  stroke-dashoffset="1000"
+                  points="{% for p in svg_data %}{{ p.0.0 }},{{ p.0.1 }} {% endfor %}">
+                  <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="4s" fill="freeze" />
+              </polyline>
+          
+              <!-- Точки с тултипами -->
+              {% for point, price, date in svg_data %}
+                  <circle 
+                      class="tooltip-point"
+                      cx="{{ point.0 }}" cy="{{ point.1 }}" r="3" 
+                      fill="currentColor"
+                      data-price="{{ price }} ₽ ({{date|date:"d.m.Y H:i"}})" />
+              {% endfor %}
+          </svg>
+          <div id="tooltip" class="absolute hidden bg-gray-900 text-sm text-gray-200 border border-gray-300 rounded shadow px-2 py-1 pointer-events-none z-50 break-words"></div>
+      </div>
+          
+{% else %}
+    <p class="text-gray-500">Нет данных для графика.</p>
+{% endif %}
+
+
+
+<script>
+function initChartTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    const svg = document.getElementById('price-chart');
+    if (!svg) return;
+
+    svg.querySelectorAll('.tooltip-point').forEach(point => {
+        point.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tooltip.textContent = point.dataset.price;
+            tooltip.classList.remove('hidden');
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY - 30) + 'px';
+        });
+
+        point.addEventListener('mouseenter', (e) => {
+            tooltip.textContent = point.dataset.price;
+            tooltip.classList.remove('hidden');
+        });
+
+        point.addEventListener('mouseleave', () => {
+            tooltip.classList.add('hidden');
+        });
+
+        point.addEventListener('mousemove', (e) => {
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY - 30) + 'px';
+        });
+    });
+
+    document.addEventListener('click', () => {
+        tooltip.classList.add('hidden');
+    });
+}
+
+// Для обычной загрузки
+document.addEventListener('DOMContentLoaded', initChartTooltip);
+
+// Для HTMX
+document.body.addEventListener('htmx:afterSwap', (e) => {
+    if (e.target.closest('.chart')) {
+        initChartTooltip();
+    }
+});
+</script>
