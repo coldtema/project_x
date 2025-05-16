@@ -1,0 +1,37 @@
+<table class="table-price min-w-full divide-y divide-gray-300 dark:divide-neutral-600 text-sm">
+    <thead class="bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-gray-200">
+        <tr>
+            <th class="px-4 py-2 text-center">Цена</th>
+            <th class="px-4 py-2 text-center">Дата добавления</th>
+            <th class="px-4 py-2 text-center">Действие</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-300 dark:divide-neutral-700 dark:text-gray-200">
+        {% for elem in prices_of_product %}
+        <tr class="hover:bg-gray-300 dark:hover:bg-neutral-700 dark:bg-neutral-900 bg-white">
+            <td class="px-4 py-2 font-medium text-center">{{ elem.price }}</td>
+            <td class="px-4 py-2 text-center">{{ elem.added_time|date:"d.m.Y H:i" }}</td>
+            <td class="px-4 py-2 text-center">
+            <form method='post'>
+                {% csrf_token %}
+                <button class="text-red-600 hover:underline"
+                        hx-post={%url 'wb_checker:delete_price' id=elem.pk%}
+                        hx-swap='outerHTML'
+                        hx-trigger='click'
+                        hx-target='closest .table-price'
+                        name='delete_product'
+                        value='1'
+                        >Удалить
+                </button>
+            </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <div class='chart_trigger'
+        hx-get={%url 'wb_checker:price_chart' id=product_to_watch.id%}
+        hx-trigger='load'
+        hx-target='.chart'
+        style='display:none;'>
+    </div>
+</table>
