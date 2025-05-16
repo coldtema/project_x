@@ -18,7 +18,7 @@
     <!-- Карточки продуктов -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
         {% for elem in db_products_page %}
-        <div class="bg-white border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5 hover:shadow-md transition">
+        <div id = 'delete_product_{{elem.pk}}' class="bg-white border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5 hover:shadow-md transition flex flex-1 flex-col">
             <div class="flex justify-between items-start mb-2">
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <a href="{{ elem.url }}" target="_blank" class="hover:underline">{{ elem.name|truncatechars:50 }}</a>
@@ -37,13 +37,21 @@
                 {% endfor %}
             </div>
 
-            <div class="flex justify-between items-center mt-4">
+            <div class="flex justify-between items-center mt-auto">
                 <a href="{% url 'price_checker:price_history' id=elem.id %}" class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
                     📈 История
                 </a>
-                <a href="{% url 'price_checker:delete_product' id=elem.id %}" class="text-red-600 dark:text-red-400 hover:underline text-sm">
-                    🗑 Удалить
-                </a>
+                <form method='post'>
+                    {% csrf_token %}
+                    <button hx-post="{% url 'price_checker:delete_product' id=elem.id %}" 
+                            class="text-red-600 dark:text-red-400 hover:underline text-sm"
+                            hx-target='#delete_product_{{elem.pk}}'
+                            hx-swap='delete'
+                            hx-trigger='click'
+                            >
+                        🗑 Удалить
+                    </button>
+                </form>
             </div>
         </div>
         {% endfor %}
