@@ -189,6 +189,23 @@ def wbproduct_details(request, id):
                                                                        'prices_of_product': prices_of_detailed_info,
                                                                        'svg_data': svg_data})
 
+def price_chart(request , id):
+    product_to_redirect = check_detailed_info_of_user(id, request.user)
+    if not product_to_redirect:
+        return HttpResponse()
+    prices_of_detailed_info = product_to_redirect.wbprice_set.all().order_by('added_time')
+    dates = []
+    prices = []
+    for elem in prices_of_detailed_info:
+        dates.append(elem.added_time)
+        prices.append(elem.price)
+    svg_data = get_sparkline_points(prices)
+    svg_data = list(map(lambda x: list(x), svg_data))
+    for i in range(len(svg_data)):
+        svg_data[i].append(dates[i])
+    return render(request, 'wb_checker/partials/price_chart.html', context={'svg_data': svg_data})
+
+
 
 @login_required
 def delete_wb_product(request, id):
