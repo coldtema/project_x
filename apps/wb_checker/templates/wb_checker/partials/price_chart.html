@@ -64,13 +64,16 @@ function initChartTooltip() {
     });
 }
 
-// Для обычной загрузки
-document.addEventListener('DOMContentLoaded', initChartTooltip);
+// Для полной загрузки страницы (если график уже есть)
+window.addEventListener('load', () => {
+    initChartTooltip();
+});
 
-// Для HTMX
-document.body.addEventListener('htmx:afterSwap', (e) => {
-    if (e.target.closest('.chart')) {
+// Для HTMX подгрузки графика (навигация или swap)
+document.body.addEventListener('htmx:afterSettle', (e) => {
+    if (e.target.closest('.chart') || e.target.id === 'price-chart') {
         initChartTooltip();
     }
 });
 </script>
+
