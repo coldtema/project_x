@@ -1,0 +1,39 @@
+<div class="price-table overflow-x-auto mb-10 rounded-2xl border-2 border-gray-300 dark:border-neutral-600">
+    <table class="min-w-full divide-y divide-gray-300 dark:divide-neutral-600 text-sm">
+        <thead class="bg-gray-200 text-gray-800 dark:bg-neutral-700 dark:text-gray-200">
+            <tr>
+                <th class="px-4 py-2 text-left">Цена</th>
+                <th class="px-4 py-2 text-left">Дата добавления</th>
+                <th class="px-4 py-2 text-left">Действие</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-300 dark:divide-neutral-700 dark:text-gray-200">
+            {% for elem in prices_of_product %}
+            <tr class="hover:bg-gray-300 dark:hover:bg-neutral-700 dark:bg-neutral-900 bg-white">
+                <td class="px-4 py-2 font-medium">{{ elem.price }}</td>
+                <td class="px-4 py-2">{{ elem.added_time|date:"d.m.Y H:i" }}</td>
+                <td class="px-4 py-2">
+                    <form method="post">
+                        {%csrf_token%}
+                        <button class="text-red-600 hover:underline"
+                                hx-post={%url 'price_checker:delete_price' id=elem.pk%}
+                                hx-target='closest .price-table'
+                                hx-swap='outerHTML'
+                                hx-trigger='click'>
+                        Удалить
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form  method="get">
+        <div class='chart_trigger'
+            hx-get={%url 'price_checker:price_chart' id=product_to_watch.id%}
+            hx-trigger='load'
+            hx-target='.price-chart'
+            style='display:none;'>
+        </div>
+    </form>
+</div>
