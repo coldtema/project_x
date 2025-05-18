@@ -185,7 +185,7 @@ def delete_price(request, id):
     product_to_redirect = Price.objects.get(id=id).product
     product_to_redirect = check_prod_of_user(product_to_redirect.id, request.user)
     if not product_to_redirect:
-        return Http404('??? (нет цены такого продукта)')
+        return HttpResponse()
     Price.objects.get(id=id).delete()
 def price_chart(request, id):
     product_to_watch = check_prod_of_user(id, request.user)
