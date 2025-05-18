@@ -82,39 +82,52 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const tooltip = document.getElementById('tooltip');
-        const svg = document.getElementById('price-chart');
-    
-        svg.querySelectorAll('.tooltip-point').forEach(point => {
-            point.addEventListener('click', (e) => {
-                e.stopPropagation();
-                tooltip.textContent = point.dataset.price;
-                tooltip.classList.remove('hidden');
-                tooltip.style.left = (e.pageX + 10) + 'px';
-                tooltip.style.top = (e.pageY - 30) + 'px';
-            });
-    
-            point.addEventListener('mouseenter', (e) => {
-                tooltip.textContent = point.dataset.price;
-                tooltip.classList.remove('hidden');
-            });
-    
-            point.addEventListener('mouseleave', () => {
-                tooltip.classList.add('hidden');
-            });
-    
-            point.addEventListener('mousemove', (e) => {
-                tooltip.style.left = (e.pageX + 10) + 'px';
-                tooltip.style.top = (e.pageY - 30) + 'px';
-            });
+function initChartTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    const svg = document.getElementById('price-chart');
+    if (!svg) return;
+
+    svg.querySelectorAll('.tooltip-point').forEach(point => {
+        point.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tooltip.textContent = point.dataset.price;
+            tooltip.classList.remove('hidden');
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY - 30) + 'px';
         });
-    
-        document.addEventListener('click', () => {
+
+        point.addEventListener('mouseenter', (e) => {
+            tooltip.textContent = point.dataset.price;
+            tooltip.classList.remove('hidden');
+        });
+
+        point.addEventListener('mouseleave', () => {
             tooltip.classList.add('hidden');
         });
+
+        point.addEventListener('mousemove', (e) => {
+            tooltip.style.left = (e.pageX + 10) + 'px';
+            tooltip.style.top = (e.pageY - 30) + 'px';
+        });
     });
-    </script>
+
+    document.addEventListener('click', () => {
+        tooltip.classList.add('hidden');
+    });
+}
+
+// Для полной загрузки страницы (если график уже есть)
+window.addEventListener('load', () => {
+    initChartTooltip();
+});
+
+// Для HTMX подгрузки графика (навигация или swap)
+document.body.addEventListener('htmx:afterSettle', (e) => {
+    if (e.target.closest('.price-chart') || e.target.id === 'price-chart') {
+        initChartTooltip();
+    }
+});
+</script>
     
     
 {% endblock %}
