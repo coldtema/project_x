@@ -1,0 +1,73 @@
+<div class="mb-8">
+    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">🔔 Ваши подписки</h2>
+    <div class="space-y-4">
+    <form method="post" 
+          class="space-y-4"
+          hx-post={%url 'wb_checker:recommendations_settings'%}
+          hx-trigger='submit'
+          hx-target='.old_submit_changes'>
+       {% csrf_token %}
+       <input type="hidden" name="form_type" value="old_submit_changes">
+      <!-- Категории -->
+       <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Категории:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
+          {% for cat in subs_cats %}
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="categories" value="{{ cat.id }}"
+                     {% if cat.id in subs_cats_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ cat.ru_path }}</span>
+            </label>
+          {% empty %}
+            <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на категории.</p>
+          {% endfor %}
+        </div>
+      </details>
+
+      <!-- Бренды -->
+      <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Бренды:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
+          {% for brand in subs_brand %}
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="brands" value="{{ brand.id }}"
+                     {% if brand.id in subs_brand_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ brand.name }}</span>
+            </label>
+          {% empty %}
+            <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на бренды.</p>
+          {% endfor %}
+        </div>
+      </details>
+
+      <!-- Селлеры -->
+      <details class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-md">
+        <summary class="cursor-pointer select-none px-4 py-2 text-gray-900 dark:text-white font-medium hover:bg-gray-100 dark:hover:bg-neutral-700 transition">
+            Продавцы:
+        </summary>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 pb-4 pt-2">
+          {% for seller in subs_seller %}
+            <label class="flex items-center space-x-2">
+              <input type="checkbox" name="sellers" value="{{ seller.id }}"
+                     {% if seller.id in subs_seller_ids %}checked{% endif %}
+                     class="accent-indigo-600 dark:accent-indigo-400">
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ seller.name }}</span>
+            </label>
+          {% empty %}
+            <p class="text-sm text-gray-500 dark:text-gray-400">Нет подписок на продавцов.</p>
+          {% endfor %}
+        </div>
+      </details>
+      <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition">
+        💾 Сохранить изменения
+      </button>
+    </div>
+  </form>
+</div>
