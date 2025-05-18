@@ -187,7 +187,21 @@ def delete_price(request, id):
     if not product_to_redirect:
         return Http404('??? (нет цены такого продукта)')
     Price.objects.get(id=id).delete()
-    return HttpResponseRedirect(reverse('price_checker:price_history', args=[product_to_redirect.id]))
+def price_chart(request, id):
+    product_to_watch = check_prod_of_user(id, request.user)
+    if not product_to_watch:
+        return HttpResponse()
+    prices_of_product = product_to_watch.price_set.all().order_by('added_time')
+    dates = []
+    prices = []
+    for elem in prices_of_product:
+        dates.append(elem.added_time)
+        prices.append(elem.price)
+    svg_data = get_sparkline_points(prices)
+    svg_data = list(map(lambda x: list(x), svg_data))
+    for i in range(len(svg_data)):
+        svg_data[i].append(dates[i])
+    return render(request, 'price_checker/partials/price_chart.html', context={'svg_data': svg_data})
 
 
 
