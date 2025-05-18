@@ -331,7 +331,7 @@ class RecommendationSettings(View):
     
     def post(self, request, *args, **kwargs):
         try:
-            self.post_dispatcher(request)
+            return self.post_dispatcher(request)
         except:
             print('отлов ошибки')
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
@@ -352,15 +352,7 @@ class RecommendationSettings(View):
             self.context['form'] = self.form
             self.context['subs_cats'] = request.user.wbmenucategory_set.all()
             self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
-
-
-        if request.POST.get('form_type', None) == 'search_categories':
-            self.form = SearchForm(request.POST)
-            self.context['form'] = self.form
-            if self.form.is_valid():
-                self.search_categories = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=self.form.cleaned_data['query'])
-                self.search_categories = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, self.search_categories))
-                self.context['search_categories'] = self.search_categories
+            return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
         
 
         if request.POST.get('form_type', None) == 'old_submit_changes':
@@ -376,11 +368,13 @@ class RecommendationSettings(View):
             self.context['subs_brand_ids'] = list(map(lambda x: x.id, self.subs_brand))
             self.context['subs_seller'] = request.user.wbseller_set.all()
             self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.subs_seller))
+            return render(request, 'wb_checker/partials/old_submit_changes.html', context=self.context)
 
 
         if request.POST.get('form_type', None) == 'search_brand_seller':
             self.context['form_add'] =  WBProductForm(request.POST)
             self.context.setdefault('search_brand_seller', self.url_dispatcher(request))
+            return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
         
 
         if request.POST.get('form_type', None) == 'search_brand_seller_submit_changes':
@@ -404,6 +398,7 @@ class RecommendationSettings(View):
                 del seller
                 self.context['subs_seller'] = request.user.wbseller_set.all()
                 self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.context['subs_seller']))
+            return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
 
 
                                                                     
