@@ -187,6 +187,13 @@ def delete_price(request, id):
     if not product_to_redirect:
         return HttpResponse()
     Price.objects.get(id=id).delete()
+    prices_of_product = product_to_redirect.price_set.all().order_by('added_time')
+    return render(request, 'price_checker/partials/price_table.html', context={'prices_of_product': prices_of_product,
+                                                                               'product_to_watch': product_to_redirect})
+
+
+
+
 def price_chart(request, id):
     product_to_watch = check_prod_of_user(id, request.user)
     if not product_to_watch:
