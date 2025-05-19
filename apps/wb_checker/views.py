@@ -54,12 +54,17 @@ class WBCheckerMain(LoginRequiredMixin, View):
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
             try:
+                form = WBProductForm()
                 self.url_dispatcher(request.POST['url'], author_object)
                 messages.success(request, 'Успех!')
             except:
                 print('отловленное уведомление об исключении')
                 messages.error(request, 'Ошибка..')
-        return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
+            prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
+            disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
+            return render(request, 'wb_checker/partials/product_cards.html', context={'prods':prods,
+                                                                                        'form': form,
+                                                                                        'disabled_prod_count': disabled_prod_count})
 
 
     @time_count
