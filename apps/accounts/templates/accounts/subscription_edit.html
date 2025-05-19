@@ -38,23 +38,30 @@
         </div>
       </div>
     </div>
-    
 
-    <div class="flex justify-center mb-8">
-      <div class="inline-flex items-center bg-gray-200 dark:bg-neutral-700 rounded-full p-1 text-sm font-medium">
-        <input type="radio" name="plan-toggle" id="monthly" class="hidden peer/monthly" checked>
+  <div class="flex justify-center mb-8">
+    <div class="inline-flex items-center bg-gray-200 dark:bg-neutral-700 rounded-full p-1 text-sm font-medium">
+        
+        <input type="radio" name="plan-toggle" id="monthly" value="monthly" class="hidden peer/monthly" checked
+                hx-get={%url 'accounts:subscription_edit'%}
+                hx-target=".subs_switcher"
+                hx-trigger="change">
         <label for="monthly" class="px-4 py-2 cursor-pointer rounded-full peer-checked/monthly:bg-blue-600 peer-checked/monthly:text-white text-gray-800 dark:text-gray-200 transition">
-          1 месяц
+            1 месяц
         </label>
     
-        <input type="radio" name="plan-toggle" id="halfyear" class="hidden peer/halfyear">
+        <input type="radio" name="plan-toggle" id="halfyear" value="halfyear" class="hidden peer/halfyear"
+                hx-get={%url 'accounts:subscription_edit'%}
+                hx-target=".subs_switcher"
+                hx-trigger="change">
         <label for="halfyear" class="px-4 py-2 cursor-pointer rounded-full peer-checked/halfyear:bg-blue-600 peer-checked/halfyear:text-white text-gray-800 dark:text-gray-200 transition">
-          6 месяцев
+            6 месяцев
         </label>
-      </div>
     </div>
+  </div>
+
     
-  
+    <div class='subs_switcher'>
     <!-- Card container -->
     <div class="grid md:grid-cols-3 gap-8">
       <!-- Basic Plan -->
@@ -98,6 +105,7 @@
       </div>
     </div>
   </div>
+</div>
   
   
 {% endblock %}
