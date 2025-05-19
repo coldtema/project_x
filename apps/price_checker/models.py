@@ -69,14 +69,14 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-    def save(self, *args, **kwargs):
-        if self.pk:  # Проверяем, что объект уже существует (не новый)
-            original = Product.objects.get(pk=self.pk)
-            if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
-                self.updated = timezone.now()  # Обновляем вручную
-            else:
-                self.updated = original.updated
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.pk:  # Проверяем, что объект уже существует (не новый)
+    #         original = Product.objects.get(pk=self.pk)
+    #         if self.latest_price != original.latest_price:  # Проверяем, изменилось ли нужное поле
+    #             self.updated = timezone.now()  # Обновляем вручную
+    #         else:
+    #             self.updated = original.updated
+    #     super().save(*args, **kwargs)
     
 
 
