@@ -28,7 +28,11 @@
 
     <!-- Форма добавления ссылки -->
     <div class="mb-10 py-6">
-      <form method="POST" class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
+      <form method="GET" 
+            hx-get="{%url 'wb_checker:recommendations_settings'%}"
+            hx-target=".brand_seller_list"
+            hx-trigger="submit"
+            class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
         {% csrf_token %}
         <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
         <input type="hidden" name="form_type" value="search_brand_seller">
