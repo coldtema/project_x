@@ -2,8 +2,12 @@
     {% if search_categories %}
       <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
-    
-        <form method="post" action="{% url 'wb_checker:recommendations_settings' %}">
+        <form method="post" 
+              hx-post={% url 'wb_checker:recommendations_settings' %}
+              hx-trigger='submit'
+              hx-target='.main_template'
+              hx-swap='outerHTML'
+              hx-indicator='.loading-indicator'>
           {% csrf_token %}
           <input type="hidden" name="form_type" value="search_submit_changes">
           <ul class="space-y-4">
