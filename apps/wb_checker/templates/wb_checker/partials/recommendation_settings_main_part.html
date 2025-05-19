@@ -24,7 +24,8 @@
   <!-- Форма добавления ссылки -->
   <div class="mb-10 py-6">
     <form method="GET" 
-          class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900"            hx-get="{%url 'wb_checker:recommendations_settings'%}"
+          class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900" 
+          hx-get="{%url 'wb_checker:recommendations_settings'%}"
           hx-target=".brand_seller_list"
           hx-trigger="submit">
 
@@ -51,7 +52,7 @@
           <span id='notif-3' class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
               {%if messages%}
                   {%for message in messages%}
-                      {%if message.extra_tags == 'success_old_submit'%}
+                      {%if message.extra_tags == 'success_search_brand_seller'%}
                       <h1>{{message}}</h1>
                       {% endif %}
                   {%endfor%}
