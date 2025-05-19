@@ -22,6 +22,7 @@ from apps.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import ExpressionWrapper, F, IntegerField
 from django.contrib import messages
+from django.utils import timezone
 
 
 
@@ -80,6 +81,9 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                                                                 defaults={'latest_price':product_data['price_element']})
         if was_not_in_db:
             Price.objects.create(product=new_product, price=product_data['price_element'])
+        else:
+            new_product.updated=timezone.now()
+            new_product.save()
         user = CustomUser.objects.get(id=request.user.id)
         user.product_set.add(new_product)
         user.slots-=1
