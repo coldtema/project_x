@@ -11,6 +11,7 @@ from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
 from django.db.models import F, IntegerField, ExpressionWrapper
 from django.db.models.aggregates import Sum
+from django.contrib import messages
 
 class SignUpView(CreateView):
     success_url = reverse_lazy('login')
@@ -70,14 +71,16 @@ class GeolocationEditView(LoginRequiredMixin, View):
                 load_dest_to_author(request.user.id, request.POST['address'])
             except:
                 form = WBDestForm(initial={'address': request.user.dest_name})
-                return render(request, 'accounts/geolocation_edit.html', context={'form': form,
-                                                                          'success': 'Возникла ошибка.'})
+                messages.error(request=request, message='Ошибка..')
+                return render(request, 'accounts/partials/geo_form.html', context={'form': form})
+            
             form = WBDestForm(initial={'address': CustomUser.objects.get(pk=request.user.pk).dest_name})
-            return render(request, 'accounts/geolocation_edit.html', context={'form': form,
-                                                                          'success': 'Успешно изменено!'})
+            messages.success(request=request, message='Успех!')
+            return render(request, 'accounts/partials/geo_form.html', context={'form': form})
+        
         form = WBDestForm(initial={'address': request.POST['address']})
-        return render(request, 'accounts/geolocation_edit.html', context={'form': form,
-                                                                          'success': 'Успешно изменено!'})
+        messages.success(request=request, message='Успех!')
+        return render(request, 'accounts/partials/geo_form.html', context={'form': form})
     
 
 def change_password(request):
