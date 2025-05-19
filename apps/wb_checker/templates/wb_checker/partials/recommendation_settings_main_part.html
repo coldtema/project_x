@@ -1,0 +1,151 @@
+<div class='main_template'>
+  <div class="sticky top-4 z-40">
+  <a href="{% url 'wb_checker:recommendations' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+    <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Назад
+  </a>
+</div> 
+<div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-6">
+  <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подписки</h1>
+
+  <!-- Текущие подписки -->
+  <div class='old_submit_changes'>
+    {% include "wb_checker/partials/old_submit_changes.html" with subs_cats=subs_cats subs_brand=subs_brand subs_seller=subs_seller%}
+  </div>
+
+  <!-- Разделитель -->
+  <div class="my-10 flex items-center gap-4">
+    <div class="flex-grow border-t border-gray-700"></div>
+  </div>
+
+
+  <!-- Форма добавления ссылки -->
+  <div class="mb-10 py-6">
+    <form method="POST" class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
+      {% csrf_token %}
+      <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
+      <input type="hidden" name="form_type" value="search_brand_seller">
+      <div class="space-y-4 text-gray-800 dark:text-white">
+          {% for field in form_add %}
+              <div>
+                  {{ field }}
+                  {% if field.help_text %}
+                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
+                  {% endif %} 
+                  {% if field.errors %}
+                      <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+                  {% endif %}
+              </div>
+          {% endfor %}
+      </div>
+      <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
+          Добавить
+      </button>
+    </form>
+  </div>
+
+  {% if search_brand_seller %}
+    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
+  
+      <form method="post" action="{% url 'wb_checker:recommendations_settings' %}">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="search_brand_seller_submit_changes">
+        <ul class="space-y-4">
+          {% if search_brand_seller.brand %}
+            <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+              <span class="text-gray-900 dark:text-white">Бренд: {{search_brand_seller.brand.name}}</span>
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="brand_sub" value="{{ search_brand_seller.brand.id }}"
+                       class="form-checkbox h-5 w-5 text-blue-600"
+                       {% if search_brand_seller.brand.id in subs_brand_ids %}checked{% endif %}>
+              </label>
+              {% if search_brand_seller.brand.id in subs_brand_ids %}
+                <input type="hidden" name="old_brand_sub" value="{{search_brand_seller.brand.id}}">
+              {% endif %}
+            </li>
+            {%endif%}
+
+          {% if search_brand_seller.seller %}
+            <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
+              <span class="text-gray-900 dark:text-white">Продавец: {{search_brand_seller.seller.name}}</span>
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="seller_sub" value="{{ search_brand_seller.seller.id }}"
+                       class="form-checkbox h-5 w-5 text-blue-600"
+                       {% if search_brand_seller.seller.id in subs_seller_ids %}checked{% endif %}>
+              </label>
+              {% if search_brand_seller.seller.id in subs_seller_ids %}
+                <input type="hidden" name="old_seller_sub" value="{{search_brand_seller.seller.id}}">
+              {% endif %}
+            </li>
+            {%endif%}
+        </ul>
+  
+        <div class="mt-6 text-right">
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+            Сохранить изменения
+          </button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+  <div class="my-10 flex items-center gap-4">
+    <div class="flex-grow border-t border-gray-700"></div>
+  </div>
+
+  <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+    <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Найти категорию</h1>
+  
+    <form method="get" 
+          class="space-y-4" 
+          hx-get={%url 'wb_checker:recommendations_settings'%}
+          hx-trigger="submit"
+          hx-target="#category_list">
+      {% csrf_token %}
+      <input type="hidden" name="form_type" value="search_categories">
+      <div class="grid gap-4">
+        {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
+            {% endif %}
+            {% if field.errors %}
+              <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="flex text-right justify-between py-2 rounded-md transition">
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Добавить товар
+          </button>
+          <span id='notif' class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
+              {%if messages%}
+                  {%for message in messages%}
+                      {%if message.extra_tags == 'success_search'%}
+                      <h1>{{message}}</h1>
+                      {% endif %}
+                  {%endfor%}
+                  <!-- Форма -->
+              {%endif%}
+          </span>
+        </div>
+    </form>
+  </div>
+  {% include "wb_checker/partials/category_list.html"%}
+</div>
+
+<script>
+  setTimeout(() => {
+    const el = document.getElementById('notif');
+    el.classList.remove('opacity-100');
+    el.classList.add('opacity-0');
+  }, 3000); 
+</script>
