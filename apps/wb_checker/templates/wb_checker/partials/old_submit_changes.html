@@ -64,10 +64,34 @@
           {% endfor %}
         </div>
       </details>
-      <button type="submit"
+
+
+      <div class="flex text-right justify-between py-2 rounded-md transition">
+          <button type="submit"
               class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-md transition">
         💾 Сохранить изменения
-      </button>
+          </button>
+          <span id='notif-2' class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
+              {%if messages%}
+                  {%for message in messages%}
+                      {%if message.extra_tags == 'success_old_submit'%}
+                      <h1>{{message}}</h1>
+                      {% endif %}
+                  {%endfor%}
+                  <!-- Форма -->
+              {%endif%}
+          </span>
+        </div>
+
+
     </div>
   </form>
+  
+<script>
+  setTimeout(() => {
+    const el = document.getElementById('notif-2');
+    el.classList.remove('opacity-100');
+    el.classList.add('opacity-0');
+  }, 3000); 
+</script>
 </div>
