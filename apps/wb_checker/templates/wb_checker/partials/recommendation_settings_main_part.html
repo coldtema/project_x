@@ -144,7 +144,14 @@
 
 <script>
   setTimeout(() => {
-    const el = document.getElementById('notif');
+    const el = document.getElementById('notif-1');
+    el.classList.remove('opacity-100');
+    el.classList.add('opacity-0');
+  }, 3000); 
+</script>
+<script>
+    setTimeout(() => {
+        const el = document.getElementById('notif-3');
     el.classList.remove('opacity-100');
     el.classList.add('opacity-0');
   }, 3000); 
