@@ -342,7 +342,6 @@ class RecommendationSettings(View):
         if request.POST.get('form_type', None) == 'search_submit_changes':
             search_subs = request.POST.getlist('search_subs', [])
             old_search_subs = request.POST.getlist('old_search_subs', None)
-            print(search_subs)
             if search_subs:
                 request.user.wbmenucategory_set.add(*map(lambda x: int(x), search_subs))
             if old_search_subs:
@@ -352,7 +351,8 @@ class RecommendationSettings(View):
             self.context['form'] = self.form
             self.context['subs_cats'] = request.user.wbmenucategory_set.all()
             self.context['subs_cats_ids'] = list(map(lambda x: x.id, self.context['subs_cats']))
-            return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
+            messages.success(request=request, message='Успех!', extra_tags='success_search')
+            return render(request, 'wb_checker/partials/recommendation_settings_main_part.html', context=self.context)
         
 
         if request.POST.get('form_type', None) == 'old_submit_changes':
