@@ -412,14 +412,14 @@ class RecommendationSettings(View):
     @time_count
     def url_dispatcher(self, request):
         '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
-        if re.search(pattern=r'catalog\/\d+\/detail', string=request.POST['url']):
-            product_artikul = re.search(r'\/(\d+)\/', request.POST['url']).group(1)
+        if re.search(pattern=r'catalog\/\d+\/detail', string=request.GET['url']):
+            product_artikul = re.search(r'\/(\d+)\/', request.GET['url']).group(1)
             return get_brand_and_seller_from_prod(product_artikul)
-        elif request.POST['url'].isdigit():
-            return get_brand_and_seller_from_prod(request.POST['url'])
-        elif re.search(pattern=r'\/(seller)\/', string=request.POST['url']):
-            return get_seller_from_link(request.POST['url'])
-        elif re.search(pattern=r'\/(brands)\/', string=request.POST['url']):
-            return get_brand_from_link(request.POST['url'])
+        elif request.GET['url'].isdigit():
+            return get_brand_and_seller_from_prod(request.GET['url'])
+        elif re.search(pattern=r'\/(seller)\/', string=request.GET['url']):
+            return get_seller_from_link(request.GET['url'])
+        elif re.search(pattern=r'\/(brands)\/', string=request.GET['url']):
+            return get_brand_from_link(request.GET['url'])
         else:
             raise Exception
