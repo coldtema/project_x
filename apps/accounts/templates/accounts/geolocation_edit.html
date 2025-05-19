@@ -32,30 +32,11 @@
     </div>
   </details>
   
-  <!-- Форма -->
-  <form method="POST" class="bg-white dark:bg-neutral-900 p-6 rounded-lg shadow space-y-4 border border-gray-400 dark:border-neutral-700">
-    {% csrf_token %}
-    
-    <div class="space-y-4 text-gray-800 dark:text-white">
-      <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Текущее местоположение</h1>
-      
-      {% for field in form %}
-        <div class="mb-4">
-          {{ field }}
-          {% if field.errors %}
-            <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
-          {% endif %}
-        </div>
-      {% endfor %}
-    </div>
-    
-    <div class="flex text-right justify-between px-4 py-2 rounded-md transition">
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
-        Изменить
-      </button>
-      <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex">{{ success }}</span>
-    </div>
-  </form>
+  <div class="geo-form">
+      {%include 'accounts/partials/geo_form.html' with form=form %}
+  </div>
+
+
   <br>
   <div class="text-lg text-gray-800 dark:text-gray-200 mb-8 space-y-6">
     <div class="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg border border-gray-300 dark:border-neutral-700 space-y-4">
