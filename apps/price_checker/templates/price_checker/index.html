@@ -33,7 +33,7 @@
             <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
                 Добавить товар
             </button>
-            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex">
+            <span id="notif" class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
                 {%if messages%}
                     {%for message in messages%}
                         <h1>{{message}}</h1>
@@ -168,5 +168,12 @@
     <div class="mt-10">
         {% include "price_checker/pagination.html" with page=db_products_page page_range=page_range request=request.GET%}
     </div>
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('notif');
+            el.classList.remove('opacity-100');
+            el.classList.add('opacity-0');
+        }, 3000); 
+    </script>
 </div>
 {% endblock content %}
