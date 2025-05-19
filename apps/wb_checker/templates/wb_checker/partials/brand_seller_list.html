@@ -2,7 +2,6 @@
     {% if search_brand_seller %}
       <div class="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Результаты поиска</h3>
-    
         <form method="post"
               hx-post="{% url 'wb_checker:recommendations_settings' %}"
               hx-trigger="submit"
@@ -10,7 +9,7 @@
               hx-swap="outerHTML">
           {% csrf_token %}
           <input type="hidden" name="form_type" value="search_brand_seller_submit_changes">
-          <ul class="space-y-4">
+          <ul class="space-y-4 pb-4">
             {% if search_brand_seller.brand %}
               <li class="flex items-center justify-between p-4 bg-gray-100 dark:bg-neutral-800 rounded-lg">
                 <span class="text-gray-900 dark:text-white">Бренд: {{search_brand_seller.brand.name}}</span>
@@ -39,9 +38,9 @@
               </li>
               {%endif%}
           </ul>
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
-            Сохранить изменения
-        </button>
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+              Сохранить изменения
+          </button>
         </form>   
       </div>
     {% endif %}
