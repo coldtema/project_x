@@ -375,12 +375,6 @@ class RecommendationSettings(View):
             self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.subs_seller))
             messages.success(request=request, message='Успех!', extra_tags='success_old_submit')
             return render(request, 'wb_checker/partials/old_submit_changes.html', context=self.context)
-
-
-        if request.POST.get('form_type', None) == 'search_brand_seller':
-            self.context['form_add'] =  WBProductForm(request.POST)
-            self.context.setdefault('search_brand_seller', self.url_dispatcher(request))
-            return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
         
 
         if request.POST.get('form_type', None) == 'search_brand_seller_submit_changes':
@@ -390,8 +384,12 @@ class RecommendationSettings(View):
             old_seller_sub = request.POST.get('old_seller_sub', None)
             if old_brand_sub and not brand_sub:
                 request.user.wbbrand_set.remove(old_brand_sub)
+                self.context['subs_brand'] = request.user.wbbrand_set.all()
+                self.context['subs_brand_ids'] = list(map(lambda x: x.id, self.context['subs_brand']))
             if old_seller_sub and not seller_sub:
                 request.user.wbseller_set.remove(old_seller_sub)
+                self.context['subs_seller'] = request.user.wbseller_set.all()
+                self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.context['subs_seller']))
             if brand_sub:
                 brand = wb_brands.Brand(WBBrand.objects.get(pk=int(brand_sub)).main_url, request.user)
                 brand.run()
