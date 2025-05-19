@@ -32,7 +32,7 @@
                 <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-4 py-2 rounded shadow transition">
                     Добавить товар
                 </button>
-                <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex">
+                <span id='notif' class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center opacity-100 flex duration-300">
                     {%if messages%}
                         {%for message in messages%}
                             <h1>{{message}}</h1>
@@ -170,6 +170,12 @@
             {% include "wb_checker/pagination.html" with page=prods page_range=page_range request=request.GET%}
         </div>
     </div>
-
+    <script>
+        setTimeout(() => {
+            const el = document.getElementById('notif');
+            el.classList.remove('opacity-100');
+            el.classList.add('opacity-0');
+        }, 3000); 
+    </script>
 </div>
 {% endblock content %}
