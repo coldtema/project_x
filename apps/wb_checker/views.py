@@ -402,7 +402,7 @@ class RecommendationSettings(View):
                 del seller
                 self.context['subs_seller'] = request.user.wbseller_set.all()
                 self.context['subs_seller_ids'] = list(map(lambda x: x.id, self.context['subs_seller']))
-            messages.success(request=request, message='Успех!', extra_tags='success_old_submit')
+            messages.success(request=request, message='Успех!', extra_tags='success_search_brand_seller')
             return render(request, 'wb_checker/partials/recommendation_settings_main_part.html', context=self.context)
 
 
