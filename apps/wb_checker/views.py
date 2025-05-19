@@ -327,6 +327,11 @@ class RecommendationSettings(View):
             subs_cats_ids = list(map(lambda x: x['pk'], subs_cats_ids))
             return render(request, 'wb_checker/partials/category_list.html', context={'search_categories': search_categories,
                                                                                       'subs_cats_ids': subs_cats_ids})
+        if request.GET.get('form_type', None) == 'search_brand_seller':
+            self.context['form_add'] =  WBProductForm(request.GET)
+            self.context.setdefault('search_brand_seller', self.url_dispatcher(request))
+            return render(request, 'wb_checker/partials/brand_seller_list.html', context=self.context)
+        
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
     def post(self, request, *args, **kwargs):
