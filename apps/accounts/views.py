@@ -49,8 +49,13 @@ def profile_edit(request):
     return(render(request, 'accounts/profile_edit.html'))
 
 def subscription_edit(request):
-
-    return(render(request, 'accounts/subscription_edit.html'))
+    if request.GET.get('plan-toggle', None) == 'monthly':
+        return render(request, 'accounts/partials/subs_month.html')
+    
+    if request.GET.get('plan-toggle', None) == 'halfyear':
+        return render(request, 'accounts/partials/subs_half_year.html')
+    
+    return render(request, 'accounts/subscription_edit.html')
 
 
 class GeolocationEditView(LoginRequiredMixin, View):
