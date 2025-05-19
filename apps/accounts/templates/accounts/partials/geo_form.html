@@ -1,0 +1,43 @@
+  <!-- Форма -->
+  <form method="POST" 
+        class="bg-white dark:bg-neutral-900 p-6 rounded-lg shadow space-y-4 border border-gray-400 dark:border-neutral-700"
+        hx-post="{%url 'accounts:geolocation_edit'%}"
+        hx-target=".geo-form"
+        hx-trigger="submit">
+    {% csrf_token %}
+    
+    <div class="space-y-4 text-gray-800 dark:text-white">
+      <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Текущее местоположение</h1>
+      
+      {% for field in form %}
+        <div class="mb-4">
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="flex text-right justify-between px-4 py-2 rounded-md transition">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition flex items-center">
+        Изменить
+      </button>
+      <span id="notif" class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
+                {%if messages%}
+                    {%for message in messages%}
+                        <h1>{{message}}</h1>
+                    {%endfor%}
+                    <!-- Форма -->
+                {%endif%}
+      </span>
+    </div>
+  </form>
+
+<script>
+    setTimeout(() => {
+        const el = document.getElementById('notif');
+        el.classList.remove('opacity-100');
+        el.classList.add('opacity-0');
+    }, 3000); 
+</script>
