@@ -138,6 +138,10 @@ class RecommentationsList(LoginRequiredMixin, View):
         prods = []
         for prod in raw_prods_brands:
             prods.extend(prod)
+        prods_dict = dict()
+        for prod in prods:
+            prods_dict.update({prod.artikul:prod})
+        prods = prods_dict.values()
         sort = request.GET.get('sort', '')
         if sort == 'price':
             prods = sorted(prods, key=lambda x: x.latest_price)
