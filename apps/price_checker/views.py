@@ -73,12 +73,12 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         product_data = get_shop_of_product(request.POST.get('url'))
         if len(product_data['name']) > 150:
             product_data['name'] = product_data['name'][:147]+'...'
-        new_product, was_not_in_db = Product.objects.get_or_create(name=product_data['name'],
-                                                                url=request.POST.get('url'),
-                                                                shop=Shop.objects.get(regex_name=product_data['shop']),  
-                                                                ref_url=request.POST.get('url'),
-                                                                first_price=product_data['price_element'],
-                                                                defaults={'latest_price':product_data['price_element']})
+        new_product, was_not_in_db = request.user.product_set.get_or_create(name=product_data['name'],
+                                                                            url=request.POST.get('url'),
+                                                                            shop=Shop.objects.get(regex_name=product_data['shop']),  
+                                                                            ref_url=request.POST.get('url'),
+                                                                            defaults={'latest_price':product_data['price_element'],
+                                                                                      'first_price':product_data['price_element'],})
         if was_not_in_db:
             Price.objects.create(product=new_product, price=product_data['price_element'])
         else:
