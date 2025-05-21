@@ -59,6 +59,17 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         if product_form.is_valid():
             try:
                 self.get_product_info_and_save(request)
+                #убрать в dispatch потом
+                db_products = request.user.product_set.filter(enabled=True) 
+                paginator = Paginator(db_products, 24)
+                page_number = request.GET.get('page', 1)
+                db_products_page = paginator.get_page(page_number)
+                all_categories = Tag.objects.all().prefetch_related('shop_set')
+                all_categories_dict = dict()
+                for category in all_categories:
+                    all_categories_dict.setdefault(category, category.shop_set.all().values('name', 'main_url'))
+                disabled_prod_count = request.user.product_set.filter(enabled=False).count()
+                product_form = ProductForm()
                 messages.success(request, 'Успех!')
             except:
                 print('отлов ошибки')
@@ -66,8 +77,11 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         else:
             print('отлов ошибки')
             messages.success(request, 'Ошибка..')
-        return redirect('price_checker:all_price_list')
-    
+        return render(request, 'price_checker/partials/product_cards.html', context={'form': product_form, 
+                                                                                    'db_products_page': db_products_page,
+                                                                                    'all_categories_dict': all_categories_dict,
+                                                                                    'disabled_prod_count': disabled_prod_count})
+            
 
     def get_product_info_and_save(self, request):
         product_data = get_shop_of_product(request.POST.get('url'))
