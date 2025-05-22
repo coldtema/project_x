@@ -41,9 +41,9 @@ def get_sparkline_points(prices, width=100, height=30):
 class PriceUpdater:
     def __init__(self, enabled):
         '''Инициализация всех необходимых атрибутов'''
-        self.batch_size = 10000
+        self.batch_size = 1000
         self.enabled = enabled
-        self.len_all_prod = Product.objects.filter(enabled=self.enabled).count()
+        self.len_all_prod = Product.objects.filter(enabled=self.enabled, repeated=False).count()
         self.batched_prods = None
         self.batched_shop_prod_dict = None
         self.prods_to_go = ['']
@@ -58,7 +58,7 @@ class PriceUpdater:
     def run(self):
         '''Запуск процесса обновления продуктов (на цену и наличие)'''
         for i in range(math.ceil(self.len_all_prod / self.batch_size)):
-            self.batched_prods=Product.objects.filter(enabled=self.enabled)[i*self.batch_size:(i+1)*self.batch_size]
+            self.batched_prods=Product.objects.filter(enabled=self.enabled, repeated=False)[i*self.batch_size:(i+1)*self.batch_size]
             self.batched_shop_prod_dict = self.build_all_shop_prod_dict()
             self.async_update_prices()
             if self.async_exeption_prods:
