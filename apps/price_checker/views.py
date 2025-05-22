@@ -174,6 +174,8 @@ def price_history(request, id):
 
 def update_avaliability(request):
     if request.user.is_staff:
+        p_u = RepetitionsPriceUpdater(False)
+        p_u.run()
         p_u = PriceUpdater(False)
         p_u.run()
         del p_u
@@ -232,6 +234,8 @@ def price_chart(request, id):
 def update_prices(request):
     '''Функция представления для запуска обновления цен'''
     if request.user.is_staff:
+        p_u = RepetitionsPriceUpdater(True)
+        p_u.run()
         p_u = PriceUpdater(True)
         p_u.run()
         del p_u
