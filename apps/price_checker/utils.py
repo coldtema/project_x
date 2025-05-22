@@ -41,7 +41,7 @@ def get_sparkline_points(prices, width=100, height=30):
 class PriceUpdater:
     def __init__(self, enabled):
         '''Инициализация всех необходимых атрибутов'''
-        self.batch_size = 1000
+        self.batch_size = 10000
         self.enabled = enabled
         self.len_all_prod = Product.objects.filter(enabled=self.enabled).count()
         self.batched_prods = None
@@ -190,13 +190,13 @@ class PriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         for product in self.broken_prods: 
-            print(f'id: {product.id}, url: {product.url}')
-            answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
-            if answer == 'd':
-                product.enabled = False
-                product.updated = timezone.now()
-            else:
-                continue
+            # print(f'id: {product.id}, url: {product.url}')
+            # answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
+            # if answer == 'd':
+            product.enabled = False
+            product.updated = timezone.now()
+            # else:
+            #     continue
 
     @time_count
     @transaction.atomic
