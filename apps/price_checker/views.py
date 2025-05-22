@@ -189,9 +189,7 @@ def delete_product(request, id):
     product_to_delete = check_prod_of_user(id, request.user)
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
-    request.user.product_set.remove(id)
-    request.user.slots += 1
-    request.user.save()    
+    Product.objects.get(id=id).delete()  
     return HttpResponse()
 
 
