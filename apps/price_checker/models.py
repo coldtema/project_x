@@ -54,7 +54,8 @@ class Product(models.Model):
     enabled = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
-    subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики продукта')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Подписчики продукта') #по идее - foreign key
+    repeated = models.BooleanField(default=False)
 
     objects = models.Manager()
     enabled_products = EnabledManager()
@@ -64,6 +65,7 @@ class Product(models.Model):
         ordering = ['-updated']
         indexes = [
             models.Index(fields=['shop']),
+            models.Index(fields=['url'])
             ]
     
     def __str__(self):
