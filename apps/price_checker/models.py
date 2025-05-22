@@ -2,9 +2,12 @@ from django.db import models
 from apps.accounts.models import CustomUser
 from django.utils import timezone
 
-class EnabledManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(enabled=True)
+class SecureManager(models.Manager):
+    def secure_get(self, *args, **kwargs):
+        try:
+            return self.get(*args, **kwargs)
+        except:
+            return None
 
 
 
@@ -57,8 +60,8 @@ class Product(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Подписчики продукта') #по идее - foreign key
     repeated = models.BooleanField(default=False)
 
-    objects = models.Manager()
-    enabled_products = EnabledManager()
+    objects = SecureManager()
+
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
