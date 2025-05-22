@@ -7,7 +7,7 @@ from .site_explorer import get_shop_of_product
 import time
 from functools import wraps
 from django.urls import reverse, reverse_lazy
-from apps.price_checker.utils import PriceUpdater
+from apps.price_checker.utils import PriceUpdater, RepetitionsPriceUpdater
 from apps.price_checker.utils import time_count, get_sparkline_points
 from django.core.paginator import Paginator
 from django.views.generic import FormView
@@ -81,24 +81,40 @@ class PriceCheckerMain(LoginRequiredMixin, View):
             
 
     def get_product_info_and_save(self, request):
-        product_data = get_shop_of_product(request.POST.get('url'))
-        if len(product_data['name']) > 150:
-            product_data['name'] = product_data['name'][:147]+'...'
-        new_product, was_not_in_db = Product.objects.get_or_create(name=product_data['name'],
-                                                                            url=request.POST.get('url'),
-                                                                            shop=Shop.objects.get(regex_name=product_data['shop']),  
-                                                                            ref_url=request.POST.get('url'),
-                                                                            defaults={'latest_price':product_data['price_element'],
-                                                                                      'first_price':product_data['price_element'],})
-        if was_not_in_db:
+        potential_repetitions = Product.objects.filter(url=request.POST.get('url'))
+        if not potential_repetitions:
+            product_data = get_shop_of_product(request.POST.get('url'))
+            if len(product_data['name']) > 150:
+                product_data['name'] = product_data['name'][:147]+'...'
+            new_product = Product.objects.create(name=product_data['name'],
+                                                author=request.user,
+                                                url=request.POST.get('url'),
+                                                shop=Shop.objects.get(regex_name=product_data['shop']),  
+                                                ref_url=request.POST.get('url'),
+                                                latest_price=product_data['price_element'],
+                                                first_price=product_data['price_element'])
             Price.objects.create(product=new_product, price=product_data['price_element'])
+            request.user.slots-=1
+            request.user.save()
         else:
-            new_product.updated=timezone.now()
-            new_product.save()
-        user = CustomUser.objects.get(id=request.user.id)
-        user.product_set.add(new_product)
-        user.slots-=1
-        user.save()
+            new_product, was_not_in_authors_db = Product.objects.get_or_create(name=potential_repetitions[0].name,
+                                                                                author=request.user,
+                                                                                url=request.POST.get('url'),
+                                                                                shop=Shop.objects.get(regex_name=potential_repetitions[0].shop),  
+                                                                                ref_url=request.POST.get('url'),
+                                                                                defaults={'latest_price':potential_repetitions[0].latest_price,
+                                                                                        'first_price':potential_repetitions[0].latest_price,
+                                                                                        'repeated': True})
+            if was_not_in_authors_db:
+                Price.objects.create(product=new_product, price=potential_repetitions[0].latest_price)
+                request.user.slots-=1
+                request.user.save()
+            else:
+                new_product.updated=timezone.now()
+                new_product.save()
+            for repetiton in potential_repetitions:
+                repetiton.repeated=True
+            Product.objects.bulk_update(potential_repetitions, fields=['repeated'])
         return True
 
 
