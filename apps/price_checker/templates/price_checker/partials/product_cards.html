@@ -50,8 +50,8 @@
     
         {% for category, shops in all_categories_dict.items %}
             <div>
-            <h3 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ category }}</h3>
-            <ul class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-1 text-gray-800 dark:text-gray-200">
+            <h3 class="font-semibold text-lg text-gray-700 dark:text-gray-300 mb-2">{{ category }}</h3>
+            <ul class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-1 text text-gray-800 dark:text-gray-200">
                 {% for shop in shops %}
                 <a href={{shop.main_url}} target = _blank class="underline">
                     <li>{{ shop.name }}</li>
@@ -154,3 +154,15 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+
+
+<form method="get"
+        hx-get={%url 'price_checker:all_price_list'%}
+        hx-target='.product-cards'
+        hx-swap='beforeend'
+        hx-trigger='revealed'>
+    <input type="hidden" name='page' value={{request.GET.page}}>
+    <input type="hidden" name='lazy-load' value=True>
+    <input type="hidden" name='sort' value={{request.GET.sort}}>
+</form>
