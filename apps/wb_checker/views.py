@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from apps.accounts.models import CustomUser
@@ -62,6 +62,8 @@ class WBCheckerMain(LoginRequiredMixin, View):
                 messages.error(request, 'Ошибка..')
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
             disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
+            if request.POST.get('from_recs', None):
+                return redirect('wb_checker:all_price_list')
             return render(request, 'wb_checker/partials/product_cards.html', context={'prods':prods,
                                                                                         'form': form,
                                                                                         'disabled_prod_count': disabled_prod_count})
