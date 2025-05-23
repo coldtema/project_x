@@ -13,7 +13,16 @@ def index(request):
             'summary': 'text of post',
             'image_url': 'http://avatars.mds.yandex.net/get-vthumb/2044023/a3932f1604e45342599fd8f71f767935/800x450',
             'image': '1'}
-    return render(request, 'core/index.html', context={'posts':[post]})
+    post1 = {'title':'first post', 
+            'date': date(year=2002, month=9, day=25),
+            'summary': 'text of post',
+            'image_url': 'https://basket-12.wbbasket.ru/vol1679/part167964/167964984/images/c516x688/1.webp',
+            'image': '1'}
+    post2 = {'title':'first post', 
+            'date': date(year=2002, month=9, day=25),
+            'summary': 'text of post',
+            'image_url': 'https://basket-12.wbbasket.ru/vol1679/part167964/167964984/images/c516x688/1.webp',}
+    return render(request, 'core/index.html', context={'posts':[post, post1, post2]})
 
 
 # @login_required
