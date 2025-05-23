@@ -43,4 +43,8 @@
           </button>
         </form>   
       </div>
+      {% elif request.GET.url %}
+        <div class="max-w-4xl mx-auto p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Не найдено ни одного бренда или продавца...</h3>
+        </div>
     {% endif %}
