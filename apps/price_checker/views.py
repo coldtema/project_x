@@ -38,6 +38,20 @@ class PriceCheckerMain(LoginRequiredMixin, View):
             db_products =  request.user.product_set.filter(enabled=True).order_by('-latest_price')
         if sort == 'discount':
             db_products =  request.user.product_set.filter(enabled=True).annotate(delta=ExpressionWrapper(F('first_price')-F('latest_price'), output_field=IntegerField())).order_by('-delta')
+        
+        if request.GET.get('lazy-load'):
+            paginator = Paginator(db_products, 24)
+            page_number = request.GET.get('page', 1)
+            if page_number == '': 
+                page_number = 2
+            else: 
+                page_number = int(page_number) + 1
+            if paginator.num_pages < page_number:
+                return HttpResponse(status=413)#пока заглушка - лучше переделать
+            db_products_page = paginator.get_page(page_number)
+            return render(request, 'price_checker/partials/lazy_product_cards.html', context={'db_products_page':db_products_page,
+                                                                                              'lazy_page': page_number})
+        
         paginator = Paginator(db_products, 24)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
@@ -61,8 +75,6 @@ class PriceCheckerMain(LoginRequiredMixin, View):
             #убрать в dispatch потом
             messages.success(request, 'Успех!')
         except:
-            print('bbbb')
-            print('отлов ошибки')
             messages.success(request, 'Ошибка..')
         db_products = request.user.product_set.filter(enabled=True) 
         paginator = Paginator(db_products, 24)
