@@ -1,10 +1,8 @@
-
-
 {% extends 'base.html' %}
-{% block title %}FAQ — HeavenDrop{% endblock title %}
+{% block title %}Blog — HeavyDrop{% endblock title %}
 
 {% block content %}<!-- Блог / Новости -->
-<section class="bg-gray-50 dark:bg-neutral-900 py-16 px-4">
+<section class="py-16 ">
   <div class="max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-12 text-center">Лента обновлений</h2>
     <div class="space-y-10">
@@ -19,7 +17,7 @@
           {% endif %}
           <div class="p-6 md:w-2/3">
             <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ post.title }}</h3>
-            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">{{ post.date|date:"j E Y" }}</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">{{ post.date|date:"j.m.Y" }}</p>
             <p class="text-gray-700 dark:text-gray-200 leading-relaxed">{{ post.summary }}</p>
           </div>
         </div>
