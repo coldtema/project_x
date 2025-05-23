@@ -19,9 +19,11 @@
 </div>
 
     <!-- Пагинация -->
-    <div class="mt-10">
+    {% comment %} <div class="mt-10">
         {% include "price_checker/pagination.html" with page=db_products_page page_range=page_range request=request.GET%}
-    </div>
+    </div> {% endcomment %}
+
+    
     <script>
         setTimeout(() => {
             const el = document.getElementById('notif');
