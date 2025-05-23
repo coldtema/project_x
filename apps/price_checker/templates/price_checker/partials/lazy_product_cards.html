@@ -1,0 +1,58 @@
+{%load custom_math%}
+    <!-- Карточки продуктов -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {% for elem in db_products_page %}
+        <div id='delete_product_{{elem.pk}}' class="bg-white border-2 border-gray-200 dark:border-neutral-700 dark:bg-neutral-900 rounded-xl p-5 hover:shadow-md transition flex flex-col flex-1">
+            <div class="flex justify-between items-start mb-2">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    <a href="{{ elem.url }}" target="_blank" class="hover:underline">{{ elem.name|truncatechars:50 }}</a>
+                </h2>
+                <span class="text-xs text-gray-400">#{{ elem.id }}</span>
+            </div>
+
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Магазин:</strong> {{ elem.shop }}</p>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-1"><strong>Цена:</strong> <span>{{ elem.latest_price }} ₽ </span>
+            {%if elem.latest_price < elem.first_price%}
+                (<span class="text-green-500">↓ {{elem.first_price|minus:elem.latest_price}} ₽</span>)
+            {%elif elem.latest_price > elem.first_price%}
+                (<span class="text-red-400">↑ {{elem.latest_price|minus:elem.first_price}} ₽</span>)
+            {%endif%}
+            </p>
+
+            <div class="flex flex-wrap gap-1 my-2">
+                {% for item in elem.shop.tags.all %}
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-200">
+                        {{ item }}
+                    </span>
+                {% endfor %}
+            </div>
+
+            <div class="flex justify-between items-center mt-auto">
+                <a href="{% url 'price_checker:price_history' id=elem.id %}" class="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
+                    📈 История
+                </a>
+                <form method='post'>
+                    {% csrf_token %}
+                    <button hx-post="{% url 'price_checker:delete_product' id=elem.id %}" 
+                            class="text-red-600 dark:text-red-400 hover:underline text-sm"
+                            hx-target='#delete_product_{{elem.pk}}'
+                            hx-swap='delete'
+                            hx-trigger='click'
+                            >
+                        🗑 Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+<form method="get"
+        hx-get={%url 'price_checker:all_price_list'%}
+        hx-target='.product-cards'
+        hx-swap='beforeend'
+        hx-trigger='revealed'>
+    <input type="hidden" name='page' value={{lazy_page}}>
+    <input type="hidden" name='lazy-load' value=True>
+    <input type="hidden" name='sort' value={{request.GET.sort}}>
+</form>
