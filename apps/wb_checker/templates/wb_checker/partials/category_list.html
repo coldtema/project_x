@@ -33,5 +33,9 @@
           </div>
         </form>
       </div>
+      {% elif request.GET.query %}
+        <div class="max-w-4xl mx-auto mt-10 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Не найдено ни одной категории...</h3>
+        </div>
     {% endif %}
   </div>
