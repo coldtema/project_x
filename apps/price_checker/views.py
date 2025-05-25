@@ -1,24 +1,20 @@
 import os
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, Http404
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from .forms import ProductForm, SendMailForm, SearchForm
 from .models import Product, Price, Shop, Tag
 from .site_explorer import get_shop_of_product
-import time
-from functools import wraps
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from apps.price_checker.utils import PriceUpdater, RepetitionsPriceUpdater
 from apps.price_checker.utils import time_count, get_sparkline_points
 from django.core.paginator import Paginator
 from django.views.generic import FormView
 from django.views import View
-from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.postgres.search import SearchVector
 from django.contrib.auth.mixins import LoginRequiredMixin
-from apps.accounts.models import CustomUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import ExpressionWrapper, F, IntegerField
 from django.contrib import messages
