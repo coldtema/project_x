@@ -18,7 +18,19 @@
     <!-- Пагинация -->
     <!-- <div class="mt-10">
         {% include "wb_checker/pagination.html" with page=prods page_range=page_range request=request.GET%}
-    </div>
+    </div> -->
+
+    <form method="get"
+        hx-get={%url 'wb_checker:all_price_list'%}
+        hx-target='.products'
+        hx-swap='beforeend'
+        hx-trigger='revealed'>
+    <input type="hidden" name='page' value={{lazy_page}}>
+    <input type="hidden" name='lazy-load' value=True>
+    <input type="hidden" name='sort' value={{request.GET.sort}}>
+    </form>
+
+
     <script>
         setTimeout(() => {
             const el = document.getElementById('notif');
