@@ -5,6 +5,9 @@ from django.views import View
 from apps.price_checker.models import Product
 from apps.accounts.models import CustomUser
 from datetime import date
+from django.core.mail import send_mail
+import os
+from django.contrib import messages
 
 
 def index(request):
@@ -31,6 +34,16 @@ def index(request):
 
 
 def contacts(request):
+    if request.method == 'POST':
+        send_mail(subject='from support form', 
+                  message=f'''От: {request.POST['name']}
+Email: {request.POST['email']}
+Текст обращения: {request.POST['message']}''',
+                  from_email=os.getenv('EMAIL_HOST_USER'),
+                  recipient_list=[os.getenv('EMAIL_HOST_USER')],
+                  fail_silently=True)
+        messages.success(request, message='Успех!')
+        return render(request, 'core/partials/support_form.html')
     return render(request, 'core/contacts.html')
 
 
