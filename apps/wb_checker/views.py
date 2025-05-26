@@ -36,6 +36,23 @@ class WBCheckerMain(LoginRequiredMixin, View):
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').order_by('-latest_price')
         if sort == 'discount':
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').annotate(delta=ExpressionWrapper(F('first_price')-F('latest_price'), output_field=IntegerField())).order_by('-delta')
+        
+        
+        
+        if request.GET.get('lazy-load'):
+            paginator = Paginator(prods, 24)
+            page_number = request.GET.get('page', 1)
+            if page_number == '': 
+                page_number = 2
+            else: 
+                page_number = int(page_number) + 1
+            if paginator.num_pages < page_number:
+                return HttpResponse(status=413)#пока заглушка - лучше переделать
+            prods = paginator.get_page(page_number)
+            return render(request, 'wb_checker/partials/lazy_product_cards.html', context={'prods':prods,
+                                                                                           'lazy_page': page_number})
+        
+        
         paginator = Paginator(prods, 24)
         page_number = request.GET.get('page', 1)
         db_products_page = paginator.get_page(page_number)
@@ -155,6 +172,20 @@ class RecommentationsList(LoginRequiredMixin, View):
             prods = sorted(prods, key=lambda x: x.rating, reverse=True)
         if sort == 'feedbacks':
             prods = sorted(prods, key=lambda x: x.feedbacks, reverse=True)
+
+
+        if request.GET.get('lazy-load'):
+            paginator = Paginator(prods, 24)
+            page_number = request.GET.get('page', 1)
+            if page_number == '': 
+                page_number = 2
+            else: 
+                page_number = int(page_number) + 1
+            if paginator.num_pages < page_number:
+                return HttpResponse(status=413)#пока заглушка - лучше переделать
+            prods = paginator.get_page(page_number)
+            return render(request, 'wb_checker/partials/lazy_recs_cards.html', context={'prods':prods,
+                                                                                           'lazy_page': page_number})
         
         paginator = Paginator(prods, 24)
         page_number = request.GET.get('page', 1)
