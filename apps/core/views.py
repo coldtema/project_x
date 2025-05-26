@@ -30,6 +30,10 @@ def index(request):
 #     return render(request, 'core/menu.html')
 
 
+def contacts(request):
+    return render(request, 'core/contacts.html')
+
+
 class MenuView(LoginRequiredMixin, View):
     def get(self, request):
         prods_snippet = request.user.product_set.filter(enabled=True)[:5]
