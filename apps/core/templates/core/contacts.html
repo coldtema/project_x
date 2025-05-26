@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Контакты — HeavyDrop{% endblock title %}
+
+{% block content %}
+
+<section class="bg-gray-100 dark:bg-neutral-800 py-16 sm:px-6 lg:px-8" id="contact">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+      Есть вопрос или предложение?
+    </h2>
+    <p class="text-lg text-gray-600 dark:text-gray-300 mb-10 text-center">
+      Свяжитесь с нами через форму или напрямую — мы ответим как можно скорее.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-10 ">
+      <!-- Форма -->
+      <form class="space-y-6 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-md border-2 border-gray-300 dark:border-neutral-700">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Имя</label>
+          <input type="text" id="name" name="name" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        </div>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <input type="email" id="email" name="email" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+        </div>
+        <div>
+          <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Сообщение</label>
+          <textarea id="message" name="message" rows="4" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+        </div>
+        <button type="submit" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors shadow-sm">
+          Отправить
+        </button>
+      </form>
+
+      <!-- Контактная информация -->
+      <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-md flex flex-col justify-between border-2 border-gray-300 dark:border-neutral-700">
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Контакты</h3>
+          <ul class="space-y-4 text-gray-700 dark:text-gray-300">
+            <li><strong>Email:</strong> <a href="mailto:hello@heavendrop.ru" class="text-indigo-600 dark:text-indigo-400 hover:underline">hello@heavendrop.ru</a></li>
+            <li><strong>Telegram:</strong> <a href="https://t.me/heavendrop_bot" class="text-indigo-600 dark:text-indigo-400 hover:underline">@heavendrop_bot</a></li>
+            <li><strong>WhatsApp:</strong> <a href="https://wa.me/79991234567" class="text-indigo-600 dark:text-indigo-400 hover:underline">+7 (999) 123-45-67</a></li>
+          </ul>
+        </div>
+        <div class="mt-10">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Мы ответим в течение 24 часов в рабочие дни.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% endblock content %}
