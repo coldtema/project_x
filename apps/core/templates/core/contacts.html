@@ -14,23 +14,9 @@
 
     <div class="grid md:grid-cols-2 gap-10 ">
       <!-- Форма -->
-      <form class="space-y-6 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-md border-2 border-gray-300 dark:border-neutral-700">
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Имя</label>
-          <input type="text" id="name" name="name" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-        </div>
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-          <input type="email" id="email" name="email" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-        </div>
-        <div>
-          <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Сообщение</label>
-          <textarea id="message" name="message" rows="4" class="mt-1 w-full px-3 py-2 rounded-md border-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-        </div>
-        <button type="submit" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors shadow-sm">
-          Отправить
-        </button>
-      </form>
+      <div class='support_form'>
+          {% include "core/partials/support_form.html" %}
+      </div>
 
       <!-- Контактная информация -->
       <div class="bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-md flex flex-col justify-between border-2 border-gray-300 dark:border-neutral-700">
