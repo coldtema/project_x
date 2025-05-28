@@ -9,8 +9,9 @@ from apps.wb_checker.utils.general_utils import get_image_url
 
 
 class Product:
-    def __init__(self, product_url, author_object):
+    def __init__(self, product_url, author_object, sizes_to_save=None):
         '''Инициализация необходимых атрибутов'''
+        self.sizes_to_save = sizes_to_save
         self.author_object = author_object
         self.author_id = author_object.id
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -18,7 +19,7 @@ class Product:
         self.artikul = re.search(r'\/(\d+)\/', product_url).group(1)
         self.product_url = f'https://www.wildberries.ru/catalog/{self.artikul}/detail.aspx'
         self.product_url_api = f'https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest={self.author_object.dest_id}&spp=30&ab_testing=false&lang=ru&nm={self.artikul}'
-        self.product_name, self.product_size, self.product_volume, self.product_price = self.get_product_detailed_info()
+        self.product_name, self.product_sizes, self.product_volume, self.product_price, self.sizes_dict = self.get_product_detailed_info()
         self.image_url = get_image_url(self.artikul)
 
 
@@ -26,8 +27,6 @@ class Product:
 
     def get_product_info(self):
         '''Функция сборки продукта'''
-        if self.product_volume == 0: enabled = False 
-        else: enabled = True
         response = self.scraper.get(self.product_url_api, headers=self.headers)
         json_data = json.loads(response.text)
         seller_name = json_data['data']['products'][0]['supplier'] #имя продавца
@@ -36,7 +35,6 @@ class Product:
         brand_artikul = json_data['data']['products'][0]['brandId'] #id бренда
         brand_object = Product.build_raw_brand_object(brand_name, brand_artikul)
         seller_object = Product.build_raw_seller_object(seller_name, seller_artikul)  
-        #добавляем элемент
         new_product = WBProduct(name=self.product_name,
                 artikul=self.artikul,
                 wb_cosh=True,
@@ -44,16 +42,25 @@ class Product:
                 seller=seller_object,
                 brand=brand_object,
                 image_url=self.image_url)
-        new_detailed_info = WBDetailedInfo(latest_price=self.product_price,
-                                           size=self.product_size,
-                                           volume=self.product_volume,
-                                           enabled=enabled,
-                                           author_id=self.author_id,
-                                           product=new_product)
-        new_price = WBPrice(price=self.product_price,
-                            added_time=timezone.now(),
-                            detailed_info=new_detailed_info)
-        self.add_product_to_db(new_product, new_detailed_info, new_price)
+        detailed_info_list = []
+        prices_list = []
+        for i in range(len(self.product_price)):
+            #добавляем элемент
+            if self.product_volume[i] == '0' or self.product_volume[i] == 0: 
+                enabled = False 
+            else: enabled = True
+            new_detailed_info = WBDetailedInfo(latest_price=self.product_price[i],
+                                                size=self.product_sizes[i],
+                                                volume=self.product_volume[i],
+                                                enabled=enabled,
+                                                author_id=self.author_id,
+                                                product=new_product)
+            new_price = WBPrice(price=self.product_price[i],
+                                added_time=timezone.now(),
+                                detailed_info=new_detailed_info)
+            detailed_info_list.append(new_detailed_info)
+            prices_list.append(new_price) 
+        self.add_product_to_db(new_product, detailed_info_list, prices_list)
 
 
     @staticmethod
@@ -78,10 +85,12 @@ class Product:
     
 
 
-    def get_product_detailed_info(self):
+    def get_product_detailed_info(self): 
         response = self.scraper.get(self.product_url_api, headers=self.headers)
         json_data = json.loads(response.text)
         name = json_data['data']['products'][0]['name']
+        if self.sizes_to_save:
+            return name, list(self.sizes_to_save.keys()), list(map(lambda x: x[0], self.sizes_to_save.values())), list(map(lambda x: x[1], self.sizes_to_save.values())), None
         sizes = json_data['data']['products'][0]['sizes']
         sizes_dict = dict()
         for size in sizes:
@@ -94,18 +103,11 @@ class Product:
             sizes_dict.update({size['origName']: (volume_of_size, price_of_size)})
         if len(list(sizes_dict.keys())) == 1 and list(sizes_dict.keys())[0] == '0':
             print(f'Товар обнаружен!\nНазвание: {name}.\nПрисутствует только 1 вариант.')
-            return name, None, sizes_dict['0'][0], sizes_dict['0'][1]
+            return name, [None], [sizes_dict['0'][0]], [sizes_dict['0'][1]], None
+        
+        
         print(f'Товар обнаружен!\nНазвание: {name}.\nДоступные варианты:')
-        for size, volume_and_price in sizes_dict.items():
-            print(f'Вариант: {size}. Количество: {volume_and_price[0]}. Цена: {volume_and_price[1]}')
-        print('Введите имя варианта, который нужно выбрать')
-        while True:
-            user_size = input()
-            if sizes_dict.get(user_size) is None: 
-                print('Введено неправильное имя варианта, попробуйте снова')
-                continue
-            break
-        return name, user_size, sizes_dict[user_size][0], sizes_dict[user_size][1]
+        return name, None, None, None, sizes_dict
     
 
 
@@ -116,19 +118,20 @@ class Product:
         WBBrand.objects.bulk_create([new_product.brand], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create([new_product.seller], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBProduct.objects.bulk_create([new_product], update_conflicts=True, unique_fields=['artikul'], update_fields=['name'])
-        new_detailed_info, was_not_in_db = WBDetailedInfo.objects.get_or_create(size=self.product_size,
-                                                                                enabled=new_detailed_info.enabled,
-                                                                                author_id=self.author_id,
-                                                                                product=new_product,
-                                                                                defaults={'volume':self.product_volume,
-                                                                                          'latest_price':self.product_price,
-                                                                                          'first_price':self.product_price}) #возможно в defaults убрать volume из за постоянных изменений (убрал - посмотреть, как ведет)
-        if was_not_in_db:
-            new_price.detailed_info = new_detailed_info
-            new_price.save()
-            self.author_object.slots -= 1
-            self.author_object.save()
-        else:
-            new_detailed_info.updated = timezone.now()
-            new_detailed_info.save()
-            print('Товар уже есть в отслеживании')
+        for i in range(len(new_detailed_info)):
+            new_detailed_info[i], was_not_in_db = WBDetailedInfo.objects.get_or_create(size=new_detailed_info[i].size,
+                                                                                        enabled=new_detailed_info[i].enabled,
+                                                                                        author_id=self.author_id,
+                                                                                        product=new_product,
+                                                                                        defaults={'volume':new_detailed_info[i].volume,
+                                                                                                'latest_price':new_detailed_info[i].latest_price,
+                                                                                                'first_price':new_detailed_info[i].latest_price}) #возможно в defaults убрать volume из за постоянных изменений (убрал - посмотреть, как ведет)
+            if was_not_in_db:
+                new_price[i].detailed_info = new_detailed_info[i]
+                new_price[i].save()
+                self.author_object.slots -= 1
+                self.author_object.save()
+            else:
+                new_detailed_info[i].updated = timezone.now()
+                new_detailed_info[i].save()
+                print('Товар уже есть в отслеживании')
