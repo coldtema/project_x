@@ -50,6 +50,7 @@
     --color-neutral-700: oklch(37.1% 0 0);
     --color-neutral-800: oklch(26.9% 0 0);
     --color-neutral-900: oklch(20.5% 0 0);
+    --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-md: 28rem;
@@ -257,6 +258,9 @@
   .sticky {
     position: sticky;
   }
+  .inset-0 {
+    inset: calc(var(--spacing) * 0);
+  }
   .top-1 {
     top: calc(var(--spacing) * 1);
   }
@@ -341,6 +345,9 @@
   }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
@@ -855,9 +862,6 @@
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
   }
-  .px-10 {
-    padding-inline: calc(var(--spacing) * 10);
-  }
   .py-0\.5 {
     padding-block: calc(var(--spacing) * 0.5);
   }
@@ -894,9 +898,6 @@
   .pt-2 {
     padding-top: calc(var(--spacing) * 2);
   }
-  .pt-8 {
-    padding-top: calc(var(--spacing) * 8);
-  }
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
   }
@@ -906,17 +907,8 @@
   .pb-5 {
     padding-bottom: calc(var(--spacing) * 5);
   }
-  .pb-8 {
-    padding-bottom: calc(var(--spacing) * 8);
-  }
-  .pb-10 {
-    padding-bottom: calc(var(--spacing) * 10);
-  }
   .pb-24 {
     padding-bottom: calc(var(--spacing) * 24);
-  }
-  .pb-78 {
-    padding-bottom: calc(var(--spacing) * 78);
   }
   .pl-5 {
     padding-left: calc(var(--spacing) * 5);
@@ -994,6 +986,9 @@
   }
   .break-words {
     overflow-wrap: break-word;
+  }
+  .text-black {
+    color: var(--color-black);
   }
   .text-blue-200 {
     color: var(--color-blue-200);
@@ -1157,8 +1152,19 @@
     }
   }
   @media (hover: hover) {
+    .group-hover\:border-blue-500:is(:where(.group):hover *) {
+      border-color: var(--color-blue-500);
+    }
+  }
+  @media (hover: hover) {
     .group-hover\:text-blue-600:is(:where(.group):hover *) {
       color: var(--color-blue-600);
+    }
+  }
+  @media (hover: hover) {
+    .group-hover\:shadow-md:is(:where(.group):hover *) {
+      --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
     }
   }
   .peer-checked\:max-h-96:is(:where(.peer):checked ~ *) {
@@ -1176,6 +1182,21 @@
   }
   .peer-checked\:rotate-180:is(:where(.peer):checked ~ *) {
     rotate: 180deg;
+  }
+  .peer-checked\:border-blue-600:is(:where(.peer):checked ~ *) {
+    border-color: var(--color-blue-600);
+  }
+  .peer-checked\:bg-blue-50:is(:where(.peer):checked ~ *) {
+    background-color: var(--color-blue-50);
+  }
+  .peer-checked\:bg-blue-600:is(:where(.peer):checked ~ *) {
+    background-color: var(--color-blue-600);
+  }
+  .peer-checked\:text-blue-700:is(:where(.peer):checked ~ *) {
+    color: var(--color-blue-700);
+  }
+  .peer-checked\:text-white:is(:where(.peer):checked ~ *) {
+    color: var(--color-white);
   }
   .peer-checked\:opacity-100:is(:where(.peer):checked ~ *) {
     opacity: 100%;
@@ -1352,6 +1373,11 @@
     }
   }
   @media (width >= 40rem) {
+    .sm\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (width >= 40rem) {
     .sm\:flex-row {
       flex-direction: row;
     }
@@ -1394,13 +1420,9 @@
     }
   }
   @media (width >= 40rem) {
-    .sm\:pb-4 {
-      padding-bottom: calc(var(--spacing) * 4);
-    }
-  }
-  @media (width >= 40rem) {
-    .sm\:pb-10 {
-      padding-bottom: calc(var(--spacing) * 10);
+    .sm\:text-base {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
     }
   }
   @media (width >= 40rem) {
@@ -1512,6 +1534,11 @@
     }
   }
   @media (width >= 80rem) {
+    .xl\:grid-cols-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+  @media (width >= 80rem) {
     .xl\:gap-10 {
       gap: calc(var(--spacing) * 10);
     }
@@ -1519,11 +1546,6 @@
   @media (width >= 80rem) {
     .xl\:pb-3 {
       padding-bottom: calc(var(--spacing) * 3);
-    }
-  }
-  @media (width >= 80rem) {
-    .xl\:pb-5 {
-      padding-bottom: calc(var(--spacing) * 5);
     }
   }
   @media (width >= 80rem) {
