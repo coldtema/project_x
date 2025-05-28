@@ -37,7 +37,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
         if sort == 'discount':
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author').annotate(delta=ExpressionWrapper(F('first_price')-F('latest_price'), output_field=IntegerField())).order_by('-delta')
         
-        
+    
         
         if request.GET.get('lazy-load'):
             paginator = Paginator(prods, 24)
@@ -64,26 +64,60 @@ class WBCheckerMain(LoginRequiredMixin, View):
                                                                  'disabled_prod_count': disabled_prod_count})
     
     def post(self, request, *args, **kwargs):
-        # if request.POST.get('delete_product'):
-        #     print('dasdaad')
-        #     return HttpResponse()
         form = WBProductForm(request.POST)
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
             try:
                 form = WBProductForm()
-                self.url_dispatcher(request.POST['url'], author_object)
+                if request.POST.getlist('size', None): #пользователь выбрал размер
+                    temp_dict = dict()
+                    for elem in request.POST.getlist('size'):
+                        temp_dict.setdefault(elem.split(' | ')[0], (elem.split(' | ')[1], elem.split(' | ')[2]))
+                    self.url_dispatcher(request.POST['url'], author_object, temp_dict)
+
+                else: #пользователь только хочет добавить продукт
+                    raw_sizes = self.url_dispatcher(request.POST['url'], author_object)
+                    if raw_sizes:
+                        prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
+                        disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
+                        list_of_all_size_info = []
+                        for size, volume_and_price in raw_sizes.items():
+                            list_of_all_size_info.append([size, volume_and_price[0], volume_and_price[1]])
+                        paginator = Paginator(prods, 24)
+                        prods = paginator.get_page(1)
+                        if request.POST.get('from_recs', None):
+                            messages.success(request, 'Успех!')
+                            return render(request, 'wb_checker/index.html', context={'form': self.form_parse,
+                                                                                    'prods': prods,
+                                                                                    'disabled_prod_count': disabled_prod_count,
+                                                                                    'raw_sizes':list_of_all_size_info,
+                                                                                    'url': request.POST['url']})
+                        messages.success(request, 'Успех!')
+                        return render(request, 'wb_checker/partials/product_cards.html', context={'raw_sizes':list_of_all_size_info,
+                                                                                                    'prods':prods,
+                                                                                                    'form': form,
+                                                                                                    'disabled_prod_count': disabled_prod_count,
+                                                                                                    'url': request.POST['url']}) 
+                    else:
+                        prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
+                        disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
+                        if request.POST.get('from_recs', None):
+                            return redirect('wb_checker:all_price_list')
+                        paginator = Paginator(prods, 24)
+                        prods = paginator.get_page(1)
+                        messages.success(request, 'Успех!')
+                        return render(request, 'wb_checker/partials/product_cards.html', context={'prods':prods,
+                                                                                                'form': form,
+                                                                                  'disabled_prod_count': disabled_prod_count})
                 messages.success(request, 'Успех!')
             except:
                 print('отловленное уведомление об исключении')
                 messages.error(request, 'Ошибка..')
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
             disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
-            if request.POST.get('from_recs', None):
-                return redirect('wb_checker:all_price_list')
             return render(request, 'wb_checker/partials/product_cards.html', context={'prods':prods,
-                                                                                        'form': form,
-                                                                                        'disabled_prod_count': disabled_prod_count})
+                                                                                            'form': form,
+                                                                                            'disabled_prod_count': disabled_prod_count})
 
 
     @time_count
