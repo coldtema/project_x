@@ -1,6 +1,40 @@
 {%load custom_math%}
 
 <div class="max-w-6xl mx-auto py-8">
+    {%if raw_sizes%}
+    <div class="wb_form w-full">
+        <form method="post" 
+            class="w-full p-4 bg-white dark:bg-neutral-900 rounded-xl shadow-md space-y-4 border-2 border-gray-200 dark:border-neutral-700"
+            hx-post="{% url 'wb_checker:all_price_list' %}"
+            hx-swap="innerHTML"
+            hx-target=".products"
+            hx-trigger="submit">
+            {% csrf_token %}
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-2 text-center pb-4 mt-2">Выберите размер</h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-6 gap-3">
+                {% for size, volume, price in raw_sizes %}
+                <label class="cursor-pointer group">
+                    <input type="radio" name="size" value="{{ size }} | {{ volume }} | {{ price }}" class="peer hidden" required>
+                    <div class="p-3 rounded-lg border-2 border-gray-300 dark:border-neutral-700 text-center group-hover:border-blue-500 bg-gray-100 dark:bg-neutral-800 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all space-y-1 text-sm sm:text-base text-black dark:text-white">
+                        <div class="font-medium">{{ size }}</div>
+                        <div class="text-xs">Остаток: {{ volume }}</div>
+                        <div class="text-xs">Цена: {{ price }} ₽</div>
+                    </div>
+                </label>
+                {% endfor %}
+                <input type="hidden" name="url" value="{{ url }}">
+            </div>
+
+            <button type="submit" class="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all text-sm sm:text-base">
+                Подтвердить
+            </button>
+        </form>
+    </div>
+
+    {% else %}
+
+    <div class='wb_form'>
         <form method="POST" 
               class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900"
               hx-post="{%url 'wb_checker:all_price_list'%}"
@@ -36,6 +70,9 @@
                 </span>
             </div>
         </form>
+    </div>
+
+    {% endif %}
 
 
   <!-- Блок "Нет в наличии" + сортировка -->
