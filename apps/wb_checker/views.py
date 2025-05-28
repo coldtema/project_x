@@ -87,14 +87,18 @@ class WBCheckerMain(LoginRequiredMixin, View):
 
 
     @time_count
-    def url_dispatcher(self, url, author_object):
+    def url_dispatcher(self, url, author_object, sizes_to_save=None):
         '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
         if re.search(pattern=r'catalog\/\d+\/detail', string=url):
-            product = wb_products.Product(url, author_object)
+            product = wb_products.Product(url, author_object, sizes_to_save)
+            if product.sizes_dict: #надо потестить с удалением объекта класса
+                return product.sizes_dict
             product.get_product_info()
             del product
         elif url.isdigit():
-            product = wb_products.Product(f'https://www.wildberries.ru/catalog/{url}/detail.aspx', author_object)
+            product = wb_products.Product(f'https://www.wildberries.ru/catalog/{url}/detail.aspx', author_object, sizes_to_save)
+            if product.sizes_dict: #надо потестить с удалением объекта класса
+                return product.sizes_dict
             product.get_product_info()
             del product
         else:
