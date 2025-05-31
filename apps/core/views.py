@@ -2,8 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
-from apps.price_checker.models import Product
-from apps.accounts.models import CustomUser
 from datetime import date
 from django.core.mail import send_mail
 import os
