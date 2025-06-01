@@ -1,5 +1,4 @@
 from functools import wraps
-import time
 from requests import request
 from bs4 import BeautifulSoup
 import re
