@@ -1307,7 +1307,7 @@ class Parser:
         '''Функция для парсинга товара из mie'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find('div', class_='current-price').text.strip()
+        price_element = soup_engine.find('div', class_='price').text.strip().split('₽')[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find('h1').text.strip()
         return {'price_element': price_element, 'name': name, 'shop': 'mie'}
