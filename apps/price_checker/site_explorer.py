@@ -1321,7 +1321,7 @@ def get_product_evitastore(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
     response = scraper.get(product_url, headers=headers, timeout=10)
-    soup_engine = BeautifulSoup(response.text, 'lxml')
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
     price_element = soup_engine.find('div', class_='cd-price').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
