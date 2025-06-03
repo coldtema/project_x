@@ -1128,7 +1128,7 @@ def get_product_litres(product_url):
     price_element = str(soup_engine.find('meta', itemprop="price"))
     price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
     name = soup_engine.find('title').text.strip()
-    name = re.search(pattern=r'(.+)( \– )', string=name).group(1)
+    name = re.search(pattern=r'(.+)( [--] )', string=name).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'litres'}
 
 
