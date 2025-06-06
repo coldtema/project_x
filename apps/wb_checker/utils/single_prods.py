@@ -298,7 +298,7 @@ class AvaliabilityUpdater:
     def enable_product(self, price_of_detail, volume):
         '''Точка входа для уведомления пользователя + изменение полей товара
         добавление товара в общую коллекцию обновления'''
-        if self.current_detail_to_check.first_price == 0:
+        if int(self.current_detail_to_check.first_price) == 0:
             self.current_detail_to_check.first_price = price_of_detail
         self.current_detail_to_check.latest_price = price_of_detail
         self.current_detail_to_check.volume = volume
@@ -316,6 +316,6 @@ class AvaliabilityUpdater:
     @transaction.atomic
     def save_update_avaliability(self):
         '''Занесение в БД обновления наличия'''
-        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated'])
+        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated', 'first_price'])
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
