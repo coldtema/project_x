@@ -711,7 +711,8 @@ def get_product_koffer(product_url):
 def get_product_age_of_innocence(product_url):
     '''Функция для парсинга товара из age-of-innocence'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers, timeout=10)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find_all('div', class_='v-stack')
     price_element = ''.join(list(map(lambda x: x.text.strip(), price_element)))
