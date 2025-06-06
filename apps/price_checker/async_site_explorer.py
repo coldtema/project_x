@@ -1544,7 +1544,7 @@ class Parser:
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
         try:
-            price_element = soup_engine.find('div', class_='product_prices -hasComparePrice').text.strip()
+            price_element = soup_engine.find('div', class_='product-main-block-header-cart__price').text.strip()
         except:
             price_element = soup_engine.find('div', class_='product_prices').text.strip()
         price_element = price_element.split('₽')[0]

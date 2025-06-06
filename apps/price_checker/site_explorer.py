@@ -1564,7 +1564,7 @@ def get_product_nespresso(product_url):
     response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
-        price_element = soup_engine.find('div', class_='product_prices -hasComparePrice').text.strip()
+        price_element = soup_engine.find('div', class_='product-main-block-header-cart__price').text.strip()
     except:
         price_element = soup_engine.find('div', class_='product_prices').text.strip()
     price_element = price_element.split('₽')[0]
