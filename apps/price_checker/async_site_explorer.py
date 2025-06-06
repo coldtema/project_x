@@ -1741,7 +1741,7 @@ class Parser:
         '''Функция для парсинга товара из santehmoll'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find('div', class_='pcard-info__price').text.strip()
+        price_element = soup_engine.find('div', class_='price__current').text.strip()
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = soup_engine.find('h1').text.strip()
         return {'price_element': price_element, 'name': name, 'shop': 'santehmoll'}
