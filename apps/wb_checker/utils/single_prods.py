@@ -155,9 +155,13 @@ class PriceUpdater:
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
             if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
+                if self.current_detail_to_check.volume >= 10 and volume < 10:
+                    self.notifications_to_save.append(Notification(text=f'(WB) Количество продукта "{self.current_detail_to_check.product.name}" остается менее 10 штук! Успейте купить :)',
+                                                                    wb_product=self.current_detail_to_check,
+                                                                    user=self.current_detail_to_check.author))
                 flag_change = True
                 self.current_detail_to_check.volume = volume
-            if flag_change: self.updated_details.append(self.current_detail_to_check)             
+            if flag_change: self.updated_details.append(self.current_detail_to_check) 
 
 
     def make_notification(self, price_of_detail):
