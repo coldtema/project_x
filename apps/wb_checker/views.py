@@ -17,6 +17,7 @@ from django.core.paginator import Paginator
 from django.contrib.postgres.search import SearchVector
 from django.contrib import messages
 from django.db.models import ExpressionWrapper, IntegerField, F
+from apps.wb_checker.utils.notifications import SmartNotification
 
 
 
@@ -299,6 +300,11 @@ def delete_wb_product(request, id):
     return HttpResponse()
 
 
+def make_notif(request):
+    notif = SmartNotification()
+    notif.run()
+    del notif
+    return redirect('core:menu')
 
 @login_required
 def delete_price(request, id):
