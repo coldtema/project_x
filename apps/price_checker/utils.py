@@ -192,6 +192,9 @@ class PriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         for product in self.broken_prods: 
+            self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукта "{product.name}" больше нет в наличии! Он добавлен во вкладку "Нет в наличии".',
+                                                            product=product,
+                                                            user=product.author))
             # print(f'id: {product.id}, url: {product.url}')
             # answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
             # if answer == 'd':
