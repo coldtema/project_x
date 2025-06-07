@@ -7,6 +7,8 @@ from django.db import transaction
 import asyncio
 from .async_site_explorer import Parser
 from django.utils import timezone
+from apps.core.models import Notification
+# from apps.core.models import Notification
 
 
 def time_count(func):
@@ -52,13 +54,14 @@ class PriceUpdater:
         self.broken_prods = []
         self.new_prices = []
         self.products_to_update = []
+        self.notifications_to_save = []
         
 
 
     def run(self):
         '''Запуск процесса обновления продуктов (на цену и наличие)'''
         for i in range(math.ceil(self.len_all_prod / self.batch_size)):
-            self.batched_prods=Product.objects.filter(enabled=self.enabled, repeated=False)[i*self.batch_size:(i+1)*self.batch_size]
+            self.batched_prods=Product.objects.filter(enabled=self.enabled, repeated=False).select_related('shop', 'author')[i*self.batch_size:(i+1)*self.batch_size]
             self.batched_shop_prod_dict = self.build_all_shop_prod_dict()
             self.async_update_prices()
             if self.async_exeption_prods:
@@ -74,6 +77,7 @@ class PriceUpdater:
             self.broken_prods = []
             self.exception_prods = []
             self.prods_to_go = ['']
+            self.notifications_to_save = []
 
 
 
@@ -207,9 +211,10 @@ class PriceUpdater:
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''
-        Product.objects.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated', 'enabled'])
+        Product.objects.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated', 'enabled', 'last_notified_price'])
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
+        Notification.objects.bulk_create(self.notifications_to_save)
 
 
 
