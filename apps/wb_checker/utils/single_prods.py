@@ -8,6 +8,7 @@ from django.db.models import Prefetch
 from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count
 from ..models import WBPrice, WBDetailedInfo, WBProduct
+from apps.core.models import Notification
 
 
 
@@ -25,6 +26,7 @@ class PriceUpdater:
         self.current_detail_to_check = None
         self.detail_product_url_api = None
         self.prods_artikuls_to_delete = []
+        self.notifications_to_save = []
     
     def run(self):
         '''Запуск процесса обновления цен + батчинг по авторам'''
@@ -36,6 +38,7 @@ class PriceUpdater:
             self.new_prices = []
             self.updated_details = []
             self.prods_artikuls_to_delete = []
+            self.notifications_to_save = []
         print(f'Товаров проверено:{self.test_counter}')
 
 
@@ -147,7 +150,7 @@ class PriceUpdater:
         flag_change = False           
         if self.current_detail_to_check.latest_price != price_of_detail: #and abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price > 0.03: #сделать потом поле у пользователя (на сколько отслеживаем цену)
             # print(abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price)
-            print(f'Цена изменилась!\nПродукт: {self.current_detail_to_check.product.url}\nБыло: {self.current_detail_to_check.latest_price}\nСтало: {price_of_detail}\n')
+            self.make_notification(price_of_detail)
             flag_change = True
             self.current_detail_to_check.latest_price = price_of_detail
             self.current_detail_to_check.updated = timezone.now()
@@ -181,9 +184,10 @@ class PriceUpdater:
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД обновления наличия'''
-        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated'])
+        WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated', 'last_notified_price'])
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
+        Notification.objects.bulk_create(self.notifications_to_save)
 
 
 
@@ -207,6 +211,7 @@ class AvaliabilityUpdater:
         self.current_detail_to_check = None
         self.detail_product_url_api = None
         self.prods_artikuls_to_delete = []
+        self.notifications_to_save = []
 
 
     def run(self):
@@ -347,3 +352,4 @@ class AvaliabilityUpdater:
         WBDetailedInfo.objects.bulk_update(self.updated_details, ['latest_price', 'volume', 'enabled', 'updated', 'first_price'])
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
+        Notification.objects.bulk_create(self.notifications_to_save)
