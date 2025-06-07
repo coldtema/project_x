@@ -308,6 +308,11 @@ class AvaliabilityUpdater:
         self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
+        self.notifications_to_save.append(Notification(text=f'(WB) Продукт "{self.current_detail_to_check.product.name}" появился в наличии! Успейте купить!',
+                                                                        wb_product=self.current_detail_to_check,
+                                                                        user=self.current_detail_to_check.author))
+        
+
     def make_deletion_notification(self):
         prods_to_delete =  WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).prefetch_related('wbdetailedinfo_set')
         for prod in prods_to_delete:
@@ -315,6 +320,7 @@ class AvaliabilityUpdater:
                 for detailed_info in prod.wbdetailedinfo_set:
                     self.notifications_to_save.append(Notification(text=f'(WB) Продукта "{detailed_info.name}" больше нет на сайте WB. Нам пришлось его полностью удалить. Если это ошибка, то напишите нам в поддержку.',
                                                                         additional_link = prod.url,
+                                                                        user=detailed_info.author))
 
 
     @time_count
