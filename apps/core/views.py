@@ -6,6 +6,7 @@ from datetime import date
 from django.core.mail import send_mail
 import os
 from django.contrib import messages
+from apps.core.models import Notification
 
 
 def index(request):
@@ -59,6 +60,10 @@ class MenuView(LoginRequiredMixin, View):
         prods = []
         for prod in raw_prods_brands:
             prods.extend(prod)
+        prods_dict = dict()
+        for prod in prods:
+            prods_dict.update({prod.artikul:prod})
+        prods = prods_dict.values()
         prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
         recs_snippet = sorted(prods, key=lambda x: x.true_discount)[-5:]
         wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)[:20]
