@@ -20,4 +20,5 @@ urlpatterns = [
     path('delete_wb_product/<int:id>', views.delete_wb_product, name='delete_wb_product'),
     path('recommendations/recommendations_settings', views.RecommendationSettings.as_view(), name='recommendations_settings'),
     path('price_chart/<int:id>', views.price_chart, name='price_chart'),
+    path('make_notif/', views.make_notif, name='make_notif'),
 ]
