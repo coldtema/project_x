@@ -158,12 +158,16 @@ class PriceUpdater:
 
     def updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя об изменении цены отслеживаемого продукта который в наличии + изменения продукта (при изменении его цены)'''
-        print(f'''
-Цена изменилась!
-Продукт: {product.url}
-Было: {product.latest_price}
-Стало: {maybe_new_price}
-''')
+        if abs(product.latest_price - maybe_new_price) > product.author.notification_discount_price or abs(int((product.latest_price-maybe_new_price)/(product.latest_price/100))) > product.author.notification_discount:
+            product.last_notified_price = maybe_new_price
+            if product.latest_price > maybe_new_price:
+                self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" упала на {product.latest_price - maybe_new_price} ₽! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
+                                                                product=product,
+                                                                user=product.author))
+            else:
+                self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" поднялась на {maybe_new_price - product.latest_price} ₽! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
+                                                                product=product,
+                                                                user=product.author))
         product.latest_price = maybe_new_price
         product.updated = timezone.now()
         self.new_prices.append(Price(price=maybe_new_price, product=product))
