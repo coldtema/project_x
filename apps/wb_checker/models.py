@@ -91,6 +91,7 @@ class WBDetailedInfo(models.Model):
     product = models.ForeignKey(WBProduct, on_delete=models.CASCADE, verbose_name='Продукт WB')
     latest_price = models.IntegerField(verbose_name='Цена продукта WB')
     first_price = models.IntegerField(verbose_name='Первая цена продукта WB')
+    last_notified_price = models.IntegerField(verbose_name='Цена уведомления пользователя', null=True)
     size = models.CharField(max_length=20, null=True, verbose_name='Размер')
     volume = models.IntegerField(verbose_name='Количество')
     enabled = models.BooleanField(default=True, verbose_name='Есть в наличии')
