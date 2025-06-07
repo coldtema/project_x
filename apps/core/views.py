@@ -61,8 +61,13 @@ class MenuView(LoginRequiredMixin, View):
             prods.extend(prod)
         prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
         recs_snippet = sorted(prods, key=lambda x: x.true_discount)[-5:]
+        wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)[:20]
+        shops_notifications = sorted(Notification.objects.filter(user=request.user, product__isnull=False).select_related('product'), key=lambda x: x.time, reverse=True)[:20]
+
         return render(request, 'core/menu.html', context={'prods_snippet': prods_snippet,
-                                                          'recs_snippet': recs_snippet})
+                                                          'recs_snippet': recs_snippet,
+                                                          'wb_notifications': wb_notifications,
+                                                          'shops_notifications': shops_notifications})
     
 
 def faq(request):
