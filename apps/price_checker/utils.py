@@ -177,11 +177,9 @@ class PriceUpdater:
 
     def disabled_updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
-        print(f'''
-Продукт снова в наличии!
-Продукт: {product.url}
-Цена: {maybe_new_price}
-''')
+        self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукт "{product.name}" появился в наличии! Успейте купить!',
+                                                        product=product,
+                                                        user=product.author))
         if product.latest_price != maybe_new_price:
             product.latest_price = maybe_new_price
             self.new_prices.append(Price(price=maybe_new_price, product=product))
