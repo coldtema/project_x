@@ -52,6 +52,7 @@ class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     latest_price = models.IntegerField(verbose_name='Последняя цена')
     first_price = models.IntegerField(verbose_name='Первая цена')
+    last_notified_price = models.IntegerField(verbose_name='Цена уведомления пользователя', null=True)
     url = models.URLField(verbose_name='URL')
     ref_url = models.URLField(verbose_name='Ref-URL')
     enabled = models.BooleanField(default=True)
