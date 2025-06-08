@@ -119,7 +119,9 @@ class PriceUpdater:
 
     def disable_product(self):
         '''Отключение товара (тк его больше нет в наличии)'''
-        print(f'Продукта больше нет в наличии!\nПродукт: {self.current_detail_to_check.product.url}\n')
+        self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ❌ Нет в наличии! </b>  Добавлен во вкладку "Нет в наличии".',
+                                                        wb_product=self.current_detail_to_check,
+                                                        user=self.current_detail_to_check.author))
         self.current_detail_to_check.enabled = False
         self.current_detail_to_check.volume = 0
         self.updated_details.append(self.current_detail_to_check)   
@@ -157,26 +159,26 @@ class PriceUpdater:
             self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
-            if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
-                if self.current_detail_to_check.volume >= 10 and volume < 10:
-                    self.notifications_to_save.append(Notification(text=f'(WB) Количество продукта "{self.current_detail_to_check.product.name}" остается менее 10 штук! Успейте купить :)',
-                                                                    wb_product=self.current_detail_to_check,
-                                                                    user=self.current_detail_to_check.author))
-                flag_change = True
-                self.current_detail_to_check.volume = volume
-            if flag_change: self.updated_details.append(self.current_detail_to_check) 
+        if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
+            if self.current_detail_to_check.volume >= 10 and volume < 10:
+                self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br>  ❗️<b>Менее 10 штук в наличии!</b> Успейте купить :)',
+                                                                wb_product=self.current_detail_to_check,
+                                                                user=self.current_detail_to_check.author))
+            flag_change = True
+            self.current_detail_to_check.volume = volume
+        if flag_change: self.updated_details.append(self.current_detail_to_check) 
 
 
     def make_notification(self, price_of_detail):
         if abs(self.current_detail_to_check.latest_price - price_of_detail) > self.current_detail_to_check.author.notification_discount_price or abs(int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))) > self.current_detail_to_check.author.notification_discount:
             if self.current_detail_to_check.latest_price > price_of_detail and self.current_detail_to_check.author.pricedown_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
-                self.notifications_to_save.append(Notification(text=f'(WB) Цена продукта "{self.current_detail_to_check.product.name}" упала на {self.current_detail_to_check.latest_price - price_of_detail} ₽! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
             elif self.current_detail_to_check.author.priceup_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
-                self.notifications_to_save.append(Notification(text=f'(WB) Цена продукта "{self.current_detail_to_check.product.name}" поднялась на {price_of_detail - self.current_detail_to_check.latest_price} ₽! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
 
@@ -331,7 +333,7 @@ class AvaliabilityUpdater:
         self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
-        self.notifications_to_save.append(Notification(text=f'(WB) Продукт "{self.current_detail_to_check.product.name}" появился в наличии! Успейте купить!',
+        self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
                                                                         wb_product=self.current_detail_to_check,
                                                                         user=self.current_detail_to_check.author))
         
@@ -341,7 +343,7 @@ class AvaliabilityUpdater:
         for prod in prods_to_delete:
             if prod.wbdetailedinfo_set.exists():
                 for detailed_info in prod.wbdetailedinfo_set:
-                    self.notifications_to_save.append(Notification(text=f'(WB) Продукта "{detailed_info.name}" больше нет на сайте WB. Нам пришлось его полностью удалить. Если это ошибка, то напишите нам в поддержку.',
+                    self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{detailed_info.name}</b> <br> <b> ❗️Больше нет на сайте WB.</b> <br> Нам пришлось его полностью удалить. Если это ошибка, то напишите нам в поддержку.',
                                                                         additional_link = prod.url,
                                                                         user=detailed_info.author))
 
