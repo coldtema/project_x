@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 import os
 from django.contrib import messages
 from apps.core.models import Notification
+from django.http import HttpResponse
 
 
 def index(request):
@@ -66,20 +67,29 @@ class MenuView(LoginRequiredMixin, View):
         prods = prods_dict.values()
         prods = sorted(prods, key=lambda x: x.true_discount, reverse=True)
         recs_snippet = sorted(prods, key=lambda x: x.true_discount)[-5:]
-        wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)[:20]
-        shops_notifications = sorted(Notification.objects.filter(user=request.user, product__isnull=False).select_related('product'), key=lambda x: x.time, reverse=True)[:20]
+        wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)
 
         return render(request, 'core/menu.html', context={'prods_snippet': prods_snippet,
                                                           'recs_snippet': recs_snippet,
-                                                          'wb_notifications': wb_notifications,
-                                                          'shops_notifications': shops_notifications})
+                                                          'wb_notifications': wb_notifications})
     
 
 def faq(request):
     return render(request, 'core/faq.html')
+
+
 def delete_notification(request, id):
     notif_to_delete = Notification.objects.filter(pk=id).select_related('user').first()
     if request.user.pk == notif_to_delete.user.pk:
         notif_to_delete.delete()
         return HttpResponse(status=200)
     return HttpResponse(status=413)
+
+
+def notifications_swap(request):
+    if request.GET['type-toggle'] == 'shops':
+        shops_notifications = sorted(Notification.objects.filter(user=request.user, product__isnull=False).select_related('product'), key=lambda x: x.time, reverse=True)
+        return render(request, 'core/partials/shops_notifications.html', context={'shops_notifications': shops_notifications})
+    if request.GET['type-toggle'] == 'WB':
+        wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)
+        return render(request, 'core/partials/shops_notifications.html', context={'wb_notifications': wb_notifications})
