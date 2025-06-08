@@ -19,6 +19,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import ExpressionWrapper, F, IntegerField
 from django.contrib import messages
 from django.utils import timezone
+from apps.price_checker.notifications import SmartNotification
 
 
 
@@ -205,6 +206,11 @@ def update_avaliability(request):
         del p_u
         return HttpResponseRedirect(reverse('price_checker:all_price_list'))
     return Http404('нет доступа')
+
+
+def make_notif(request):
+    SmartNotification().run()
+    return HttpResponseRedirect(reverse('price_checker:all_price_list'))
 
 
 @login_required
