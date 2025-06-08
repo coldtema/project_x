@@ -163,12 +163,13 @@ class PriceUpdater:
     def updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя об изменении цены отслеживаемого продукта который в наличии + изменения продукта (при изменении его цены)'''
         if abs(product.latest_price - maybe_new_price) > product.author.notification_discount_price or abs(int((product.latest_price-maybe_new_price)/(product.latest_price/100))) > product.author.notification_discount:
-            product.last_notified_price = maybe_new_price
-            if product.latest_price > maybe_new_price:
+            if product.latest_price > maybe_new_price and product.author.pricedown_notification is True:
+                product.last_notified_price = maybe_new_price
                 self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" упала на {product.latest_price - maybe_new_price} ₽! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
                                                                 product=product,
                                                                 user=product.author))
-            else:
+            elif product.author.priceup_notification is True:
+                product.last_notified_price = maybe_new_price
                 self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" поднялась на {maybe_new_price - product.latest_price} ₽! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
                                                                 product=product,
                                                                 user=product.author))
@@ -199,13 +200,8 @@ class PriceUpdater:
             self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукта "{product.name}" больше нет в наличии! Он добавлен во вкладку "Нет в наличии".',
                                                             product=product,
                                                             user=product.author))
-            # print(f'id: {product.id}, url: {product.url}')
-            # answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
-            # if answer == 'd':
             product.enabled = False
             product.updated = timezone.now()
-            # else:
-            #     continue
 
     @time_count
     @transaction.atomic
