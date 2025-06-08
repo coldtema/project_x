@@ -1,7 +1,6 @@
 import math
 from apps.wb_checker.models import WBDetailedInfo
 from apps.core.models import Notification
-from apps.wb_checker.models import WBDetailedInfo
 from django.db import transaction
 
 
