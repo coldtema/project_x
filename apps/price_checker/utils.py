@@ -230,6 +230,7 @@ class RepetitionsPriceUpdater:
         self.broken_prods = []
         self.new_prices = []
         self.products_to_update = []
+        self.notifications_to_save = []
         
 
 
@@ -252,6 +253,7 @@ class RepetitionsPriceUpdater:
             self.broken_prods = []
             self.exception_prods = []
             self.prods_to_go = ['']
+            self.notifications_to_save = []
 
 
 
@@ -343,15 +345,20 @@ class RepetitionsPriceUpdater:
 
     def updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя об изменении цены отслеживаемого продукта который в наличии + изменения продукта (при изменении его цены)'''
-        print(f'''
-Цена изменилась!
-Продукт: {product.url}
-Было: {product.latest_price}
-Стало: {maybe_new_price}
-''')
         #сделать уведомления для всех пользователей, у кого этот продукт есть
-        repetitions = Product.objects.filter(url=product.url)
+        repetitions = Product.objects.filter(url=product.url).select_related('author', 'shop')
         for repetition in repetitions:
+            if abs(repetition.latest_price - maybe_new_price) > repetition.author.notification_discount_price or abs(int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))) > repetition.author.notification_discount:
+                if repetition.latest_price > maybe_new_price and repetition.author.pricedown_notification is True:
+                    repetition.last_notified_price = maybe_new_price
+                    self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Цена продукта "{repetition.name}" упала на {repetition.latest_price - maybe_new_price} ₽! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
+                                                                    product=repetition,
+                                                                    user=repetition.author))
+                elif repetition.author.priceup_notification is True:
+                    repetition.last_notified_price = maybe_new_price
+                    self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Цена продукта "{repetition.name}" поднялась на {maybe_new_price - repetition.latest_price} ₽! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
+                                                                    product=repetition,
+                                                                    user=repetition.author))
             repetition.latest_price = maybe_new_price
             repetition.updated = timezone.now()
             self.new_prices.append(Price(price=maybe_new_price, product=repetition))
@@ -361,14 +368,11 @@ class RepetitionsPriceUpdater:
 
     def disabled_updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
-        print(f'''
-Продукт снова в наличии!
-Продукт: {product.url}
-Цена: {maybe_new_price}
-''')
-        #сделать уведомления для всех пользователей, у кого этот продукт есть
-        repetitions = Product.objects.filter(url=product.url)
+        repetitions = Product.objects.filter(url=product.url).select_related('author', 'shop')
         for repetition in repetitions:
+            self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Продукт "{repetition.name}" появился в наличии! Успейте купить!',
+                                                            product=repetition,
+                                                            user=repetition.author))
             if repetition.latest_price != maybe_new_price:
                 repetition.latest_price = maybe_new_price
                 self.new_prices.append(Price(price=maybe_new_price, product=repetition))
@@ -381,20 +385,19 @@ class RepetitionsPriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         urls_of_broken_prods = list(*map(lambda x: x.url, self.broken_prods))
-        broken_repetitions = Product.objects.filter(url__in=urls_of_broken_prods)
-        for product in broken_repetitions: 
-            # print(f'id: {product.id}, url: {product.url}')
-            # answer = input('Что делаем с продуктом? (d - выключить, все остальное - пропустить) \n')
-            # if answer == 'd':
+        broken_repetitions = Product.objects.filter(url__in=urls_of_broken_prods).select_related('author', 'shop')
+        for product in broken_repetitions:
+            self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукта "{product.name}" больше нет в наличии! Он добавлен во вкладку "Нет в наличии".',
+                                                            product=product,
+                                                            user=product.author))
             product.enabled = False
             product.updated = timezone.now()
-            # else:
-            #     continue
 
     @time_count
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''
-        Product.objects.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated', 'enabled'])
+        Product.objects.all().bulk_update(self.products_to_update, fields=['latest_price', 'updated', 'enabled', 'last_notified_price'])
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
+        Notification.objects.bulk_create(self.notifications_to_save)
