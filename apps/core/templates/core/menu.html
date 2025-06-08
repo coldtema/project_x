@@ -130,7 +130,7 @@
             <div class="flex justify-between items-center p-4">
               <div class="">
                 <p class="text-gray-800 dark:text-gray-100 text-base font-medium">
-                  {{ elem.text }}
+                  {{ elem.text | safe}}
                 </p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   {{ elem.time|date:"H:i d.m.Y" }}
