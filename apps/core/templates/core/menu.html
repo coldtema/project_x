@@ -86,87 +86,32 @@
     </div>
   
     <div>
-  <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Уведомления</h2>
+  <div class='flex justify-between items-center pb-6'>
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">Уведомления</h2>
+    <div class="inline-flex items-center bg-gray-200 dark:bg-neutral-700 rounded-full p-1 text-sm font-medium">
+          
+          <input type="radio" name="type-toggle" id="WB" value="WB" class="hidden peer/monthly" checked
+                  hx-get={%url 'core:notifications_swap'%}
+                  hx-target=".shops_notifications"
+                  hx-trigger="change">
+          <label for="WB" class="px-4 py-2 cursor-pointer rounded-full peer-checked/monthly:bg-blue-600 peer-checked/monthly:text-white text-gray-800 dark:text-gray-200 transition">
+              WB
+          </label>
+      
+          <input type="radio" name="type-toggle" id="shops" value="shops" class="hidden peer/halfyear"
+                  hx-get={%url 'core:notifications_swap'%}
+                  hx-target=".shops_notifications"
+                  hx-trigger="change">
+          <label for="shops" class="px-4 py-2 cursor-pointer rounded-full peer-checked/halfyear:bg-blue-600 peer-checked/halfyear:text-white text-gray-800 dark:text-gray-200 transition">
+              Магазины
+          </label>
+      </div>
+    </div>
 
   <ul class="space-y-3">
-    {% if wb_notifications %}
-        {% for elem in wb_notifications %}
-          <li>
-            <a href="{% url 'wb_checker:wb_product_details' id=elem.wb_product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
-              
-              <div class="flex justify-between items-start p-4">
-                <!-- Основной текст -->
-                <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
-                  {{ elem.text|safe }}
-                </p>
-
-                <!-- Кнопка удалить -->
-                <button
-                  type="button"
-                  hx-post="#"
-                  hx-swap="outerHTML"
-                  class="text-gray-400 hover:text-red-500 transition"
-                  aria-label="Удалить уведомление"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                      viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Время в правом нижнем углу -->
-              <span class="absolute bottom-2 right-4 text-sm text-gray-500 dark:text-gray-400">
-                {{ elem.time|date:"H:i d.m.Y" }}
-              </span>
-
-            </a>
-          </li>
-        {% endfor %}
-      {% else %}
-      <li class="text-gray-600 dark:text-gray-400 text-sm italic">
-        Пока нет уведомлений из Wildberries...
-      </li>
-    {%endif%}
-    {% if shops_notifications %}
-      {% for elem in shops_notifications %}
-        <li>
-            <a href="{% url 'price_checker:price_history' id=elem.product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
-              
-              <div class="flex justify-between items-start p-4">
-                <!-- Основной текст -->
-                <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
-                  {{ elem.text|safe }}
-                </p>
-
-                <!-- Кнопка удалить -->
-                <button
-                  type="button"
-                  hx-post="#"
-                  hx-swap="outerHTML"
-                  class="text-gray-400 hover:text-red-500 transition"
-                  aria-label="Удалить уведомление"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                      viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Время в правом нижнем углу -->
-              <span class="absolute bottom-2 right-4 text-sm text-gray-500 dark:text-gray-400">
-                {{ elem.time|date:"H:i d.m.Y" }}
-              </span>
-
-            </a>
-          </li>
-      {% endfor %}
-    {% else %}
-      <li class="text-gray-600 dark:text-gray-400 text-sm italic">
-        Пока нет уведомлений из Интернет - магазинов...
-      </li>
-    {% endif %}
+    <div class='shops_notifications'>
+      {% include "core/partials/shops_notifications.html" %}
+    </div>
   </ul>
 
   {% comment %} <a href="{% url 'notifications:all' %}" class="text-sm text-blue-600 hover:underline mt-4 inline-block">Все уведомления →</a> {% endcomment %}
