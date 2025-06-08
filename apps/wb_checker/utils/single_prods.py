@@ -169,12 +169,13 @@ class PriceUpdater:
 
     def make_notification(self, price_of_detail):
         if abs(self.current_detail_to_check.latest_price - price_of_detail) > self.current_detail_to_check.author.notification_discount_price or abs(int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))) > self.current_detail_to_check.author.notification_discount:
-            self.current_detail_to_check.last_notified_price = price_of_detail
-            if self.current_detail_to_check.latest_price > price_of_detail:
+            if self.current_detail_to_check.latest_price > price_of_detail and self.current_detail_to_check.author.pricedown_notification is True:
+                self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'(WB) Цена продукта "{self.current_detail_to_check.product.name}" упала на {self.current_detail_to_check.latest_price - price_of_detail} ₽! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
-            else:
+            elif self.current_detail_to_check.author.priceup_notification is True:
+                self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'(WB) Цена продукта "{self.current_detail_to_check.product.name}" поднялась на {price_of_detail - self.current_detail_to_check.latest_price} ₽! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
