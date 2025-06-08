@@ -4,7 +4,7 @@
 {% block title %}HeavyDrop - Меню{% endblock title %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto p-4 space-y-8">
+<div class="max-w-5xl mx-auto space-y-8">
   
     <!-- Заголовок -->
     <div>
@@ -90,34 +90,39 @@
 
   <ul class="space-y-3">
     {% if wb_notifications %}
-      {% for elem in wb_notifications %}
-        <li>
-          <a href="{%url 'wb_checker:wb_product_details' id=elem.wb_product.pk%}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200">
-            <div class="flex justify-between items-center p-4">
-              <div class="">
-                <p class="text-gray-800 dark:text-gray-100 text-base font-medium">
-                  {{ elem.text }}
+        {% for elem in wb_notifications %}
+          <li>
+            <a href="{% url 'wb_checker:wb_product_details' id=elem.wb_product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
+              
+              <div class="flex justify-between items-start p-4">
+                <!-- Основной текст -->
+                <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
+                  {{ elem.text|safe }}
                 </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ elem.time|date:"H:i d.m.Y" }}
-                </p>
+
+                <!-- Кнопка удалить -->
+                <button
+                  type="button"
+                  hx-post="#"
+                  hx-swap="outerHTML"
+                  class="text-gray-400 hover:text-red-500 transition"
+                  aria-label="Удалить уведомление"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
-              <button
-                type="button"
-                hx-post="#"
-                hx-swap="outerHTML"
-                class="text-gray-400 hover:text-red-500 transition"
-                aria-label="Удалить уведомление"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-          </a>
-        </li>
-      {% endfor %}
+
+              <!-- Время в правом нижнем углу -->
+              <span class="absolute bottom-2 right-4 text-sm text-gray-500 dark:text-gray-400">
+                {{ elem.time|date:"H:i d.m.Y" }}
+              </span>
+
+            </a>
+          </li>
+        {% endfor %}
       {% else %}
       <li class="text-gray-600 dark:text-gray-400 text-sm italic">
         Пока нет уведомлений из Wildberries...
@@ -126,31 +131,36 @@
     {% if shops_notifications %}
       {% for elem in shops_notifications %}
         <li>
-          <a href="{%url 'price_checker:price_history' id=elem.product.pk%}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200">
-            <div class="flex justify-between items-center p-4">
-              <div class="">
-                <p class="text-gray-800 dark:text-gray-100 text-base font-medium">
-                  {{ elem.text | safe}}
+            <a href="{% url 'price_checker:price_history' id=elem.product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
+              
+              <div class="flex justify-between items-start p-4">
+                <!-- Основной текст -->
+                <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
+                  {{ elem.text|safe }}
                 </p>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                  {{ elem.time|date:"H:i d.m.Y" }}
-                </p>
+
+                <!-- Кнопка удалить -->
+                <button
+                  type="button"
+                  hx-post="#"
+                  hx-swap="outerHTML"
+                  class="text-gray-400 hover:text-red-500 transition"
+                  aria-label="Удалить уведомление"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
-              <button
-                type="button"
-                hx-post="#"
-                hx-swap="outerHTML"
-                class="text-gray-400 hover:text-red-500 transition"
-                aria-label="Удалить уведомление"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-          </a>
-        </li>
+
+              <!-- Время в правом нижнем углу -->
+              <span class="absolute bottom-2 right-4 text-sm text-gray-500 dark:text-gray-400">
+                {{ elem.time|date:"H:i d.m.Y" }}
+              </span>
+
+            </a>
+          </li>
       {% endfor %}
     {% else %}
       <li class="text-gray-600 dark:text-gray-400 text-sm italic">
