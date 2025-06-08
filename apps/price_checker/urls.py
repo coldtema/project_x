@@ -14,5 +14,6 @@ urlpatterns = [
     path('share_product/<int:id>', views.ShareProduct.as_view(), name='share_product'),
     path('search_product/', views.SearchView.as_view(), name='search_product'),
     path('update_avaliability/', views.update_avaliability, name='update_avaliability'),
-    path('price_chart/<int:id>', views.price_chart, name='price_chart')
+    path('price_chart/<int:id>', views.price_chart, name='price_chart'),
+    path('make_notif/', views.make_notif, name='make_notif'),
 ]
