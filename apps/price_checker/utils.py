@@ -165,14 +165,14 @@ class PriceUpdater:
         if abs(product.latest_price - maybe_new_price) > product.author.notification_discount_price or abs(int((product.latest_price-maybe_new_price)/(product.latest_price/100))) > product.author.notification_discount:
             if product.latest_price > maybe_new_price and product.author.pricedown_notification is True:
                 product.last_notified_price = maybe_new_price
-                self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" упала на {product.latest_price - maybe_new_price} ₽! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
-                                                                product=product,
-                                                                user=product.author))
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{product.latest_price - maybe_new_price} ₽</b>! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
+                                                                    product=product,
+                                                                    user=product.author))
             elif product.author.priceup_notification is True:
                 product.last_notified_price = maybe_new_price
-                self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Цена продукта "{product.name}" поднялась на {maybe_new_price - product.latest_price} ₽! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
-                                                                product=product,
-                                                                user=product.author))
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - product.latest_price} ₽</b>! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
+                                                                    product=product,
+                                                                    user=product.author))
         product.latest_price = maybe_new_price
         product.updated = timezone.now()
         self.new_prices.append(Price(price=maybe_new_price, product=product))
@@ -182,9 +182,9 @@ class PriceUpdater:
 
     def disabled_updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
-        self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукт "{product.name}" появился в наличии! Успейте купить!',
-                                                        product=product,
-                                                        user=product.author))
+        self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
+                                                            product=product,
+                                                            user=product.author))
         if product.latest_price != maybe_new_price:
             product.latest_price = maybe_new_price
             self.new_prices.append(Price(price=maybe_new_price, product=product))
@@ -197,7 +197,7 @@ class PriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         for product in self.broken_prods: 
-            self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукта "{product.name}" больше нет в наличии! Он добавлен во вкладку "Нет в наличии".',
+            self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
                                                             product=product,
                                                             user=product.author))
             product.enabled = False
@@ -351,12 +351,12 @@ class RepetitionsPriceUpdater:
             if abs(repetition.latest_price - maybe_new_price) > repetition.author.notification_discount_price or abs(int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))) > repetition.author.notification_discount:
                 if repetition.latest_price > maybe_new_price and repetition.author.pricedown_notification is True:
                     repetition.last_notified_price = maybe_new_price
-                    self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Цена продукта "{repetition.name}" упала на {repetition.latest_price - maybe_new_price} ₽! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
+                    self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
                 elif repetition.author.priceup_notification is True:
                     repetition.last_notified_price = maybe_new_price
-                    self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Цена продукта "{repetition.name}" поднялась на {maybe_new_price - repetition.latest_price} ₽! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
+                    self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
             repetition.latest_price = maybe_new_price
@@ -370,7 +370,7 @@ class RepetitionsPriceUpdater:
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
         repetitions = Product.objects.filter(url=product.url).select_related('author', 'shop')
         for repetition in repetitions:
-            self.notifications_to_save.append(Notification(text=f'({repetition.shop.name}) Продукт "{repetition.name}" появился в наличии! Успейте купить!',
+            self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
                                                             product=repetition,
                                                             user=repetition.author))
             if repetition.latest_price != maybe_new_price:
@@ -387,7 +387,7 @@ class RepetitionsPriceUpdater:
         urls_of_broken_prods = list(*map(lambda x: x.url, self.broken_prods))
         broken_repetitions = Product.objects.filter(url__in=urls_of_broken_prods).select_related('author', 'shop')
         for product in broken_repetitions:
-            self.notifications_to_save.append(Notification(text=f'({product.shop.name}) Продукта "{product.name}" больше нет в наличии! Он добавлен во вкладку "Нет в наличии".',
+            self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
                                                             product=product,
                                                             user=product.author))
             product.enabled = False
