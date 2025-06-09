@@ -1,0 +1,60 @@
+<form method="post" 
+          class="space-y-6 bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-md"
+          hx-post="{% url 'accounts:notification_edit' %}"
+          hx-target=".notif_form"
+          hx-trigger="submit">
+      {% csrf_token %}
+
+      <div>
+        <label class="text sm:text-base md:text-lg lg:text-lg xl:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 block"> Минимальное изменение цены (%)</label>
+        <input type="number" name="notification_discount" min="1" max="100" value="{{ user.notification_discount }}"
+              class="w-full p-2 rounded-xl border border-gray-300 dark:border-neutral-600 bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+
+      <div>
+        <label class="text sm:text-base md:text-lg lg:text-lg xl:text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 block">Минимальное изменение цены (₽)</label>
+        <input type="number" name="notification_discount_price" min="1" value="{{ user.notification_discount_price }}"
+              class="w-full p-2 rounded-xl border border-gray-300 dark:border-neutral-600 bg-gray-50 dark:bg-neutral-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <span class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2 block">Какие уведомления получать:</span>
+        <div class="space-y-2">
+          <label class="flex items-center space-x-3">
+            <input type="checkbox" name="pricedown_notification" {% if user.pricedown_notification %}checked{% endif %}
+                  class="rounded text-blue-600">
+            <span class="text-gray-800 dark:text-gray-100 px-1">О снижении цены</span>
+          </label>
+          <label class="flex items-center space-x-3">
+            <input type="checkbox" name="priceup_notification" {% if user.priceup_notification %}checked{% endif %}
+                  class="rounded text-blue-600">
+            <span class="text-gray-800 dark:text-gray-100 px-1">О повышении цены</span>
+          </label>
+        </div>
+      </div>
+      
+
+      <div class="flex text-right justify-between py-2 rounded-md transition">
+        <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text sm:text-base md:text-lg lg:text-lg xl:text-lg font-medium text-white font-semibold hover:bg-blue-700 transition">
+          Сохранить
+        </button>
+        <span id="notif" class="text-sm font-semibold text-gray-800 dark:text-gray-200 items-center flex opacity-100 duration-300">
+                  {%if messages%}
+                      {%for message in messages%}
+                          <h1>{{message}}</h1>
+                      {%endfor%}
+                      <!-- Форма -->
+                  {%endif%}
+        </span>
+      </div>
+    </form>
+
+
+<script>
+    setTimeout(() => {
+        const el = document.getElementById('notif');
+        el.classList.remove('opacity-100');
+        el.classList.add('opacity-0');
+    }, 3000); 
+</script>
