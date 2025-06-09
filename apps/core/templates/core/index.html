@@ -1,12 +1,51 @@
 {% extends 'base.html' %}
 {% block title %}Blog — HeavyDrop{% endblock title %}
 
-{% block content %}<!-- Блог / Новости -->
+{% block content %}
+
+
 <section class="py-16 ">
   <div class="max-w-4xl mx-auto">
     <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-12 text-center">Новости проекта</h2>
+
     <div class="space-y-10">
-      
+
+      <!-- 1 пост -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
+        <div class="md:flex">
+          <div class="md:w-1/3">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/76/Tabby_cat-hello.jpg" alt="Привет, мир!" class="w-full h-full object-cover">
+          </div>
+          <div class="p-6 md:w-2/3">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Привет, мир!</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">15.06.2025</p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">Всем привет! Меня зовут Артем, и это мой проект по отслеживанию скидок HeavyDrop!</p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">Сегодня первый день его работы, я буду очень рад, если вы зарегистрируетесь и будете им пользоваться :)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Полезные ссылки -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
+        <div class="md:flex">
+          <div class="md:w-1/3">
+            <img src="https://cs10.pikabu.ru/post_img/2018/05/24/8/og_og_1527170065245788079.jpg" alt="Полезные ссылки" class="w-full h-full object-cover">
+          </div>
+          <div class="p-6 md:w-2/3">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Полезные ссылки</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">16.06.2025</p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">Собрал все полезные ссылки для понимания, как пользоваться сервисом, в одном посте. Рекомендую ознакомиться!</p>
+            <br>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed underline-offset-1">1. <a href={%url 'core:faq' %} class="underline"> Ответы на вопросы </a></p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed underline-offset-1">2. <a href="faq/" class="underline"> Гайд по пользованию сервисом </a></p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed underline-offset-1">3. <a href={%url 'core:contacts' %} class="underline"> Контакты/поддержка </a></p>
+            <br>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">В любом случае, вы можете писать мне напрямую в Telegram: <a href="https://t.me/coldtema" class="underline"> @coldtema </a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Блог / Новости -->
       {% for post in posts %}
       <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition">
         <div class="md:flex">
@@ -18,7 +57,7 @@
           <div class="p-6 md:w-2/3">
             <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ post.title }}</h3>
             <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">{{ post.date|date:"j.m.Y" }}</p>
-            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">{{ post.summary }}</p>
+            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">{{ post.summary | safe }}</p>
           </div>
         </div>
       </div>
