@@ -45,9 +45,19 @@ def update_discount_balance(request):
     #         tag.shop_set.add(shop)
     return redirect('accounts:profile')
 
-def profile_edit(request):
-
-    return(render(request, 'accounts/profile_edit.html'))
+def notification_edit(request):
+    if request.method == 'POST':
+        try:
+            request.user.notification_discount = int(request.POST.get('notification_discount', 10))
+            request.user.notification_discount_price = int(request.POST.get('notification_discount_price', 300))
+            request.user.pricedown_notification = bool(request.POST.get('pricedown_notification', False))
+            request.user.priceup_notification = bool(request.POST.get('priceup_notification', False))
+            request.user.save()
+            messages.success(request, message='Успех!')
+        except:
+            messages.error(request, message='Ошибка...')
+        return render(request, 'accounts/partials/notif_form.html')
+    return render(request, 'accounts/notification_edit.html')
 
 def subscription_edit(request):
     if request.GET.get('plan-toggle', None) == 'monthly':
