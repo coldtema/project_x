@@ -67,14 +67,14 @@
 
   <!-- Навигация по разделам -->
   <div class="grid md:grid-cols-2 gap-6">
-    <a href="{% url 'accounts:profile_edit' %}" class="block bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
-      <div class="text-xl font-semibold mb-1">Редактировать профиль</div>
-      <div class="text-sm opacity-80">Изменить имя, почту и другую информацию</div>
+    <a href="{% url 'accounts:notification_edit' %}" class="block bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
+      <div class="text-xl font-semibold mb-1">Уведомления</div>
+      <div class="text-sm opacity-80">Настройка параметров для получения только полезных уведомлений</div>
     </a>
 
     <a href="{% url 'accounts:subscription_edit' %}" class="block bg-gradient-to-r from-green-500 to-green-600 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
       <div class="text-xl font-semibold mb-1">Моя подписка</div>
-      <div class="text-sm opacity-80">Посмотреть или изменить текущий тариф</div>
+      <div class="text-sm opacity-80">Посмотреть текущий тариф и пополнить баланс</div>
     </a>
 
     <a href="{% url 'accounts:geolocation_edit' %}" class="block bg-gradient-to-r from-yellow-400 to-yellow-500 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
@@ -83,8 +83,8 @@
     </a>
 
     <a href="{% url 'accounts:change_password' %}" class="block bg-gradient-to-r from-red-400 to-red-500 text-white p-5 rounded-xl shadow hover:shadow-lg transition">
-      <div class="text-xl font-semibold mb-1">Безопасность</div>
-      <div class="text-sm opacity-80">Сменить пароль и просмотреть активные сессии</div>
+      <div class="text-xl font-semibold mb-1">Редактировать профиль</div>
+      <div class="text-sm opacity-80">Изменить почту и пароль</div>
     </a>
   </div>
 </div>
