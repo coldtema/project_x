@@ -8,29 +8,13 @@ import os
 from django.contrib import messages
 from apps.core.models import Notification
 from django.http import HttpResponse
+from .models import Post
 
 
 def index(request):
-    post = {'title':'first post', 
-            'date': date(year=2002, month=9, day=25),
-            'summary': 'text of post',
-            'image_url': 'http://avatars.mds.yandex.net/get-vthumb/2044023/a3932f1604e45342599fd8f71f767935/800x450',
-            'image': '1'}
-    post1 = {'title':'first post', 
-            'date': date(year=2002, month=9, day=25),
-            'summary': 'text of post',
-            'image_url': 'https://basket-12.wbbasket.ru/vol1679/part167964/167964984/images/c516x688/1.webp',
-            'image': '1'}
-    post2 = {'title':'first post', 
-            'date': date(year=2002, month=9, day=25),
-            'summary': 'text of post',
-            'image_url': 'https://basket-12.wbbasket.ru/vol1679/part167964/167964984/images/c516x688/1.webp',}
-    return render(request, 'core/index.html', context={'posts':[post, post1, post2]})
+    posts = Post.objects.all()
+    return render(request, 'core/index.html', context={'posts':posts})
 
-
-# @login_required
-# def menu(request):
-#     return render(request, 'core/menu.html')
 
 
 def contacts(request):
@@ -40,7 +24,7 @@ def contacts(request):
 Email: {request.POST['email']}
 Текст обращения: {request.POST['message']}''',
                   from_email=os.getenv('EMAIL_HOST_USER'),
-                  recipient_list=[os.getenv('EMAIL_HOST_USER')],
+                  recipient_list=[os.getenv('EMAIL_HEAVY')],
                   fail_silently=True)
         messages.success(request, message='Успех!')
         return render(request, 'core/partials/support_form.html')
