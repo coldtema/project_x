@@ -13,7 +13,7 @@ class CustomUser(AbstractUser):
     dest_name = models.CharField(max_length=1000, default="Москва")
     dest_id = models.CharField(max_length=100, default="-1257786")
     discount_balance = models.IntegerField(default=0)
-    notification_discount_price = models.IntegerField(default=100, verbose_name='Скидка для уведомления (руб)')
+    notification_discount_price = models.IntegerField(default=300, verbose_name='Скидка для уведомления (руб)')
     notification_discount = models.IntegerField(default=10, verbose_name='Скидка для уведомления (%)')
     pricedown_notification = models.BooleanField(default=True)
     priceup_notification = models.BooleanField(default=True)
