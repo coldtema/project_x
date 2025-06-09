@@ -14,5 +14,6 @@ class Notification(models.Model):
 
 class Post(models.Model):
     text = models.TextField(verbose_name='Текст уведомления')
+    title = models.CharField(max_length=256, verbose_name='Заголовок')
     time = models.DateField(auto_now_add = True, verbose_name='Дата уведомления')
-    
+
