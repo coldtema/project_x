@@ -10,3 +10,9 @@ class Notification(models.Model):
     wb_product = models.ForeignKey(WBDetailedInfo, on_delete=models.CASCADE, null=True, verbose_name='WB продукт')
     additional_link = models.URLField(null = True, verbose_name='Доп. ссылка')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, verbose_name='Пользователь')
+
+
+class Post(models.Model):
+    text = models.TextField(verbose_name='Текст уведомления')
+    time = models.DateField(auto_now_add = True, verbose_name='Дата уведомления')
+    
