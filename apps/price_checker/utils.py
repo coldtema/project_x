@@ -107,6 +107,10 @@ class PriceUpdater:
             parser = Parser()
             async_results = asyncio.run(parser.process_all_sites(self.prods_to_go))
             for i in range(len(async_results)):
+                if async_results[i][0] == 'timeout':
+                    self.batched_shop_prod_dict[async_results[i][1]].clear()
+                    print(async_results[i][1]) #точка входа для написания лога
+                    continue
                 if isinstance(async_results[i], tuple):
                     self.async_exeption_prods.append(self.prods_to_go[i])
                     continue
@@ -290,6 +294,10 @@ class RepetitionsPriceUpdater:
             parser = Parser()
             async_results = asyncio.run(parser.process_all_sites(self.prods_to_go))
             for i in range(len(async_results)):
+                if async_results[i][0] == 'timeout':
+                    self.batched_shop_prod_dict[async_results[i][1]].clear()
+                    print(async_results[i][1]) #точка входа для написания лога
+                    continue
                 if isinstance(async_results[i], tuple):
                     self.async_exeption_prods.append(self.prods_to_go[i])
                     continue
@@ -309,8 +317,6 @@ class RepetitionsPriceUpdater:
         for product in self.async_exeption_prods:
             try:
                 maybe_new_price = get_shop_of_product(product.url)['price_element']
-            except TimeoutError:
-                print(product, '- завершился по таймауту')
             except:
                 self.exception_prods.append(product)
                 continue
