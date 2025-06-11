@@ -107,7 +107,8 @@ class PriceUpdater:
             parser = Parser()
             async_results = asyncio.run(parser.process_all_sites(self.prods_to_go))
             for i in range(len(async_results)):
-                if async_results[i][0] == 'timeout':
+                print(async_results[i])
+                if isinstance(async_results[i], tuple) and async_results[i][0] == 'timeout':
                     self.batched_shop_prod_dict[async_results[i][1]].clear()
                     print(async_results[i][1]) #точка входа для написания лога
                     continue
@@ -294,7 +295,8 @@ class RepetitionsPriceUpdater:
             parser = Parser()
             async_results = asyncio.run(parser.process_all_sites(self.prods_to_go))
             for i in range(len(async_results)):
-                if async_results[i][0] == 'timeout':
+                print(async_results[i])
+                if isinstance(async_results[i], tuple) and async_results[i][0] == 'timeout':
                     self.batched_shop_prod_dict[async_results[i][1]].clear()
                     print(async_results[i][1]) #точка входа для написания лога
                     continue
