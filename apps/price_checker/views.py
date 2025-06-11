@@ -249,6 +249,12 @@ def price_chart(request, id):
     for elem in prices_of_product:
         dates.append(elem.added_time)
         prices.append(elem.price)
+    if prices and prices[0] != product_to_watch.first_price:
+        dates.insert(0, product_to_watch.created)
+        prices.insert(0, product_to_watch.first_price)
+    elif not prices:
+        dates.insert(0, product_to_watch.created)
+        prices.insert(0, product_to_watch.first_price)
     svg_data = get_sparkline_points(prices)
     svg_data = list(map(lambda x: list(x), svg_data))
     for i in range(len(svg_data)):
