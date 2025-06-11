@@ -67,9 +67,9 @@
       <ul class="space-y-3">
         {%if recs_snippet%}
           {%for elem in recs_snippet%}
-            <li class="flex items-center justify-between p-3 bg-gray-800 rounded-xl border dark:border-gray-700">
+            <li class="flex items-center justify-between p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-400 dark:border-gray-700">
               <a href="{{elem.url}}">
-                <span class="text-gray-300">{{elem.name}}</span>
+                <span class="text-gray-900 dark:text-gray-300">{{elem.name}}</span>
               </a>
               <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded-lg">-{{elem.true_discount}}%</span>
             </li>
