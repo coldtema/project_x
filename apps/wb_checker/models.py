@@ -95,6 +95,7 @@ class WBDetailedInfo(models.Model):
     size = models.CharField(max_length=20, null=True, verbose_name='Размер')
     volume = models.IntegerField(verbose_name='Количество')
     enabled = models.BooleanField(default=True, verbose_name='Есть в наличии')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Время добавления продукта')
     updated = models.DateTimeField(default=timezone.now, verbose_name='Время обновления продукта')
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Автор продукта')
     
