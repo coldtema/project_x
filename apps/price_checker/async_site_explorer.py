@@ -23,6 +23,9 @@ class Parser:
         async def wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
+            except httpx.TimeoutException:
+                regex = r'://(www\.)?(ru\.)?(mytishchi\.)?(moscow\.)?(msk\.)?(moskva\.)?(outlet\.)?(shop\.)?([\w-]+)\.(\w+)/'
+                return 'timeout', re.search(pattern=regex, string=args[1]).group(9).strip()
             except Exception as e:
                 return args
         return wrapper
