@@ -276,7 +276,7 @@ def price_chart(request , id):
         return HttpResponse()
     prices_of_detailed_info = product_to_redirect.wbprice_set.all().order_by('added_time')
     dates = []
-    prices = []
+    prices = []  
     for elem in prices_of_detailed_info:
         dates.append(elem.added_time)
         prices.append(elem.price)
