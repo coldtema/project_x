@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'tailwind',
     'theme',
-    'django_browser_reload',
+    # 'django_browser_reload',
 ]
 
 MIDDLEWARE = [
@@ -64,7 +64,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 ROOT_URLCONF = 'project_x.urls'
@@ -144,10 +145,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "apps/price_checker/static/price_checker"),
     os.path.join(BASE_DIR, "apps/wb_checker/static/wb_checker"),
-    os.path.join(BASE_DIR, "apps/core/static/")
+    os.path.join(BASE_DIR, "apps/core/static/core"),
+    os.path.join(BASE_DIR, "apps/core/static/js"),
+    os.path.join(BASE_DIR, "theme/static/css/dist")
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
