@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'db', #'127.0.0.1',
+        'HOST': '127.0.0.1', #'db'
         'PORT': '5432',
     }
 }
@@ -178,6 +178,6 @@ NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 
 CELERY_BROKER_URL = 'redis://redis:6379/0' 
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0' 
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0' 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
