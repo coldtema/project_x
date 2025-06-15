@@ -24,5 +24,5 @@ urlpatterns = [
     path('wb_checker/', include('apps.wb_checker.urls', namespace='wb_checker')),
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path("__reload__/", include("django_browser_reload.urls")),
+    # path("__reload__/", include("django_browser_reload.urls")),
 ]
