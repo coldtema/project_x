@@ -102,35 +102,6 @@
       </form>
     </div>
   </div>
-    
-        <!-- Быстрые ссылки -->
-        <div class="mt-8 flex flex-wrap gap-4">
-            <a href="{% url 'wb_checker:clear_db' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                🧹 Очистить базу
-            </a>
-            <a href="{% url 'wb_checker:update_prices' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                💰 Обновить цены
-            </a>
-            <a href="{% url 'wb_checker:update_avaliability' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                📦 Обновить наличие
-            </a>
-            <a href="{% url 'wb_checker:update_all_menu_categories' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                🗂️ Обновить категории меню
-            </a>
-            <a href="{% url 'wb_checker:update_top_prods' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                🔝 Обновить топ продукты
-            </a>
-            <a href="{% url 'wb_checker:update_top_prods_info' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                📝 Обновить инфу о топах
-            </a>
-            <a href="{% url 'wb_checker:recommendations' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                🎯 Перейти к рекомендациям
-            </a>
-            <a href="{% url 'accounts:update_discount_balance' %}" class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-blue-600 dark:text-blue-300 px-4 py-2 rounded-lg shadow text-sm">
-                Обновить баланс скидок
-            </a>
-        </div>
-
 
     <div class="grid mt-8 gap-4 sm:gap-4 xl:gap-10 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 xl:pb-3">
     {% for elem in prods %}
