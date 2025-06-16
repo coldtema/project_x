@@ -197,21 +197,6 @@ def price_history(request, id):
                                                                         'svg_data': svg_data})
 
 
-def update_avaliability(request):
-    if request.user.is_staff:
-        p_u = RepetitionsPriceUpdater(False)
-        p_u.run()
-        p_u = PriceUpdater(False)
-        p_u.run()
-        del p_u
-        return HttpResponseRedirect(reverse('price_checker:all_price_list'))
-    return Http404('нет доступа')
-
-
-def make_notif(request):
-    SmartNotification().run()
-    return HttpResponseRedirect(reverse('price_checker:all_price_list'))
-
 
 @login_required
 def delete_product(request, id):
@@ -260,21 +245,6 @@ def price_chart(request, id):
     for i in range(len(svg_data)):
         svg_data[i].append(dates[i])
     return render(request, 'price_checker/partials/price_chart.html', context={'svg_data': svg_data})
-
-
-
-@time_count
-@login_required
-def update_prices(request):
-    '''Функция представления для запуска обновления цен'''
-    if request.user.is_staff:
-        p_u = RepetitionsPriceUpdater(True)
-        p_u.run()
-        p_u = PriceUpdater(True)
-        p_u.run()
-        del p_u
-        return HttpResponseRedirect(reverse('price_checker:all_price_list'))
-    return Http404('нет доступа')
 
 
 
