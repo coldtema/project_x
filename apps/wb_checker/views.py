@@ -305,13 +305,6 @@ def delete_wb_product(request, id):
     request.user.save()
     return HttpResponse()
 
-
-def make_notif(request):
-    notif = SmartNotification()
-    notif.run()
-    del notif
-    return redirect('core:menu')
-
 @login_required
 def delete_price(request, id):
     '''Функция представления для удаления цены конкретного продукта'''
@@ -323,68 +316,6 @@ def delete_price(request, id):
     prices_of_detailed_info = detailed_info_to_watch.wbprice_set.all().order_by('added_time')
     return render(request, 'wb_checker/partials/price_table.html', context={'prices_of_product': prices_of_detailed_info,
                                                                             'product_to_watch': detailed_info_to_watch})
-
-
-
-
-def clear_db(request):
-    '''Полная очистка таблиц, связанных с вб'''
-    TopWBProduct.objects.all().delete()
-    WBMenuCategory.objects.all().delete()
-    WBBrand.objects.all().delete()
-    WBSeller.objects.all().delete()
-    WBProduct.objects.all().delete()
-    WBDetailedInfo.objects.all().delete()
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-
-
-
-@time_count
-def update_menu_categories(request):
-    '''Обновление категорий общего меню wb'''
-    update_menu_cats()
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-
-
-
-@time_count
-def update_prices(request):
-    '''Обновление цен на продукты и их наличия'''
-    price_updater = PriceUpdater()
-    price_updater.run()
-    del price_updater
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-
-
-
-@time_count
-def update_avaliability(request):
-    '''Проверка наличия продуктов, которых не было в наличии'''
-    avaliability_updater = AvaliabilityUpdater()
-    avaliability_updater.run()
-    del avaliability_updater
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-
-            
-
-
-
-@time_count
-def update_top_prods(request):
-    wb_brands.TopWBProductBrandUpdater().run()
-    wb_sellers.TopWBProductSellerUpdater().run()
-    wb_menu_categories.TopWBProductMenuCategoryUpdater().run()
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
-
-
-
-
-@time_count
-def update_top_prods_info(request):
-    updater_info_of_top = UpdaterInfoOfTop()
-    updater_info_of_top.run()
-    del updater_info_of_top
-    return HttpResponseRedirect(reverse('wb_checker:all_price_list'))
 
 
 class RecommendationSettings(View):
