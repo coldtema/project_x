@@ -146,7 +146,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "apps/price_checker/static/price_checker"),
-    os.path.join(BASE_DIR, "apps/wb_checker/static/wb_checker"),
     os.path.join(BASE_DIR, "apps/core/static/core"),
     os.path.join(BASE_DIR, "apps/core/static/js"),
     os.path.join(BASE_DIR, "theme/static/css/dist")
