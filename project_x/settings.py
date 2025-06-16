@@ -185,6 +185,7 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULE = {
+    #wb_checker
     'one_hour_update_single_prods_plus_make_notif':{
         'task': 'apps.wb_checker.tasks.update_single_prods_plus_make_notif',
         'schedule': 3600,
@@ -200,5 +201,10 @@ CELERY_BEAT_SCHEDULE = {
     'one_hour_update_top_prods_info':{
         'task': 'apps.wb_checker.tasks.update_top_prods_info',
         'schedule': timedelta(hours=1),
+        },
+    #price_checker
+    'three_hours_update_all_price_checker':{
+        'task': 'apps.price_checker.tasks.update_all_price_checker',
+        'schedule': timedelta(hours=3),
         }
     }
