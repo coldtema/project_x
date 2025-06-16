@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 
 # Загружаем .env файл
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'tailwind',
     'theme',
+    'django_celery_results',
     # 'django_browser_reload',
 ]
 
@@ -177,7 +179,26 @@ INTERNAL_IPS = [
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 
-CELERY_BROKER_URL = 'redis://redis:6379/0' 
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0' 
+CELERY_BROKER_URL = 'redis://localhost:6379/0' 
+CELERY_RESULT_BACKEND = 'django-db' #'redis://localhost:6379/0' 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_EXTENDED = True
+CELERY_BEAT_SCHEDULE = {
+    'one_hour_update_single_prods_plus_make_notif':{
+        'task': 'apps.wb_checker.tasks.update_single_prods_plus_make_notif',
+        'schedule': 3600,
+        },
+    'one_day_update_menu_categories':{
+        'task': 'apps.wb_checker.tasks.update_menu_categories',
+        'schedule': timedelta(hours=24),
+        },
+    'twelve_hours_update_top_prods':{
+        'task': 'apps.wb_checker.tasks.update_top_prods',
+        'schedule': timedelta(hours=12),
+        },
+    'one_hour_update_top_prods_info':{
+        'task': 'apps.wb_checker.tasks.update_top_prods_info',
+        'schedule': timedelta(hours=1),
+        }
+    }
