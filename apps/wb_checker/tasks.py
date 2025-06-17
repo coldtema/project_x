@@ -4,6 +4,7 @@ from apps.wb_checker.utils.categories import update_menu_cats
 from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater, WBPriceClearer
 from apps.wb_checker import wb_menu_categories, wb_brands, wb_sellers
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
+from core.tasks import update_discount_balance
 
 
 @shared_task
@@ -81,6 +82,7 @@ def update_single_prods_plus_make_notif():
         update_prices.si(),
         update_avaliability.si(),
         clear_prices.si(),
+        update_discount_balance.si(),
         make_notif.si(),
     )()
     return True
