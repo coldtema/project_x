@@ -9,8 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
-from django.db.models import F, IntegerField, ExpressionWrapper
-from django.db.models.aggregates import Sum
 from django.contrib import messages
 
 class SignUpView(CreateView):
@@ -26,24 +24,6 @@ def profile(request):
     used_slots = sub_dict[request.user.subscription] - request.user.slots
     return render(request, 'accounts/profile.html', context={'used_slots':used_slots})
 
-
-def update_discount_balance(request):
-    all_users = CustomUser.objects.all()
-    for user in all_users:
-        balance_prods = user.product_set.all().annotate(discount_delta=ExpressionWrapper(F('first_price') - F('latest_price'), output_field=IntegerField())).aggregate(Sum('discount_delta'))['discount_delta__sum']
-        balance_wb_prods = user.wbdetailedinfo_set.all().annotate(discount_delta=ExpressionWrapper(F('first_price') - F('latest_price'), output_field=IntegerField())).aggregate(Sum('discount_delta'))['discount_delta__sum']
-        if balance_prods is None: balance_prods = 0
-        if balance_wb_prods is None: balance_wb_prods = 0
-        balance = balance_prods + balance_wb_prods
-        user.discount_balance = balance
-        user.save()
-    # all_shops = Shop.objects.all()
-    # for shop in all_shops:
-    #     tag = shop_to_category.get(shop.regex_name, None)
-    #     if tag:
-    #         tag, _ = Tag.objects.get_or_create(name=tag)
-    #         tag.shop_set.add(shop)
-    return redirect('accounts:profile')
 
 def notification_edit(request):
     if request.method == 'POST':
