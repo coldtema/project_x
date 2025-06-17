@@ -10,5 +10,6 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('contacts/', views.contacts, name='contacts'),
     path('delete_notification/<int:id>', views.delete_notification, name='delete_notification'),
-    path('notifications_swap/', views.notifications_swap, name='notifications_swap')
+    path('notifications_swap/', views.notifications_swap, name='notifications_swap'),
+    path('guide/', views.guide, name='guide'),
 ]
