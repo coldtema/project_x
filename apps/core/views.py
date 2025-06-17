@@ -62,6 +62,10 @@ def faq(request):
     return render(request, 'core/faq.html')
 
 
+def guide(request):
+    return render(request, 'core/guide.html')
+
+
 def delete_notification(request, id):
     notif_to_delete = Notification.objects.filter(pk=id).select_related('user').first()
     if request.user.pk == notif_to_delete.user.pk:
