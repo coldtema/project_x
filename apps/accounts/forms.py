@@ -8,10 +8,23 @@ front_attrs = {'class': 'w-full px-3 py-2 rounded-md border border-gray-300 dark
 class SignUpForm(UserCreationForm):
     # username = forms.CharField(max_length=30)
     # email = forms.EmailField(max_length=200)
+    error_messages = {
+        "password_mismatch": "Пароли не совпадают.",
+    }
 
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password1', 'password2'] #как бы расширили поля, которые могут быть 
+        error_messages = {
+            'username': {
+                'unique': "Пользователь с таким именем уже существует.",
+                'mismatch': "Пожалуйста, введите корректное имя пользователя.",
+            },
+            'email': {
+                'unique': "Пользователь с такой почтой уже существует.",
+                'mismatch': "Пожалуйста, введите корректный адрес электронной почты.",
+            },
+        }
 
 class WBDestForm(forms.Form):
     address = forms.CharField(required=True, max_length=1000, widget=forms.TextInput(attrs=front_attrs), help_text='Местоположение')
