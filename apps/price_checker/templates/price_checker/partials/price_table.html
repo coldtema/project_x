@@ -28,7 +28,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <form  method="get">
+    <form method="get">
         <div class='chart_trigger'
             hx-get={%url 'price_checker:price_chart' id=product_to_watch.id%}
             hx-trigger='load'
