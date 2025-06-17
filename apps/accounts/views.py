@@ -18,7 +18,7 @@ class SignUpView(CreateView):
 
 @login_required
 def profile(request):
-    sub_dict = {'FREE': 10,
+    sub_dict = {'FREE': 20,
                 'PLATINUM':100,
                 'ULTIMA':1000}
     used_slots = sub_dict[request.user.subscription] - request.user.slots
