@@ -1,7 +1,7 @@
 from celery import shared_task, chain
 from apps.price_checker.utils import RepetitionsPriceUpdater, PriceUpdater, PriceClearer
 from apps.price_checker.notifications import SmartNotification
-from core.tasks import update_discount_balance
+from apps.core.tasks import update_discount_balance
 
 @shared_task
 def update_avaliability():
