@@ -409,3 +409,36 @@ class RepetitionsPriceUpdater:
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
         Notification.objects.bulk_create(self.notifications_to_save)
+
+
+
+class PriceClearer:
+    def __init__(self):
+        '''Инициализация необходимых атрибутов'''
+        self.batch_size = 1000
+        self.len_all_prods_list = Product.objects.all().count()
+        self.batched_prods_list = []
+        self.price_ids_to_delete = []
+
+
+    def run(self):
+        '''Запуск процесса удаления лишних цен + батчинг по продуктам'''
+        for i in range(math.ceil(self.len_all_prods_list / self.batch_size)):
+            self.batched_prods_list = Product.objects.all().prefetch_related('price_set')[i*self.batch_size:(i+1)*self.batch_size]
+            self.go_through_all_prods()     
+            self.delete_notif_in_db()
+            self.price_ids_to_delete = []
+
+
+    def go_through_all_prods(self):
+        '''Функция, в которой идет проход по одному продукту из батча'''
+        for i in range(len(self.batched_prods_list)):
+            if self.batched_prods_list[i].price_set.count() > 15:
+                self.price_ids_to_delete.extend(list(map(lambda x: x['pk'], self.batched_prods_list[i].price_set.order_by('-added_time')[14:].values('pk'))))
+                self.price_ids_to_delete.pop()
+
+
+    @transaction.atomic
+    def delete_notif_in_db(self):
+        '''Занесение в БД обновления наличия'''
+        Price.objects.filter(pk__in=self.price_ids_to_delete).delete()
