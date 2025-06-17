@@ -13,8 +13,9 @@ from apps.wb_checker.utils.general_utils import get_image_url
 class Brand:
     '''Класс для формирования списка топовых продуктов от определенного бренда с вб'''
 
-    def __init__(self, brand_url, author_object):
+    def __init__(self, brand_url, author_object, celery_task=False):
         '''Инициализация необходимых атрибутов'''
+        self.celery_task = celery_task
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
@@ -76,7 +77,8 @@ class Brand:
         WBBrand.objects.bulk_create([self.brand_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.final_dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_brand_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
-        self.author_object.wbbrand_set.add(self.brand_object)
+        if self.celery_task == False:
+            self.author_object.wbbrand_set.add(self.brand_object)
 
 
 
@@ -182,4 +184,4 @@ class TopWBProductBrandUpdater():
         author_object = CustomUser.objects.get(username='coldtema') #переделать
         for brand in self.brands_with_subs:
             TopWBProduct.objects.filter(source='BRAND', brand_id=brand['pk']).delete()
-            Brand(brand['main_url'], author_object).run()
+            Brand(brand['main_url'], author_object, celery_task=True).run()

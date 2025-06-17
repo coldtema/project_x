@@ -13,8 +13,9 @@ from apps.wb_checker.utils.general_utils import get_image_url
 class Seller:
     '''Класс для формирования списка топовых продуктов от определенного селлера с вб'''
 
-    def __init__(self, seller_url, author_object):
+    def __init__(self, seller_url, author_object, celery_task=False):
         '''Инициализация необходимых атрибутов'''
+        self.celery_task = celery_task
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
@@ -74,7 +75,8 @@ class Seller:
         WBSeller.objects.bulk_create([self.seller_object], update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBBrand.objects.bulk_create(self.final_dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_seller_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
-        self.author_object.wbseller_set.add(self.seller_object)
+        if self.celery_task == False:
+            self.author_object.wbseller_set.add(self.seller_object)
 
     
     def get_seller_artikul(self):
@@ -189,4 +191,4 @@ class TopWBProductSellerUpdater():
         TopWBProduct.objects.filter(source='SELLER').delete()
         for seller in self.sellers_with_subs:
             TopWBProduct.objects.filter(source='SELLER', seller=seller).delete()
-            Seller(seller.main_url, author_object).run()
+            Seller(seller.main_url, author_object, celery_task=True).run()

@@ -13,8 +13,9 @@ from apps.wb_checker.utils.general_utils import get_image_url
 class MenuCategory:
     '''Класс для формирования топовых продуктов из любой категории wb (~2500)'''
     
-    def __init__(self, category_url, author_object):
+    def __init__(self, category_url, author_object, celery_task=False):
         '''Инициализация необходимых атрибутов'''
+        self.celery_task = celery_task
         self.headers = {"User-Agent": "Mozilla/5.0"}
         self.scraper = cloudscraper.create_scraper()
         self.author_object = author_object
@@ -79,7 +80,8 @@ class MenuCategory:
         WBBrand.objects.bulk_create(self.final_dict_brands_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         WBSeller.objects.bulk_create(self.final_dict_sellers_to_add.values(), update_conflicts=True, unique_fields=['wb_id'], update_fields=['name'])
         TopWBProduct.objects.bulk_create(self.list_category_products_to_add_with_scores, ignore_conflicts=True) #ссылается не на id а на wb_id добавленного бренда (тк оно уникальное)
-        self.author_object.wbmenucategory_set.add(self.category_object)
+        if self.celery_task == False:
+            self.author_object.wbmenucategory_set.add(self.category_object)
 
 
 
@@ -191,4 +193,4 @@ class TopWBProductMenuCategoryUpdater():
         for category in self.all_categories:
             if category.shard_key != 'blackhole' and category.query != None and category.shard_key != None and category.shard_key != '':
                 TopWBProduct.objects.filter(source='CATEGORY', menu_category=category).delete()
-                MenuCategory(f'https://www.wildberries.ru{category.main_url}', author_object).run()
+                MenuCategory(f'https://www.wildberries.ru{category.main_url}', author_object, celery_task=True).run()
