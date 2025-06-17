@@ -1,9 +1,8 @@
 from celery import shared_task, chain
 from apps.wb_checker.utils.notifications import SmartNotification
 from apps.wb_checker.utils.categories import update_menu_cats
-from apps.wb_checker.utils.single_prods import PriceUpdater
-from apps.wb_checker.utils.single_prods import AvaliabilityUpdater
-from apps.wb_checker import wb_menu_categories, wb_products, wb_brands, wb_sellers
+from apps.wb_checker.utils.single_prods import PriceUpdater, AvaliabilityUpdater, WBPriceClearer
+from apps.wb_checker import wb_menu_categories, wb_brands, wb_sellers
 from apps.wb_checker.utils.top_prods import UpdaterInfoOfTop
 
 
@@ -66,12 +65,22 @@ def update_menu_categories():
 
 
 @shared_task
+def clear_prices():
+    '''Удаление ненужных цен в wb_checker'''
+    p_c = WBPriceClearer()
+    p_c.run()
+    del p_c
+    return True
+
+
+@shared_task
 def update_single_prods_plus_make_notif():
     '''Обновление каждого продукта в приложении wb_checker + создание уведомлений'''
     print('Обновление каждого продукта в приложении wb_checker + создание уведомлений')
     chain(
         update_prices.si(),
         update_avaliability.si(),
+        clear_prices.si(),
         make_notif.si(),
     )()
     return True
