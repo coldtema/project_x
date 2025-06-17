@@ -205,5 +205,11 @@ CELERY_BEAT_SCHEDULE = {
     'three_hours_update_all_price_checker':{
         'task': 'apps.price_checker.tasks.update_all_price_checker',
         'schedule': timedelta(hours=3),
+        },
+    #core
+    'one_day_clear_notifications':{
+        'task': 'apps.core.tasks.clear_notifications',
+        'schedule': timedelta(hours=24),
         }
+    
     }
