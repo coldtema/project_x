@@ -256,20 +256,12 @@ def wbproduct_details(request, id):
     detailed_info_to_watch = check_detailed_info_of_user(id, request.user)
     if not detailed_info_to_watch:
         return Http404('??? (нет такого продукта)')
-    prices_of_detailed_info = detailed_info_to_watch.wbprice_set.all().order_by('added_time')
-    dates = []
-    prices = []
-    for elem in prices_of_detailed_info:
-        dates.append(elem.added_time)
-        prices.append(elem.price)
-    svg_data = get_sparkline_points(prices)
-    svg_data = list(map(lambda x: list(x), svg_data))
-    for i in range(len(svg_data)):
-        svg_data[i].append(dates[i])
+    prices_of_detailed_info = list(detailed_info_to_watch.wbprice_set.all().order_by('added_time'))
     return render(request, 'wb_checker/product_details.html', context={'product_to_watch': detailed_info_to_watch, 
-                                                                       'prices_of_product': prices_of_detailed_info,
-                                                                       'svg_data': svg_data})
+                                                                       'prices_of_product': prices_of_detailed_info,})
 
+
+@login_required
 def price_chart(request , id):
     product_to_redirect = check_detailed_info_of_user(id, request.user)
     if not product_to_redirect:
@@ -280,12 +272,6 @@ def price_chart(request , id):
     for elem in prices_of_detailed_info:
         dates.append(elem.added_time)
         prices.append(elem.price)
-    if prices and prices[0] != product_to_redirect.first_price:
-        dates.insert(0, product_to_redirect.created)
-        prices.insert(0, product_to_redirect.first_price)
-    elif not prices:
-        dates.insert(0, product_to_redirect.created)
-        prices.insert(0, product_to_redirect.first_price)
     svg_data = get_sparkline_points(prices)
     svg_data = list(map(lambda x: list(x), svg_data))
     for i in range(len(svg_data)):
