@@ -68,9 +68,12 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         product_form = ProductForm(request.POST)
         try:
-            self.get_product_info_and_save(request)
-            #убрать в dispatch потом
-            messages.success(request, 'Успех!')
+            if request.user.slots <= 0:
+                messages.error(request, 'Нет места..')
+            else:
+                self.get_product_info_and_save(request)
+                #убрать в dispatch потом
+                messages.success(request, 'Успех!')
         except:
             messages.success(request, 'Ошибка..')
         db_products = request.user.product_set.filter(enabled=True) 
@@ -195,6 +198,8 @@ def delete_product(request, id):
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
     Product.objects.get(id=id).delete()  
+    request.user.slots+=1
+    request.user.save()
     return HttpResponse()
 
 
