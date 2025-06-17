@@ -13,7 +13,7 @@
     </a>
   </div> 
   <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-6">
-    <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подписки</h1>
+    <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подборки</h1>
 
     <!-- Текущие подписки -->
     <div class='old_submit_changes'>
@@ -34,15 +34,13 @@
             hx-trigger="submit"
             class="bg-white shadow-lg rounded-xl p-6 space-y-4 border-2 border-gray-300 dark:border-neutral-700 dark:bg-neutral-900">
         {% csrf_token %}
-        <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца по ссылке</h1>
+        <h1 class="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 text-center">Добавить бренд или продавца</h1>
         <input type="hidden" name="form_type" value="search_brand_seller">
         <div class="space-y-4 text-gray-800 dark:text-white">
             {% for field in form_add %}
                 <div>
                     {{ field }}
-                    {% if field.help_text %}
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
-                    {% endif %} 
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Артикул/ссылка на товар бренда или продавца</p>
                     {% if field.errors %}
                         <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
                     {% endif %}

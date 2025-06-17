@@ -8,7 +8,7 @@
   </a>
 </div> 
 <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-6">
-  <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подписки</h1>
+  <h1 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Настройка подборки</h1>
 
   <!-- Текущие подписки -->
   <div class='old_submit_changes'>
@@ -36,9 +36,7 @@
           {% for field in form_add %}
               <div>
                   {{ field }}
-                  {% if field.help_text %}
-                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ field.help_text }}</p>
-                  {% endif %} 
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Артикул/ссылка на товар бренда или продавца</p>
                   {% if field.errors %}
                       <p class="text-sm text-red-500 mt-1">{{ field.errors|striptags }}</p>
                   {% endif %}
