@@ -69,6 +69,8 @@ class WBCheckerMain(LoginRequiredMixin, View):
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
             try:
+                if request.user.slots <= 0:
+                    raise Exception
                 form = WBProductForm()
                 if request.POST.getlist('size', None): #пользователь выбрал размер
                     temp_dict = dict()
@@ -112,8 +114,12 @@ class WBCheckerMain(LoginRequiredMixin, View):
                                                                                   'disabled_prod_count': disabled_prod_count})
                 messages.success(request, 'Успех!')
             except:
-                print('отловленное уведомление об исключении')
-                messages.error(request, 'Ошибка..')
+                if request.user.slots <= 0:
+                    messages.error(request, 'Нет места..')
+                    if request.POST.get('from_recs', None):
+                        return redirect('wb_checker:all_price_list')
+                else:
+                    messages.error(request, 'Ошибка..')
             prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
             disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
             return render(request, 'wb_checker/partials/product_cards.html', context={'prods':prods,
