@@ -1,5 +1,5 @@
 from celery import shared_task, chain
-from apps.price_checker.utils import RepetitionsPriceUpdater, PriceUpdater
+from apps.price_checker.utils import RepetitionsPriceUpdater, PriceUpdater, PriceClearer
 from apps.price_checker.notifications import SmartNotification
 
 @shared_task
@@ -30,12 +30,22 @@ def update_prices():
     return True
 
 
+@shared_task
+def clear_prices():
+    '''Удаление ненужных цен в price_checker'''
+    p_c = PriceClearer()
+    p_c.run()
+    del p_c
+    return True
+
+
 
 @shared_task
 def update_all_price_checker():
     chain(
         update_avaliability.si(),
         update_prices.si(),
+        clear_prices.si(),
         make_notif.si()
     )()
     return True
