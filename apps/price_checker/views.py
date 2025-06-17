@@ -183,18 +183,8 @@ def price_history(request, id):
     if not product_to_watch:
         return Http404('??? (нет такого продукта)')
     prices_of_product = product_to_watch.price_set.all().order_by('added_time')
-    dates = []
-    prices = []
-    for elem in prices_of_product:
-        dates.append(elem.added_time)
-        prices.append(elem.price)
-    svg_data = get_sparkline_points(prices)
-    svg_data = list(map(lambda x: list(x), svg_data))
-    for i in range(len(svg_data)):
-        svg_data[i].append(dates[i])
     return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
-                                                                        'prices_of_product': prices_of_product,
-                                                                        'svg_data': svg_data})
+                                                                        'prices_of_product': prices_of_product})
 
 
 
@@ -234,12 +224,6 @@ def price_chart(request, id):
     for elem in prices_of_product:
         dates.append(elem.added_time)
         prices.append(elem.price)
-    if prices and prices[0] != product_to_watch.first_price:
-        dates.insert(0, product_to_watch.created)
-        prices.insert(0, product_to_watch.first_price)
-    elif not prices:
-        dates.insert(0, product_to_watch.created)
-        prices.insert(0, product_to_watch.first_price)
     svg_data = get_sparkline_points(prices)
     svg_data = list(map(lambda x: list(x), svg_data))
     for i in range(len(svg_data)):
