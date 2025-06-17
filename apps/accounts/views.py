@@ -11,10 +11,40 @@ from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
 from django.contrib import messages
 
-class SignUpView(CreateView):
-    success_url = reverse_lazy('login')
-    template_name = 'registration/signup.html'
-    form_class = SignUpForm
+class SignUpView(View):
+    '''View для регистрации пользователя'''
+    def get(self, request):
+        form = SignUpForm()
+        return render(request, 'registration/signup.html', context={'form': form})
+
+    def post(self, request):
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+        else:
+            form_errors = []
+            for error_list in form.errors.values():
+                form_errors.extend(error_list)
+            form_errors = self.make_clean_errors(form_errors)
+        return render(request, 'registration/signup.html', context={'form': form,
+                                                                    'errors': form_errors})
+    def make_clean_errors(self, form_errors):
+        for i in range(len(form_errors)):
+            form_errors[i] = self.customize_error(form_errors[i])
+        return form_errors
+
+    def customize_error(self, msg):
+        if "too short" in msg:
+            return "Пароль слишком короткий. Минимум 8 символов."
+        if "too similar" in msg:
+            return "Пароль слишком похож на имя пользователя."
+        if "too common" in msg:
+            return "Пароль слишком простой."
+        if "entirely numeric" in msg:
+            return "Пароль не должен состоять только из цифр."
+        return msg
+    
 
 @login_required
 def profile(request):
