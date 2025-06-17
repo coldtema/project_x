@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Гайд — HeavyDrop{% endblock title %}
+
+{% block content %}
+<div class="sticky top-4 z-40">
+  <a href="{% url 'core:menu' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+    <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Назад
+  </a>
+</div>
+
+<section class="py-10">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-12 text-gray-800 dark:text-white">Как пользоваться HeavyDrop</h1>
+    
+    <div class="space-y-8">
+
+
+        <!-- Левое меню -->
+      <nav class="space-y-2 md:col-span-1">
+        <a href="#profile" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-neutral-700 transition">👤 Профиль</a>
+        <a href="#recommendations" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-neutral-700 transition">⭐ Рекомендации</a>
+        <a href="#wb" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-neutral-700 transition">🛒 Wildberries</a>
+        <a href="#others" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-neutral-700 transition">🛍️ Другие магазины</a>
+      </nav>
+
+      <!-- Шаг 1 -->
+      <section id="profile">
+        <div class="flex items-center gap-4 p-6 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm hover:ring-2 hover:ring-blue-500 transition">
+            <div class="flex-shrink-0">
+            <div class="text-gray-900 dark:text-white w-10 h-10 flex items-center justify-center bg-blue-500 rounded-full text-lg font-semibold ">1</div>
+            </div>
+            <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Создай аккаунт</h2>
+            <p class="text-gray-700 dark:text-gray-300">
+                Зарегистрируйся через форму или Telegram-бота. Мы не собираем лишние данные — только имя и почта.
+            </p>
+            </div>
+        </div>
+    </section>
+
+      <!-- Шаг 2 -->
+      <div class="flex items-start gap-4 p-6 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm hover:ring-2 hover:ring-blue-500 transition">
+        <div class="flex-shrink-0">
+          <div class="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full text-lg font-semibold">2</div>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Добавь интересующие товары</h2>
+          <p class="text-gray-700 dark:text-gray-300">
+            Скопируй ссылку с Wildberries, Ozon или других маркетплейсов и вставь в личный кабинет. Мы начнём отслеживание.
+          </p>
+        </div>
+      </div>
+
+      <!-- Шаг 3 -->
+      <div class="flex items-start gap-4 p-6 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm hover:ring-2 hover:ring-blue-500 transition">
+        <div class="flex-shrink-0">
+          <div class="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full text-lg font-semibold">3</div>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Получай уведомления</h2>
+          <p class="text-gray-700 dark:text-gray-300">
+            Когда цена на товар снижается, мы сразу шлём тебе уведомление. Ты можешь выбрать: Telegram, Email или просто push на сайте.
+          </p>
+        </div>
+      </div>
+
+      <!-- Шаг 4 -->
+      <div class="flex items-start gap-4 p-6 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-sm hover:ring-2 hover:ring-blue-500 transition">
+        <div class="flex-shrink-0">
+          <div class="w-10 h-10 flex items-center justify-center bg-blue-500 text-white rounded-full text-lg font-semibold">4</div>
+        </div>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Купи по выгодной цене</h2>
+          <p class="text-gray-700 dark:text-gray-300">
+            Переходи по ссылке и покупай по скидке. Мы не берём комиссий, просто помогаем ловить лучшие предложения.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock content %}
