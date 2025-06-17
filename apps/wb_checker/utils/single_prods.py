@@ -356,3 +356,36 @@ class AvaliabilityUpdater:
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
         Notification.objects.bulk_create(self.notifications_to_save)
+
+
+
+class WBPriceClearer:
+    def __init__(self):
+        '''Инициализация необходимых атрибутов'''
+        self.batch_size = 1000
+        self.len_all_details_list = WBDetailedInfo.objects.all().count()
+        self.batched_details_list = []
+        self.wbprice_ids_to_delete = []
+
+
+    def run(self):
+        '''Запуск процесса удаления лишних цен + батчинг по авторам'''
+        for i in range(math.ceil(self.len_all_details_list / self.batch_size)):
+            self.batched_details_list = WBDetailedInfo.objects.all().prefetch_related('wbprice_set')[i*self.batch_size:(i+1)*self.batch_size]
+            self.go_through_all_details()     
+            self.delete_notif_in_db()
+            self.wbprice_ids_to_delete = []
+
+
+    def go_through_all_details(self):
+        '''Функция, в которой идет проход по одной детали из батча'''
+        for i in range(len(self.batched_details_list)):
+            if self.batched_details_list[i].wbprice_set.count() > 15:
+                self.wbprice_ids_to_delete.extend(list(map(lambda x: x['pk'], self.batched_details_list[i].wbprice_set.order_by('-added_time')[14:].values('pk'))))
+                self.wbprice_ids_to_delete.pop()
+
+
+    @transaction.atomic
+    def delete_notif_in_db(self):
+        '''Занесение в БД обновления наличия'''
+        WBPrice.objects.filter(pk__in=self.wbprice_ids_to_delete).delete()
