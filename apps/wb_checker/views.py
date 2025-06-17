@@ -89,13 +89,11 @@ class WBCheckerMain(LoginRequiredMixin, View):
                         paginator = Paginator(prods, 24)
                         prods = paginator.get_page(1)
                         if request.POST.get('from_recs', None):
-                            messages.success(request, 'Успех!')
                             return render(request, 'wb_checker/index.html', context={'form': self.form_parse,
                                                                                     'prods': prods,
                                                                                     'disabled_prod_count': disabled_prod_count,
                                                                                     'raw_sizes':list_of_all_size_info,
                                                                                     'url': request.POST['url']})
-                        messages.success(request, 'Успех!')
                         return render(request, 'wb_checker/partials/product_cards.html', context={'raw_sizes':list_of_all_size_info,
                                                                                                     'prods':prods,
                                                                                                     'form': form,
