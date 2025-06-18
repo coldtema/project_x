@@ -10,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
 from django.contrib import messages
-
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 
 
 
@@ -113,7 +114,75 @@ class GeolocationEditView(LoginRequiredMixin, View):
     
 
 
-@login_required
-def change_password(request):
 
-    return(render(request, 'accounts/change_password.html'))
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    def get(self, request, *args, **kwargs):
+        print('hello')
+        return super().get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            print('ok')
+        else:
+            print(form.errors.as_json())
+        if not CustomUser.objects.filter(email=request.POST.get('email')).first():
+            return render(request, 'registration/password_reset_form.html', context={'form': form, 'error': 'Пользователь с таким E-mail не найден.'})
+        return super().post(request, *args, **kwargs)
+    
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'registration/password_reset_form_done.html'
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+    
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+    
+
+    def post(self, request, *args, **kwargs):
+        form = SetPasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            print('ok')
+        else:
+            form_errors = []
+            for error_list in form.errors.values():
+                form_errors.extend(error_list)
+            form_errors = self.make_clean_errors(form_errors)
+            return render(request, 'registration/password_reset_confirm.html', context={'form': form, 'errors': form_errors})
+        return super().post(request, *args, **kwargs)
+
+    def make_clean_errors(self, form_errors):
+        for i in range(len(form_errors)):
+            form_errors[i] = self.customize_error(form_errors[i])
+        return form_errors
+
+    def customize_error(self, msg):
+        if "too short" in msg:
+            return "Пароль слишком короткий. Минимум 8 символов."
+        if "too similar" in msg:
+            return "Пароль слишком похож на имя пользователя."
+        if "too common" in msg:
+            return "Пароль слишком простой."
+        if "entirely numeric" in msg:
+            return "Пароль не должен состоять только из цифр."
+        if "match" in msg:
+            return "Пароли не совпадают."
+        return msg
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+    
+
+
+    
+
