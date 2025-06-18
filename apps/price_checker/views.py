@@ -146,7 +146,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
         return list(range(lowest_page, highest_page+1))
 
 
-class DisabledProds(View):
+class DisabledProds(LoginRequiredMixin, View):
     @time_count
     def get(self, request, *args, **kwargs):
         db_products =  request.user.product_set.filter(enabled=False)
@@ -218,7 +218,7 @@ def delete_price(request, id):
 
 
 
-
+@login_required
 def price_chart(request, id):
     product_to_watch = check_prod_of_user(id, request.user)
     if not product_to_watch:

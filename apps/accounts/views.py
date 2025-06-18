@@ -11,6 +11,9 @@ from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
 from django.contrib import messages
 
+
+
+
 class SignUpView(View):
     '''View для регистрации пользователя'''
     def get(self, request):
@@ -55,6 +58,8 @@ def profile(request):
     return render(request, 'accounts/profile.html', context={'used_slots':used_slots})
 
 
+
+@login_required
 def notification_edit(request):
     if request.method == 'POST':
         try:
@@ -69,6 +74,9 @@ def notification_edit(request):
         return render(request, 'accounts/partials/notif_form.html')
     return render(request, 'accounts/notification_edit.html')
 
+
+
+@login_required
 def subscription_edit(request):
     if request.GET.get('plan-toggle', None) == 'monthly':
         return render(request, 'accounts/partials/subs_month.html')
@@ -77,6 +85,7 @@ def subscription_edit(request):
         return render(request, 'accounts/partials/subs_half_year.html')
     
     return render(request, 'accounts/subscription_edit.html')
+
 
 
 class GeolocationEditView(LoginRequiredMixin, View):
@@ -103,6 +112,8 @@ class GeolocationEditView(LoginRequiredMixin, View):
         return render(request, 'accounts/partials/geo_form.html', context={'form': form})
     
 
+
+@login_required
 def change_password(request):
 
     return(render(request, 'accounts/change_password.html'))

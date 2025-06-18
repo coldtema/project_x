@@ -159,7 +159,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
         return list(range(lowest_page, highest_page+1))
 
 
-class WBDisabledProds(View):
+class WBDisabledProds(LoginRequiredMixin, View):
     @time_count
     def get(self, request, *args, **kwargs):
         prods = request.user.wbdetailedinfo_set.filter(enabled=False).select_related('product', 'author')
@@ -295,6 +295,7 @@ def delete_wb_product(request, id):
     request.user.save()
     return HttpResponse()
 
+
 @login_required
 def delete_price(request, id):
     '''Функция представления для удаления цены конкретного продукта'''
@@ -308,7 +309,7 @@ def delete_price(request, id):
                                                                             'product_to_watch': detailed_info_to_watch})
 
 
-class RecommendationSettings(View):
+class RecommendationSettings(LoginRequiredMixin, View):
     @time_count
     def dispatch(self, request, *args, **kwargs):
         self.subs_brand = request.user.wbbrand_set.all()

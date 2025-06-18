@@ -65,7 +65,7 @@ def faq(request):
 def guide(request):
     return render(request, 'core/guide.html')
 
-
+@login_required
 def delete_notification(request, id):
     notif_to_delete = Notification.objects.filter(pk=id).select_related('user').first()
     if request.user.pk == notif_to_delete.user.pk:
@@ -73,7 +73,7 @@ def delete_notification(request, id):
         return HttpResponse(status=200)
     return HttpResponse(status=413)
 
-
+@login_required
 def notifications_swap(request):
     if request.GET['type-toggle'] == 'shops':
         shops_notifications = sorted(Notification.objects.filter(user=request.user, product__isnull=False).select_related('product'), key=lambda x: x.time, reverse=True)
