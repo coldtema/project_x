@@ -148,9 +148,7 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 
     def post(self, request, *args, **kwargs):
         form = SetPasswordForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            print('ok')
-        else:
+        if not form.is_valid():
             form_errors = []
             for error_list in form.errors.values():
                 form_errors.extend(error_list)
