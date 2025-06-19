@@ -1639,21 +1639,6 @@ class Parser:
 
 
     @exc_returner
-    async def get_product_santehnika_tut(self, product_url):
-        '''Функция для парсинга товара из santehnika-tut'''
-        response = await self.client.get(product_url)
-        soup_engine = BeautifulSoup(response.text, 'lxml')
-        try:
-            price_element = soup_engine.find('div', class_='price clubprice').text.strip()
-        except:
-            price_element = soup_engine.find('div', class_='price').text.strip()
-        price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
-        name = soup_engine.find('h1').text.strip()
-        return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut'}
-
-
-
-    @exc_returner
     async def get_product_wau(self, product_url):
         '''Функция для парсинга товара из wau'''
         response = await self.client.get(product_url)
@@ -2128,33 +2113,6 @@ class Parser:
 
 
     @exc_returner
-    async def get_product_top_santehnika(self, product_url):
-        '''Функция для парсинга товара из top-santehnika'''
-        response = await self.client.get(product_url)
-        soup_engine = BeautifulSoup(response.text, 'html.parser')
-        try:
-            price_element = soup_engine.find('div', class_='coupon-price').text.strip()
-        except:
-            price_element = soup_engine.find('div', class_='product-cart__price measure-price').text.strip()
-        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-        name = soup_engine.find('h1').text.strip()
-        return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika'}
-
-
-
-    @exc_returner
-    async def get_product_rossko(self, product_url):
-        '''Функция для парсинга товара из rossko'''
-        response = await self.client.get(product_url)
-        soup_engine = BeautifulSoup(response.text, 'html.parser')
-        price_element = soup_engine.find('div', class_='price').text.strip()
-        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-        name = soup_engine.find('h1').text.strip()
-        return {'price_element': price_element, 'name': name, 'shop': 'rossko'}
-
-
-
-    @exc_returner
     async def get_product_z51(self, product_url):
         '''Функция для парсинга товара из z51'''
         response = await self.client.get(product_url)
@@ -2546,6 +2504,47 @@ class Parser:
     async def get_product_bbcream(self, product_url):
         ...
 
+
+
+    @exc_returner
+    async def get_product_top_santehnika(self, product_url):
+        '''Функция для парсинга товара из top-santehnika'''
+        response = await self.client.get(product_url)
+        soup_engine = BeautifulSoup(response.text, 'html.parser')
+        try:
+            price_element = soup_engine.find('div', class_='coupon-price').text.strip()
+        except:
+            price_element = soup_engine.find('div', class_='product-cart__price measure-price').text.strip()
+        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+        name = soup_engine.find('h1').text.strip()
+        return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika'}
+
+
+
+    @exc_returner
+    async def get_product_rossko(self, product_url):
+        '''Функция для парсинга товара из rossko'''
+        response = await self.client.get(product_url)
+        soup_engine = BeautifulSoup(response.text, 'html.parser')
+        price_element = soup_engine.find('div', class_='price').text.strip()
+        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+        name = soup_engine.find('h1').text.strip()
+        return {'price_element': price_element, 'name': name, 'shop': 'rossko'}
+    
+
+    @exc_returner
+    async def get_product_santehnika_tut(self, product_url):
+        '''Функция для парсинга товара из santehnika-tut'''
+        response = await self.client.get(product_url)
+        soup_engine = BeautifulSoup(response.text, 'lxml')
+        try:
+            price_element = soup_engine.find('div', class_='price clubprice').text.strip()
+        except:
+            price_element = soup_engine.find('div', class_='price').text.strip()
+        price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+        name = soup_engine.find('h1').text.strip()
+        return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut'}
+
     @exc_returner
     async def get_product_postmeridiem_brand(self, product_url): #цена не парсится из-за js-кода
         '''Функция для парсинга товара из postmeridiem-brand'''
@@ -2653,7 +2652,6 @@ class Parser:
                     'garlyn': get_product_garlyn,
                     'kuppersberg': get_product_kuppersberg,
                     'bosssleep': get_product_bosssleep,
-                    'muztorg': get_product_muztorg,
                     'voishe': get_product_voishe,
                     'finn-flare': get_product_finn_flare,
                     'biggeek': get_product_biggeek,
@@ -2695,7 +2693,6 @@ class Parser:
                     'ochkarik': get_product_ochkarik,
                     'hi-stores': get_product_hi_stores,
                     'fkniga': get_product_fkniga,
-                    'santehnika-tut': get_product_santehnika_tut,
                     'wau': get_product_wau,
                     'skinjestique': get_product_skinjestique,
                     'igroray': get_product_igroray,
@@ -2730,8 +2727,6 @@ class Parser:
                     'parfums': get_product_parfums,
                     'lex1': get_product_lex1,
                     'r-ulybka': get_product_r_ulybka,
-                    'top-santehnika': get_product_top_santehnika,
-                    'rossko': get_product_rossko,
                     'z51': get_product_z51,
                     'moulinex': get_product_moulinex,
                     'krutizmi': get_product_krutizmi,
@@ -2786,6 +2781,10 @@ class Parser:
                     'euro-diski': get_product_euro_diski,
                     'dvizhcom': get_product_dvizhcom,
                     'bbcream': get_product_bbcream,
+                    'muztorg': get_product_muztorg,
+                    'top-santehnika': get_product_top_santehnika,
+                    'rossko': get_product_rossko,
+                    'santehnika-tut': get_product_santehnika_tut,
                     }
     
     async def process_all_sites(self, prods_to_go):
