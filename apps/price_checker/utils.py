@@ -202,9 +202,9 @@ class PriceUpdater:
         '''Функция-точка входа для уведомления пользователя + изменения продукта (при невозможности получить его цену)'''
         print(f'Продукты, по которым не удалось обновить цену:')
         for product in self.broken_prods: 
-            self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
-                                                            product=product,
-                                                            user=product.author))
+            # self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
+            #                                                 product=product,
+            #                                                 user=product.author))
             product.enabled = False
             product.updated = timezone.now()
 
@@ -395,9 +395,9 @@ class RepetitionsPriceUpdater:
         urls_of_broken_prods = list(*map(lambda x: x.url, self.broken_prods))
         broken_repetitions = Product.objects.filter(url__in=urls_of_broken_prods).select_related('author', 'shop')
         for product in broken_repetitions:
-            self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
-                                                            product=product,
-                                                            user=product.author))
+            # self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ❌ Нет в наличии! </b> Добавлен во вкладку "Нет в наличии".',
+            #                                                 product=product,
+            #                                                 user=product.author))
             product.enabled = False
             product.updated = timezone.now()
 
