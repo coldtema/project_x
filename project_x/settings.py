@@ -185,21 +185,21 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULE = {
     #wb_checker
-    'one_hour_update_single_prods_plus_make_notif':{
+    'thirty_mins_update_single_prods_plus_make_notif':{
         'task': 'apps.wb_checker.tasks.update_single_prods_plus_make_notif',
-        'schedule': 3600,
+        'schedule': 1800,
         },
     'one_day_update_menu_categories':{
         'task': 'apps.wb_checker.tasks.update_menu_categories',
         'schedule': timedelta(hours=24),
         },
-    'twelve_hours_update_top_prods':{
+    'six_hours_update_top_prods':{
         'task': 'apps.wb_checker.tasks.update_top_prods',
-        'schedule': timedelta(hours=12),
+        'schedule': timedelta(hours=6),
         },
-    'one_hour_update_top_prods_info':{
+    'thirty_mins_update_top_prods_info':{
         'task': 'apps.wb_checker.tasks.update_top_prods_info',
-        'schedule': timedelta(hours=1),
+        'schedule': 1800,
         },
     #price_checker
     'three_hours_update_all_price_checker':{
@@ -207,9 +207,9 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(hours=3),
         },
     #core
-    'one_day_clear_notifications':{
+    'one_hour_clear_notifications':{
         'task': 'apps.core.tasks.clear_notifications',
-        'schedule': timedelta(hours=24),
+        'schedule': timedelta(hours=1),
         }
     
     }
