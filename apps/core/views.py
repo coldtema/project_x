@@ -33,7 +33,8 @@ Email: {request.POST['email']}
 
 class MenuView(LoginRequiredMixin, View):
     def get(self, request):
-        prods_snippet = request.user.product_set.filter(enabled=True)[:5]
+        prods_snippet = request.user.product_set.filter(enabled=True)[:3]
+        prods_wb_snippet = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product')[:3]
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
         menu_categories = request.user.wbmenucategory_set.all().prefetch_related('topwbproduct_set')
@@ -54,6 +55,7 @@ class MenuView(LoginRequiredMixin, View):
         wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)
 
         return render(request, 'core/menu.html', context={'prods_snippet': prods_snippet,
+                                                          'prods_wb_snippet': prods_wb_snippet,
                                                           'recs_snippet': recs_snippet,
                                                           'wb_notifications': wb_notifications})
     
