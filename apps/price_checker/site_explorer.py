@@ -1091,21 +1091,6 @@ def get_product_bosssleep(product_url):
 
 
 
-def get_product_muztorg(product_url):
-    '''Функция для парсинга товара из muztorg'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers, timeout=10)
-    soup_engine = BeautifulSoup(response.text, 'lxml')
-    try:
-        price_element = soup_engine.find('div', class_='mt-product-price__default-value').text.strip()
-    except:
-        price_element = soup_engine.find('div', class_='mt-product-price__discounted-value').text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'muztorg'}
-
-
-
 def get_product_finn_flare(product_url):
     '''Функция для парсинга товара из finn-flare'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -1661,21 +1646,6 @@ def get_product_fkniga(product_url):
 
 
 
-def get_product_santehnika_tut(product_url):
-    '''Функция для парсинга товара из santehnika-tut'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = httpx.get(url='product_url', headers=headers, timeout=10, verify=False)#что-то с проверкой сертификатов
-    soup_engine = BeautifulSoup(response.text, 'lxml')
-    try:
-        price_element = soup_engine.find('div', class_='price clubprice').text.strip()
-    except:
-        price_element = soup_engine.find('div', class_='price').text.strip()
-    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut'}
-
-
-
 def get_product_wau(product_url):
     '''Функция для парсинга товара из wau'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -2182,35 +2152,6 @@ def get_product_r_ulybka(product_url):
 
 
 
-def get_product_top_santehnika(product_url):
-    '''Функция для парсинга товара из top-santehnika'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers, timeout=10)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-    try:
-        price_element = soup_engine.find('div', class_='coupon-price').text.strip()
-    except:
-        price_element = soup_engine.find('div', class_='product-cart__price measure-price').text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika'}
-
-
-
-def get_product_rossko(product_url):#временно отвалился
-    '''Функция для парсинга товара из rossko'''
-    headers = {"User-Agent": "Mozilla/5.0"}
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(product_url, headers=headers, timeout=10)
-    soup_engine = BeautifulSoup(response.text, 'html.parser')
-    price_element = soup_engine.find('div', class_='price').text.strip()
-    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('h1').text.strip()
-    return {'price_element': price_element, 'name': name, 'shop': 'rossko'}
-
-
-
 def get_product_z51(product_url):#ыресенно отвалился
     '''Функция для парсинга товара из z51'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -2586,6 +2527,66 @@ def get_product_dvizhcom(product_url):
 def get_product_bbcream(product_url):
     ...
 
+
+
+def get_product_muztorg(product_url):#бан по ip
+    '''Функция для парсинга товара из muztorg'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = request('GET', product_url, headers=headers, timeout=10)
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('div', class_='mt-product-price__default-value').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='mt-product-price__discounted-value').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'muztorg'}
+
+
+def get_product_santehnika_tut(product_url):
+    '''Функция для парсинга товара из santehnika-tut'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    response = httpx.get(url='product_url', headers=headers, timeout=10, verify=False)#что-то с проверкой сертификатов
+    soup_engine = BeautifulSoup(response.text, 'lxml')
+    try:
+        price_element = soup_engine.find('div', class_='price clubprice').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = int(float(''.join(list(filter(lambda x: True if x.isdigit() or x=='.' else False, price_element)))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'santehnika-tut'}
+
+
+
+def get_product_top_santehnika(product_url):
+    '''Функция для парсинга товара из top-santehnika'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers, timeout=10)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    try:
+        price_element = soup_engine.find('div', class_='coupon-price').text.strip()
+    except:
+        price_element = soup_engine.find('div', class_='product-cart__price measure-price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'top-santehnika'}
+
+
+
+def get_product_rossko(product_url):#временно отвалился
+    '''Функция для парсинга товара из rossko'''
+    headers = {"User-Agent": "Mozilla/5.0"}
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers, timeout=10)
+    soup_engine = BeautifulSoup(response.text, 'html.parser')
+    price_element = soup_engine.find('div', class_='price').text.strip()
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
+    name = soup_engine.find('h1').text.strip()
+    return {'price_element': price_element, 'name': name, 'shop': 'rossko'}
+
+
+
 def get_product_postmeridiem_brand(product_url): #цена не парсится из-за js-кода
     '''Функция для парсинга товара из postmeridiem-brand'''
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -2692,7 +2693,6 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'garlyn': get_product_garlyn,
                 'kuppersberg': get_product_kuppersberg,
                 'bosssleep': get_product_bosssleep,
-                'muztorg': get_product_muztorg,
                 'voishe': get_product_voishe,
                 'finn-flare': get_product_finn_flare,
                 'biggeek': get_product_biggeek,
@@ -2734,7 +2734,6 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'ochkarik': get_product_ochkarik,
                 'hi-stores': get_product_hi_stores,
                 'fkniga': get_product_fkniga,
-                'santehnika-tut': get_product_santehnika_tut,
                 'wau': get_product_wau,
                 'skinjestique': get_product_skinjestique,
                 'igroray': get_product_igroray,
@@ -2769,8 +2768,6 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'parfums': get_product_parfums,
                 'lex1': get_product_lex1,
                 'r-ulybka': get_product_r_ulybka,
-                'top-santehnika': get_product_top_santehnika,
-                'rossko': get_product_rossko,
                 'z51': get_product_z51,
                 'moulinex': get_product_moulinex,
                 'krutizmi': get_product_krutizmi,
@@ -2825,6 +2822,10 @@ shop_to_func = {'brandshop': get_product_brandshop,
                 'euro-diski': get_product_euro_diski,
                 'dvizhcom': get_product_dvizhcom,
                 'bbcream': get_product_bbcream,
+                'muztorg': get_product_muztorg,#бан по ip
+                'santehnika-tut': get_product_santehnika_tut,
+                'top-santehnika': get_product_top_santehnika,
+                'rossko': get_product_rossko,
                 }
 
 
