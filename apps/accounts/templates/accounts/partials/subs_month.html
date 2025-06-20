@@ -23,7 +23,14 @@
           <li>Приоритетная поддержка 24/7</li>
           <li>Эксклюзивные предложения</li>
         </ul>
-        <button class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-blue-50 transition">Выбрать</button>
+        <form method="post" action="{% url 'accounts:payment' %}">
+          {% csrf_token %}
+          <input type="hidden" name="plan" value="PLATINUM">
+          <input type="hidden" name="time" value="1">
+          <input type="hidden" name="sum" value="99">
+          <input type="hidden" name='request_payment' value='1'>
+          <button type="submit" class="bg-white text-blue-600 hover:bg-gray-200 px-6 py-2 rounded-lg transition">Выбрать</button>
+        </form>
       </div>
   
       <!-- Ultimate Plan -->
@@ -37,6 +44,13 @@
           <li>Персональный менеджер</li>
           <li>Доступ к закрытым вебинарам и мероприятиям</li>
         </ul>
-        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Выбрать</button>
+        <form method="post" action="{% url 'accounts:payment' %}">
+          {% csrf_token %}
+          <input type="hidden" name="plan" value="ULTIMA">
+          <input type="hidden" name="time" value="1">
+          <input type="hidden" name="sum" value="199">
+          <input type="hidden" name='request_payment' value='1'>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Выбрать</button>
+        </form>
       </div>
     </div>
