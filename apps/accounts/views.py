@@ -181,6 +181,17 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
         return super().get(request, *args, **kwargs)
     
 
+def payment(request):
+    if request.method == 'POST' and request.POST.get('request_payment'):
+        if request.user.subrequest_set.filter(status='PENDING').exists():
+            messages.error(request, message='У вас уже есть активный запрос на подписку. Пожалуйста, дождитесь его обработки')
+            return render(request, 'accounts/payment.html')
+        elif request.user.subscription == 'PREMIUM' or request.user.subscription == 'ULTIMA':
+            messages.error(request, message='У вас уже есть активная подписка. Подробная информация доступна в')
+            return render(request, 'accounts/payment.html')
+        return render(request, 'accounts/payment.html', context={'plan': request.POST.get('plan'),
+                                                                'time': request.POST.get('time'),
+                                                                'sum': request.POST.get('sum')})
 
     
 
