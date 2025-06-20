@@ -26,7 +26,7 @@
         <form method="post" action="{% url 'accounts:payment' %}">
           {% csrf_token %}
           <input type="hidden" name="plan" value="PLATINUM">
-          <input type="hidden" name="time" value="1">
+          <input type="hidden" name="time" value="6">
           <input type="hidden" name="sum" value="354">
           <input type="hidden" name='request_payment' value='1'>
           <button type="submit" class="bg-white text-blue-600 hover:bg-gray-200 px-6 py-2 rounded-lg transition">Выбрать</button>
