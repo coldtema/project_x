@@ -21,3 +21,25 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+
+
+class SubRequest(models.Model):
+    class Subscription(models.TextChoices):
+        ULTIMA = 'ULTIMA', 'Ultima Status'
+        PLATINUM = 'PLATINUM', 'Platinum Status'
+        FREE = 'FREE', 'Free Status'
+
+    class Status(models.TextChoices):
+        FINISHED = 'FINISHED', 'FINISHED'
+        ACCEPTED = 'ACCEPTED', 'ACCEPTED'
+        PENDING = 'PENDING', 'PENDING'
+        DECLINED = 'DECLINED', 'DECLINED'
+    price = models.IntegerField()
+    duration = models.CharField(max_length=8, default='1 month')
+    sub_plan = models.CharField(max_length=8, default=Subscription.FREE, choices=Subscription.choices)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    status = models.CharField(max_length=8, default=Status.PENDING, choices=Status.choices)
+    created = models.DateTimeField(auto_now_add=True)
+
+    
