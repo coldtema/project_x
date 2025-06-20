@@ -1,8 +1,10 @@
 from celery import shared_task
 from apps.core.utils import NotificationsClearer
-from apps.accounts.models import CustomUser
+from apps.accounts.models import CustomUser, SubRequest
 from django.db.models import F, IntegerField, ExpressionWrapper
 from django.db.models.aggregates import Sum
+from dateutil.relativedelta import relativedelta
+from datetime import date
 
 
 @shared_task
@@ -22,3 +24,14 @@ def update_discount_balance():
         balance = balance_prods + balance_wb_prods
         user.discount_balance = balance
         user.save()
+
+
+@shared_task
+def give_subs():
+    subs_to_finish = SubRequest.objects.filter(status=SubRequest.Status.ACCEPTED).select_related('user')
+    for sub_request in subs_to_finish:
+        sub_request.user.subscription = sub_request.sub_plan
+        sub_request.user.sub_expire = date.today() + relativedelta(months=int(sub_request.duration.split()[0]))
+        sub_request.user.save()
+        sub_request.status = SubRequest.Status.FINISHED
+        sub_request.save()
