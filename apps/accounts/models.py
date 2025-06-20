@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
@@ -9,8 +10,9 @@ class CustomUser(AbstractUser):
         FREE = 'FREE', 'Free Status'
     email = models.EmailField(unique=True)
     subscription = models.CharField(max_length=8, default=Subscription.FREE, choices=Subscription.choices)
-    sub_expire = models.DateField(null=True)
+    sub_expire = models.DateField(null=True, blank=True)
     slots = models.IntegerField(default=20)
+    prods = models.IntegerField(default=0, verbose_name='Количество продуктов')
     dest_name = models.CharField(max_length=1000, default="Москва")
     dest_id = models.CharField(max_length=100, default="-1257786")
     discount_balance = models.IntegerField(default=0)
