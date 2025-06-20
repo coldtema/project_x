@@ -14,4 +14,6 @@ urlpatterns = [
     path('notification_edit/', views.notification_edit, name='notification_edit'),
     path('subscription_edit/', views.subscription_edit, name='subscription_edit'),
     path('geolocation_edit/', views.GeolocationEditView.as_view(), name='geolocation_edit'),
+    path('subscription_edit/payment/', views.payment, name='payment'),
+    path('subscription_edit/payment_history/', views.payment_history, name='payment_history')
 ]
