@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView
-from .models import CustomUser
+from .models import CustomUser, SubRequest
 from apps.price_checker.models import Shop, Tag
 from django.views import View
 from .forms import SignUpForm
@@ -119,15 +119,10 @@ class GeolocationEditView(LoginRequiredMixin, View):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
     def get(self, request, *args, **kwargs):
-        print('hello')
         return super().get(request, *args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         form = PasswordResetForm(request.POST)
-        if form.is_valid():
-            print('ok')
-        else:
-            print(form.errors.as_json())
         if not CustomUser.objects.filter(email=request.POST.get('email')).first():
             return render(request, 'registration/password_reset_form.html', context={'form': form, 'error': 'Пользователь с таким E-mail не найден.'})
         return super().post(request, *args, **kwargs)
@@ -181,6 +176,7 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
         return super().get(request, *args, **kwargs)
     
 
+
 def payment(request):
     if request.method == 'POST' and request.POST.get('request_payment'):
         if request.user.subrequest_set.filter(status='PENDING').exists():
@@ -192,6 +188,20 @@ def payment(request):
         return render(request, 'accounts/payment.html', context={'plan': request.POST.get('plan'),
                                                                 'time': request.POST.get('time'),
                                                                 'sum': request.POST.get('sum')})
+    
+
+def payment_history(request):
+    if request.method == 'POST' and request.POST.get('submit_payment'):
+        if request.user.subrequest_set.filter(status='PENDING').exists():
+            messages.error(request, message='У вас уже есть активный запрос на подписку. Пожалуйста, дождитесь его обработки.')
+            return render(request, 'accounts/payment_history.html', context={'orders': SubRequest.objects.filter(user=request.user).order_by('-created')})
+        SubRequest.objects.create(user=request.user,
+                                sub_plan=request.POST.get('plan'),
+                                duration=request.POST.get('time'),
+                                price=request.POST.get('price'))
+        return redirect('accounts:payment_history')
+    return render(request, 'accounts/payment_history.html', context={'orders': SubRequest.objects.filter(user=request.user).order_by('-created')})
+
 
     
 
