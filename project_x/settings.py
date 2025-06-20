@@ -210,6 +210,9 @@ CELERY_BEAT_SCHEDULE = {
     'one_hour_clear_notifications':{
         'task': 'apps.core.tasks.clear_notifications',
         'schedule': timedelta(hours=1),
-        }
-    
+    },
+    'one_minute_give_subs':{
+        'task': 'apps.core.tasks.give_subs',
+        'schedule': timedelta(minutes=1),
     }
+}
