@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="sticky top-4 z-40">
+  <a href="{% url 'accounts:subscription_edit' %}" class="inline-flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-neutral-800 rounded-full text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 border border-gray-300 dark:border-neutral-600 shadow-sm transition cursor-pointer group">
+    <svg class="w-4 h-4 stroke-current group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Назад
+  </a>
+</div>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6">История заявок</h1>
+
+  {% if orders %}
+    <ul class="space-y-4">
+      {% for order in orders %}
+        <li class="bg-white dark:bg-neutral-900 border-2 border-gray-200 dark:border-neutral-700 rounded-xl p-4 shadow-sm">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ order.sub_plan }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Длительность: {{ order.duration }} мес.</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Сумма: <span class="font-semibold">{{ order.price }} ₽</span></p>
+            </div>
+            <div class="text-center gap-4">
+              {% if order.status == 'FINISHED' %}
+                <span class="inline-block bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-semibold px-3 py-1 rounded">Успешно</span>
+              {% elif order.status == 'PENDING' or order.status == 'ACCEPTED' %}
+                <span class="inline-block bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-semibold px-3 py-1 rounded">В обработке</span>
+              {% else %}
+                <span class="inline-block bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs font-semibold px-3 py-1 rounded">Отменено</span>
+              {% endif %}
+              <p class="text-xs text-gray-400 mt-3">{{ order.created|date:"d.m.Y H:i" }}</p>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-center text-gray-500 dark:text-gray-400">У вас пока нет заявок.</p>
+  {% endif %}
+</div>
+{% endblock %}
