@@ -12,6 +12,7 @@ from .pickpoints import load_dest_to_author
 from django.contrib import messages
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.http import HttpResponseNotAllowed
 
 
 
@@ -54,7 +55,7 @@ class SignUpView(View):
 def profile(request):
     sub_dict = {'FREE': 20,
                 'PLATINUM':100,
-                'ULTIMA':1000}
+                'ULTIMA': 1000}
     used_slots = sub_dict[request.user.subscription] - request.user.slots
     return render(request, 'accounts/profile.html', context={'used_slots':used_slots})
 
@@ -176,24 +177,27 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
         return super().get(request, *args, **kwargs)
     
 
-
+@login_required
 def payment(request):
     if request.method == 'POST' and request.POST.get('request_payment'):
-        if request.user.subrequest_set.filter(status='PENDING').exists():
+        if request.user.subrequest_set.filter(status__in=['PENDING', 'ACCEPTED', 'SENT']).exists():
             messages.error(request, message='У вас уже есть активный запрос на подписку. Пожалуйста, дождитесь его обработки')
-            return render(request, 'accounts/payment.html')
-        elif request.user.subscription == 'PREMIUM' or request.user.subscription == 'ULTIMA':
+            return render(request, 'accounts/payment.html')  
+        elif request.user.subscription == 'PLATINUM' or request.user.subscription == 'ULTIMA':
             messages.error(request, message='У вас уже есть активная подписка. Подробная информация доступна в')
-            return render(request, 'accounts/payment.html')
+            return render(request, 'accounts/payment.html')  
         return render(request, 'accounts/payment.html', context={'plan': request.POST.get('plan'),
                                                                 'time': request.POST.get('time'),
                                                                 'sum': request.POST.get('sum')})
-    
+    else:
+        return HttpResponseNotAllowed(['POST'])   
 
+@login_required 
 def payment_history(request):
     if request.method == 'POST' and request.POST.get('submit_payment'):
-        if request.user.subrequest_set.filter(status='PENDING').exists():
-            messages.error(request, message='У вас уже есть активный запрос на подписку. Пожалуйста, дождитесь его обработки.')
+        if request.user.subrequest_set.filter(status__in=['PENDING', 'ACCEPTED', 'SENT']).exists():
+            return render(request, 'accounts/payment_history.html', context={'orders': SubRequest.objects.filter(user=request.user).order_by('-created')})
+        elif request.user.subscription == 'PLATINUM' or request.user.subscription == 'ULTIMA':
             return render(request, 'accounts/payment_history.html', context={'orders': SubRequest.objects.filter(user=request.user).order_by('-created')})
         SubRequest.objects.create(user=request.user,
                                 sub_plan=request.POST.get('plan'),
