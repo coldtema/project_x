@@ -33,13 +33,14 @@ class SubRequest(models.Model):
     class Status(models.TextChoices):
         FINISHED = 'FINISHED', 'FINISHED'
         ACCEPTED = 'ACCEPTED', 'ACCEPTED'
+        SENT = 'SENT', 'SENT'
         PENDING = 'PENDING', 'PENDING'
         DECLINED = 'DECLINED', 'DECLINED'
     price = models.IntegerField()
-    duration = models.CharField(max_length=8, default='1 month')
+    duration = models.CharField(max_length=8, default='1')
     sub_plan = models.CharField(max_length=8, default=Subscription.FREE, choices=Subscription.choices)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     status = models.CharField(max_length=8, default=Status.PENDING, choices=Status.choices)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=timezone.now)
 
     
