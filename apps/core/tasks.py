@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import date
 from django.core.mail import send_mail
 import os
+from django.conf import settings
 
 
 @shared_task
@@ -30,14 +31,10 @@ def update_discount_balance():
 
 @shared_task
 def give_subs():
-    sub_dict = {'FREE': 20,
-                'PLATINUM':100,
-                'ULTIMA': 1000}
     subs_to_finish = SubRequest.objects.filter(status=SubRequest.Status.ACCEPTED).select_related('user')
     for sub_request in subs_to_finish:
         sub_request.user.subscription = sub_request.sub_plan
         sub_request.user.sub_expire = date.today() + relativedelta(months=int(sub_request.duration.split()[0]))
-        sub_request.user.slots = sub_dict[sub_request.sub_plan] - (20 - sub_request.user.slots)
         sub_request.user.save()
         sub_request.status = SubRequest.Status.FINISHED
         sub_request.save()
@@ -59,3 +56,15 @@ Username: {sub.user.username},
                     from_email=os.getenv('EMAIL_HOST_USER'),
                     recipient_list=[os.getenv('EMAIL_HEAVY')],
                     fail_silently=True)
+        
+
+
+
+@shared_task
+def cancel_subs():
+    subs_to_check = CustomUser.objects.filter(subscription__in=['PLATINUM', 'ULTIMA'])
+    for sub in subs_to_check:
+        if sub.sub_expire < date.today():
+            sub.subscription = 'FREE'
+            sub.sub_expire = None
+            sub.save()
