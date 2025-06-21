@@ -668,9 +668,8 @@ class Parser:
         '''Функция для парсинга товара из danielonline'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
+        price_element = soup_engine.find('span', attrs={'itemprop': 'price'})['content']
         all_info = soup_engine.find('title').text.strip()
-        price_element = re.search(pattern=r'по\sцене\s(.+?)(руб\.)', string=all_info).group(1)
-        price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = re.search(pattern=r'(.+?)\,', string=all_info).group(1)
         return {'price_element': price_element, 'name': name, 'shop': 'danielonline'}
 
