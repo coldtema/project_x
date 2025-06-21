@@ -53,11 +53,8 @@ class SignUpView(View):
 
 @login_required
 def profile(request):
-    sub_dict = {'FREE': 20,
-                'PLATINUM':100,
-                'ULTIMA': 1000}
-    used_slots = sub_dict[request.user.subscription] - request.user.slots
-    return render(request, 'accounts/profile.html', context={'used_slots':used_slots})
+    slots = settings.SLOTS_DICT[request.user.subscription] - request.user.prods
+    return render(request, 'accounts/profile.html', context={'slots':slots})
 
 
 
