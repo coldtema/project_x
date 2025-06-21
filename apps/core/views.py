@@ -9,6 +9,7 @@ from django.contrib import messages
 from apps.core.models import Notification
 from django.http import HttpResponse
 from .models import Post
+from .tasks import send_mail_support_form
 
 
 def index(request):
@@ -19,13 +20,7 @@ def index(request):
 
 def contacts(request):
     if request.method == 'POST':
-        send_mail(subject='from support form', 
-                  message=f'''От: {request.POST['name']}
-Email: {request.POST['email']}
-Текст обращения: {request.POST['message']}''',
-                  from_email=os.getenv('EMAIL_HOST_USER'),
-                  recipient_list=[os.getenv('EMAIL_HEAVY')],
-                  fail_silently=True)
+        send_mail_support_form.delay(request.POST['name'], request.POST['email'], request.POST['message'])
         messages.success(request, message='Успех!')
         return render(request, 'core/partials/support_form.html')
     return render(request, 'core/contacts.html')
