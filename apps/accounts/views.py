@@ -14,6 +14,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.http import HttpResponseNotAllowed
 from django.conf import settings
+from apps.core.tasks import admin_sub_notif
 
 
 
@@ -201,6 +202,7 @@ def payment_history(request):
                                 sub_plan=request.POST.get('plan'),
                                 duration=request.POST.get('time'),
                                 price=request.POST.get('price'))
+        admin_sub_notif.delay()
         return redirect('accounts:payment_history')
     return render(request, 'accounts/payment_history.html', context={'orders': SubRequest.objects.filter(user=request.user).order_by('-created')})
 
