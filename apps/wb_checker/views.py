@@ -18,6 +18,7 @@ from django.contrib.postgres.search import SearchVector
 from django.contrib import messages
 from django.db.models import ExpressionWrapper, IntegerField, F
 from apps.wb_checker.utils.notifications import SmartNotification
+from django.conf import settings
 
 
 
@@ -69,7 +70,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
         if form.is_valid():
             author_object = CustomUser.objects.get(pk=request.user.id)
             try:
-                if request.user.slots <= 0:
+                if settings.SLOTS_DICT[request.user.subscription] - request.user.prods <= 0:
                     raise Exception
                 form = WBProductForm()
                 if request.POST.getlist('size', None): #пользователь выбрал размер
@@ -112,7 +113,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
                                                                                   'disabled_prod_count': disabled_prod_count})
                 messages.success(request, 'Успех!')
             except:
-                if request.user.slots <= 0:
+                if settings.SLOTS_DICT[request.user.subscription] - request.user.prods <= 0:
                     messages.error(request, 'Нет места..')
                     if request.POST.get('from_recs', None):
                         return redirect('wb_checker:all_price_list')
@@ -291,7 +292,7 @@ def delete_wb_product(request, id):
     if not product_to_delete:
         return HttpResponse()
     WBDetailedInfo.objects.get(pk=id).delete() #сделать доп функцию у продукта, что если он нигде не фигурирует в качестве Foreign Key, то его нужно удалить
-    request.user.slots += 1
+    request.user.prods -= 1
     request.user.save()
     return HttpResponse()
 
