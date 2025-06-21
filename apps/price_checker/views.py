@@ -20,6 +20,7 @@ from django.db.models import ExpressionWrapper, F, IntegerField
 from django.contrib import messages
 from django.utils import timezone
 from apps.price_checker.notifications import SmartNotification
+from django.conf import settings
 
 
 
@@ -68,7 +69,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         product_form = ProductForm(request.POST)
         try:
-            if request.user.slots <= 0:
+            if settings.SLOTS_DICT[request.user.subscription] - request.user.prods <= 0:
                 messages.error(request, 'Нет места..')
             else:
                 self.get_product_info_and_save(request)
@@ -106,7 +107,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                                                 latest_price=product_data['price_element'],
                                                 first_price=product_data['price_element'])
             Price.objects.create(product=new_product, price=product_data['price_element'])
-            request.user.slots-=1
+            request.user.prods+=1
             request.user.save()
         else:
             new_product, was_not_in_authors_db = Product.objects.get_or_create(name=potential_repetitions[0].name,
@@ -119,7 +120,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                                                                                         'repeated': True})
             if was_not_in_authors_db:
                 Price.objects.create(product=new_product, price=potential_repetitions[0].latest_price)
-                request.user.slots-=1
+                request.user.prods+=1
                 request.user.save()
             else:
                 new_product.updated=timezone.now()
@@ -198,7 +199,7 @@ def delete_product(request, id):
     if not product_to_delete:
         return Http404('??? (нет такого продукта)')
     Product.objects.get(id=id).delete()  
-    request.user.slots+=1
+    request.user.prods-=1
     request.user.save()
     return HttpResponse()
 
