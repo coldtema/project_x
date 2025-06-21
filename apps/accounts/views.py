@@ -10,8 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import WBDestForm
 from .pickpoints import load_dest_to_author
 from django.contrib import messages
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, LoginView
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, AuthenticationForm
 from django.http import HttpResponseNotAllowed
 from django.conf import settings
 from apps.core.tasks import admin_sub_notif
@@ -174,6 +174,13 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'registration/password_reset_complete.html'
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+    
+
+class CustomLoginView(LoginView):
+    def form_invalid(self, form):
+        form.errors.clear()
+        form.add_error(None, "Неправильное имя пользователя или пароль")
+        return self.render_to_response(self.get_context_data(form=form))
     
 
 @login_required
