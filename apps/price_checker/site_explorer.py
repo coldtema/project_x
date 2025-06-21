@@ -1604,9 +1604,9 @@ def get_product_ochkarik(product_url):
     '''Функция для парсинга товара из ochkarik'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get('https://ochkarik.ru/catalog/kontaktnye-linzy/acuvue-oasys-with-hydraluxe-30-linz/', headers=headers, timeout=10)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find('div', 'basket-info__price').text.split('₽')[0]
+    price_element = soup_engine.find('div', class_='basket-info__price').text.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
     return {'price_element': price_element, 'name': name, 'shop': 'ochkarik'}

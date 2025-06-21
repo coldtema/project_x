@@ -1600,7 +1600,7 @@ class Parser:
         '''Функция для парсинга товара из ochkarik'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find('div', 'basket-info__price').text.split('₽')[0]
+        price_element = soup_engine.find('div', class_='basket-info__price').text.split('₽')[0]
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
         return {'price_element': price_element, 'name': name, 'shop': 'ochkarik'}
