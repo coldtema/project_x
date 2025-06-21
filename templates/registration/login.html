@@ -9,7 +9,13 @@
         <!-- Форма входа -->
         <form method="POST">
             {% csrf_token %}
-            
+            {% if form.non_field_errors %}
+            <div class="text-red-600 text-center bg-red-100 border border-red-300 p-2 rounded mb-4">
+                {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
             <!-- Поля формы -->
             <div class="space-y-4">
                 {% for field in form %}
