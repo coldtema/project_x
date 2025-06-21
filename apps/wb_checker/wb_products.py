@@ -129,7 +129,7 @@ class Product:
             if was_not_in_db:
                 new_price[i].detailed_info = new_detailed_info[i]
                 new_price[i].save()
-                self.author_object.slots -= 1
+                self.author_object.prods += 1
                 self.author_object.save()
             else:
                 new_detailed_info[i].updated = timezone.now()
