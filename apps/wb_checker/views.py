@@ -104,6 +104,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
                         prods = request.user.wbdetailedinfo_set.filter(enabled=True).select_related('product', 'author')
                         disabled_prod_count = request.user.wbdetailedinfo_set.filter(enabled=False).count()
                         if request.POST.get('from_recs', None):
+                            messages.success(request, 'Успех!')
                             return redirect('wb_checker:all_price_list')
                         paginator = Paginator(prods, 24)
                         prods = paginator.get_page(1)
