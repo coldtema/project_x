@@ -650,6 +650,7 @@ def get_product_danielonline(product_url):
     response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', attrs={'itemprop': 'price'})['content']
+    price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     all_info = soup_engine.find('title').text.strip()
     name = re.search(pattern=r'(.+?)\,', string=all_info).group(1)
     return {'price_element': price_element, 'name': name, 'shop': 'danielonline'}
