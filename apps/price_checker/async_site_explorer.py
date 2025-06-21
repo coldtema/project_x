@@ -1794,12 +1794,7 @@ class Parser:
         '''Функция для парсинга товара из divanboss'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find_all('p', class_='item-header__price')
-        price_element = list(map(lambda x: x.text, price_element))
-        if '%' in price_element[1]:
-            price_element = price_element[2]
-        else:
-            price_element = price_element[0]
+        price_element = soup_engine.find_all('span', attrs={'id': 'product_price_sale'})[-2].text
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
         name = ' '.join(list(map(lambda x: x.strip(), soup_engine.find('h1').text.strip().split('\n'))))
         return {'price_element': price_element, 'name': name, 'shop': 'divanboss'}
