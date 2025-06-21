@@ -152,3 +152,12 @@
     <input type="hidden" name='lazy-load' value=True>
     <input type="hidden" name='sort' value={{request.GET.sort}}>
 </form>
+
+
+<script>
+        setTimeout(() => {
+            const el = document.getElementById('notif');
+            el.classList.remove('opacity-100');
+            el.classList.add('opacity-0');
+        }, 3000); 
+    </script>
