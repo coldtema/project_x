@@ -225,5 +225,9 @@ CELERY_BEAT_SCHEDULE = {
     'one_minute_admin_sub_notif':{
         'task': 'apps.core.tasks.admin_sub_notif',
         'schedule': timedelta(minutes=1),
+    },
+    'one_day_cancel_subs':{
+        'task': 'apps.core.tasks.cancel_subs',
+        'schedule': timedelta(hours=24),
     }
 }
