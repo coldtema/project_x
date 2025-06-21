@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.http import HttpResponseNotAllowed
+from django.conf import settings
 
 
 
