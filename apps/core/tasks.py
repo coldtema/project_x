@@ -68,3 +68,14 @@ def cancel_subs():
             sub.subscription = 'FREE'
             sub.sub_expire = None
             sub.save()
+
+
+@shared_task
+def send_mail_support_form(name, email, message):
+    send_mail(subject='from support form', 
+                  message=f'''От: {name}
+Email: {email}
+Текст обращения: {message}''',
+                  from_email=os.getenv('EMAIL_HOST_USER'),
+                  recipient_list=[os.getenv('EMAIL_HEAVY')],
+                  fail_silently=True)
