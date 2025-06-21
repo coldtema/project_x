@@ -2328,10 +2328,9 @@ def get_product_vamvelosiped(product_url):
     response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
-        price_element = soup_engine.find_all('span', class_='price price-new')
-        price_element = price_element[-1].text.strip()
+        price_element = soup_engine.find('div', class_='our_price_display text-center').text.split('₽')[1]
     except:
-        price_element = soup_engine.find('span', class_='price').text.strip()
+        price_element = soup_engine.find('div', class_='our_price_display text-center').text.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     name = soup_engine.find('h1').text.strip()
     return {'price_element': price_element, 'name': name, 'shop': 'vamvelosiped'}
