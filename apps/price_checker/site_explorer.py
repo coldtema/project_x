@@ -1078,12 +1078,7 @@ def get_product_bosssleep(product_url):
     headers = {"User-Agent": "Mozilla/5.0"}
     response = request('GET', product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
-    price_element = soup_engine.find_all('p', class_='item-header__price')
-    price_element = list(map(lambda x: x.text, price_element))
-    if '%' in price_element[1]:
-        price_element = price_element[2]
-    else:
-        price_element = price_element[0]
+    price_element = soup_engine.find_all('span', attrs={'id': 'product_price_sale'})[-2].text
     name = soup_engine.find('h1').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
     return {'price_element': price_element, 'name': name, 'shop': 'bosssleep'}
