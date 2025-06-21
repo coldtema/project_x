@@ -178,6 +178,13 @@ INTERNAL_IPS = [
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 
+SLOTS_DICT = {
+    'FREE': 20,
+    'PLATINUM': 100,
+    'ULTIMA': 1000
+}
+
+
 CELERY_BROKER_URL = 'redis://localhost:6379/0' 
 CELERY_RESULT_BACKEND = 'django-db' #'redis://localhost:6379/0' 
 CELERY_ACCEPT_CONTENT = ['json']
