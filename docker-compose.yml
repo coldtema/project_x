@@ -7,7 +7,8 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput &&
-             gunicorn project_x.wsgi:application --bind 0.0.0.0:8000"
+             python manage.py loaddata initial.json &&
+             gunicorn project_x.wsgi:application --bind 0.0.0.0:8000 --workers 3 --preload --log-level info"
     volumes:
       - .:/code
     ports:
@@ -36,6 +37,18 @@ services:
     build:
       context: .
     command: celery -A project_x worker --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+
+  celery-beat:
+    build:
+      context: .
+    command: celery -A project_x beat --loglevel=info
     volumes:
       - .:/code
     depends_on:
