@@ -10,6 +10,7 @@ __pycache__/
 *.bak
 *.dat
 *.dir
+*.json
 balvanka.py
 
 # Игнорируем конфиденциальные данные
