@@ -31,9 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['domen.com', 'www.domen.com']
 
 LOGIN_REDIRECT_URL  =  "/"
 LOGOUT_REDIRECT_URL  =  "/"
@@ -100,7 +100,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': '127.0.0.1', #'db'
+        'HOST': 'db', #'127.0.0.1' db
         'PORT': '5432',
     }
 }
@@ -181,11 +181,11 @@ NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 SLOTS_DICT = {
     'FREE': 20,
     'PLATINUM': 100,
-    'ULTIMA': 1000
+    'ULTIMA': 500
 }
 
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0' 
+CELERY_BROKER_URL = 'redis://redis:6379/0' 
 CELERY_RESULT_BACKEND = 'django-db' #'redis://localhost:6379/0' 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
@@ -227,3 +227,9 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(hours=24),
     }
 }
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
