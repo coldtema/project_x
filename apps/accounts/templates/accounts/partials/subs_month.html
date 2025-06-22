@@ -2,26 +2,25 @@
     <div class="grid md:grid-cols-3 gap-8">
       <!-- Basic Plan -->
       <div class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center">
-        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Базовый</h3>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">FREE</h3>
         <p class="text-gray-600 dark:text-gray-400 text-lg mb-6">Идеально для людей, которым нужно только основное.</p>
         <p class="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">Бесплатно</p>
         <ul class="text-left text-gray-600 dark:text-gray-400 mb-6 space-y-2">
-          <li>Доступ к основным рекомендациям</li>
-          <li>2 предложения в неделю</li>
-          <li>Без поддержки 24/7</li>
+          <li>Ограниченный доступ к рекомендациям</li>
+          <li>20 мест для отслеживания</li>
+          <li>Обновление цен раз в час</li>
         </ul>
       </div>
   
       <!-- Premium Plan -->
       <div class="bg-blue-600 dark:bg-blue-700 border border-blue-500 dark:border-blue-500 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center text-white">
-        <h3 class="text-2xl font-semibold mb-4">Премиум</h3>
+        <h3 class="text-2xl font-semibold mb-4">PLATINUM</h3>
         <p class="text-lg mb-6">Для тех, кто хочет больше возможностей и дополнительных преимуществ.</p>
         <p class="text-4xl font-bold mb-4">₽99/мес</p>
         <ul class="text-left mb-6 space-y-2">
           <li>Доступ ко всем рекомендациям</li>
-          <li>10 предложений в неделю</li>
-          <li>Приоритетная поддержка 24/7</li>
-          <li>Эксклюзивные предложения</li>
+          <li>100 мест для отслеживания</li>
+          <li>Обновление цен раз в 30 минут</li>
         </ul>
         <form method="post" action="{% url 'accounts:payment' %}">
           {% csrf_token %}
@@ -35,14 +34,13 @@
   
       <!-- Ultimate Plan -->
       <div class="bg-white dark:bg-neutral-800 border border-gray-300 dark:border-neutral-700 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out p-6 text-center">
-        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Ультра</h3>
+        <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">ULTIMA</h3>
         <p class="text-gray-600 dark:text-gray-400 text-lg mb-6">Для настоящих ценителей, которым нужно всё и сразу.</p>
         <p class="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">₽199/мес</p>
         <ul class="text-left text-gray-600 dark:text-gray-400 mb-6 space-y-2">
-          <li>Доступ ко всем эксклюзивным материалам</li>
-          <li>Неограниченное количество предложений</li>
-          <li>Персональный менеджер</li>
-          <li>Доступ к закрытым вебинарам и мероприятиям</li>
+          <li>Доступ ко всем рекомендациям</li>
+          <li>500 мест для отслеживания</li>
+          <li>Обновление цен раз в 10 минут</li>
         </ul>
         <form method="post" action="{% url 'accounts:payment' %}">
           {% csrf_token %}
