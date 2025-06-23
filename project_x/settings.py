@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['heavydrop.com', 'www.heavydrop.com']
+ALLOWED_HOSTS = ['heavydrop.ru', 'www.heavydrop.ru']
 
 LOGIN_REDIRECT_URL  =  "/"
 LOGOUT_REDIRECT_URL  =  "/"
