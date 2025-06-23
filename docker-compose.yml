@@ -2,19 +2,20 @@ version: '3.12.6'
 
 services:
   web:
-    build:
-      context: .
+    build: .
     command: >
       sh -c "python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              python manage.py loaddata initial.json &&
-             gunicorn project_x.wsgi:application --bind 0.0.0.0:8000 --workers 3 --preload --log-level info"
+             gunicorn project_x.wsgi:application --bind 0.0.0.0:8000 --workers 3"
     volumes:
       - static:/code/staticfiles
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Для теста 
     env_file:
       - .env
+    networks:
+      - app_network
     depends_on:
       - db
       - redis
@@ -25,51 +26,59 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
-    ports:
-      - "5432:5432"
+    networks:
+      - app_network
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    networks:
+      - app_network
 
   celery:
-    build:
-      context: .
+    build: .
     command: celery -A project_x worker --loglevel=info
     volumes:
       - .:/code
+    env_file:
+      - .env
+    networks:
+      - app_network
     depends_on:
       - redis
       - db
-    env_file:
-      - .env
 
   celery-beat:
-    build:
-      context: .
-    command: celery -A project_x beat --loglevel=info
+    build: .
+    command: celery -A project_x beat --loglevel=info --schedule=/tmp/celerybeat-schedule
     user: "1000:1000"
     volumes:
       - .:/code
+    env_file:
+    - .env
+    networks:
+      - app_network
     depends_on:
       - redis
       - db
-    env_file:
-      - .env
 
   nginx:
     image: nginx:latest
     ports:
-    - "80:80"
-    - "443:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - /etc/letsencrypt/:/etc/letsencrypt/
       - static:/code/staticfiles
+    networks:
+      - app_network
     depends_on:
       - web
 
 volumes:
   static:
   postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
