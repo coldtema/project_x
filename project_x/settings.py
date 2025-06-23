@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['domen.com', 'www.domen.com']
+ALLOWED_HOSTS = ['heavydrop.com', 'www.heavydrop.com']
 
 LOGIN_REDIRECT_URL  =  "/"
 LOGOUT_REDIRECT_URL  =  "/"
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # 'django_browser_reload',
 ]
 
+#..
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -66,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     # 'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
@@ -153,7 +154,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -230,6 +231,9 @@ CELERY_BEAT_SCHEDULE = {
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False 
+SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+USE_X_FORWARDED_HOST = True
+CSRF_TRUSTED_ORIGINS = ['https://heavydrop.ru', 'https://www.heavydrop.ru']
