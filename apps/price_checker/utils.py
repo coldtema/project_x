@@ -85,7 +85,7 @@ class PriceUpdater:
         '''Функция для конструирования словаря типа (магазин: все его продукты)'''
         temp_dict = dict()
         for product in self.batched_prods:
-            temp_dict.setdefault(product.shop.name, []).append(product)
+            temp_dict.setdefault(product.shop.regex_name, []).append(product)
         return temp_dict
         
 
