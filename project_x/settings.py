@@ -207,7 +207,7 @@ CELERY_BEAT_SCHEDULE = {
         },
     'thirty_mins_update_top_prods_info':{
         'task': 'apps.wb_checker.tasks.update_top_prods_info',
-        'schedule': 300,
+        'schedule': 1800,
         },
     #price_checker
     'three_hours_update_all_price_checker':{
