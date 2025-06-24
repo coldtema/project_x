@@ -36,7 +36,7 @@ services:
 
   celery:
     build: .
-    command: celery -A project_x worker --loglevel=info
+    command: celery -A project_x worker --concurrency=2 --max-tasks-per-child=5 --loglevel=info
     volumes:
       - .:/code
     env_file:
