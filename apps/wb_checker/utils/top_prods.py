@@ -12,6 +12,7 @@ from apps.wb_checker.utils.general_utils import time_count
 from apps.wb_checker.models import TopWBProduct
 from django.db import transaction
 from apps.wb_checker.utils.general_utils import get_price_history_url
+import gc
 
 
 class TopBuilder:
@@ -127,6 +128,7 @@ class UpdaterInfoOfTop:
         '''Инициализация необходимых атрибутов'''
         self.batch_size = 200 #из-за маленького батчинга начинает бд захлебываться под конец (если много изменений)
         self.len_all_top_wb_products_list = TopWBProduct.objects.all().count()
+        self.artikuls_of_all_top_wb_products_list = TopWBProduct.objects.all().values_list('artikul', flat=True)
         self.batched_top_wb_products_list = []
         self.scraper = cloudscraper.create_scraper()
         self.headers = {"User-Agent": "Mozilla/5.0"}
@@ -136,9 +138,12 @@ class UpdaterInfoOfTop:
     def run(self):
         '''Запуск процесса обновления + разбиение всех продуктов на батчи'''
         for i in range(math.ceil(self.len_all_top_wb_products_list / self.batch_size)):
-            self.batched_top_wb_products_list = TopWBProduct.objects.all()[i*self.batch_size:(i+1)*self.batch_size]
+            self.batched_top_wb_products_list = TopWBProduct.objects.filter(id__in=self.artikuls_of_all_top_wb_products_list[i*self.batch_size:(i+1)*self.batch_size])
             self.get_new_info()
-        self.save_update_prices()
+            self.save_update_prices()
+            self.updated_top_prods = []
+            self.top_prods_artikuls_to_delete = []
+            gc.collect()
 
 
     def get_new_info(self):
