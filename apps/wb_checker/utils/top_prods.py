@@ -138,10 +138,9 @@ class UpdaterInfoOfTop:
     def run(self):
         '''Запуск процесса обновления + разбиение всех продуктов на батчи'''
         for i in range(math.ceil(self.len_all_top_wb_products_list / self.batch_size)):
-            self.batched_top_wb_products_list = TopWBProduct.objects.filter(id__in=self.artikuls_of_all_top_wb_products_list[i*self.batch_size:(i+1)*self.batch_size])
+            self.batched_top_wb_products_list = TopWBProduct.objects.filter(artikul__in=self.artikuls_of_all_top_wb_products_list[i*self.batch_size:(i+1)*self.batch_size])
             self.get_new_info()
             self.save_update_prices()
-            print(len(self.updated_top_prods))
             self.updated_top_prods = []
             self.top_prods_artikuls_to_delete = []
             gc.collect()
