@@ -207,7 +207,7 @@ CELERY_BEAT_SCHEDULE = {
         },
     'thirty_mins_update_top_prods_info':{
         'task': 'apps.wb_checker.tasks.update_top_prods_info',
-        'schedule': 1800,
+        'schedule': 300,
         },
     #price_checker
     'three_hours_update_all_price_checker':{
@@ -231,8 +231,7 @@ CELERY_BEAT_SCHEDULE = {
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True 
-SESSION_COOKIE_HTTPONLY = True
+SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 USE_X_FORWARDED_HOST = True
