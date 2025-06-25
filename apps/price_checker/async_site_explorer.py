@@ -10,7 +10,7 @@ import asyncio
 class Parser:
 
     def __init__(self):
-        self.client = httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}, limits=httpx.Limits(max_connections=200, max_keepalive_connections=200), timeout=httpx.Timeout(10.0, connect=9.0))
+        self.client = httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}, limits=httpx.Limits(max_connections=200, max_keepalive_connections=200), timeout=httpx.Timeout(15.0, connect=10.0))
 
     def get_shop_of_product(self, product_url):
         '''Функция, определяющая, какому магазину принадлежит ссылка'''
