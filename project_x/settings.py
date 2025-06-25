@@ -237,11 +237,3 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 USE_X_FORWARDED_HOST = True
 CSRF_TRUSTED_ORIGINS = ['https://heavydrop.ru', 'https://www.heavydrop.ru']
-
-
-def simple_middleware(get_response):
-    def middleware(request):
-        print("is_secure:", request.is_secure())
-        print("X-Forwarded-Proto:", request.META.get("HTTP_X_FORWARDED_PROTO"))
-        return get_response(request)
-    return middleware
