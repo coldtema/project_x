@@ -127,7 +127,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
                                                                                             'disabled_prod_count': disabled_prod_count})
 
 
-    @time_count
+    
     def url_dispatcher(self, url, author_object, sizes_to_save=None):
         '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
         if re.search(pattern=r'catalog\/\d+\/detail', string=url):
@@ -162,7 +162,7 @@ class WBCheckerMain(LoginRequiredMixin, View):
 
 
 class WBDisabledProds(LoginRequiredMixin, View):
-    @time_count
+    
     def get(self, request, *args, **kwargs):
         prods = request.user.wbdetailedinfo_set.filter(enabled=False).select_related('product', 'author')
         paginator = Paginator(prods, 12)
@@ -189,7 +189,7 @@ class WBDisabledProds(LoginRequiredMixin, View):
 
 
 class RecommentationsList(LoginRequiredMixin, View):
-    @time_count
+    
     def get(self, request, *args, **kwargs): #по факту можно все в кэш вынести
         brands = request.user.wbbrand_set.all().prefetch_related('topwbproduct_set')
         sellers = request.user.wbseller_set.all().prefetch_related('topwbproduct_set')
@@ -312,7 +312,7 @@ def delete_price(request, id):
 
 
 class RecommendationSettings(LoginRequiredMixin, View):
-    @time_count
+    
     def dispatch(self, request, *args, **kwargs):
         self.subs_brand = request.user.wbbrand_set.all()
         self.subs_brand_ids = list(map(lambda x: x.id, self.subs_brand))
@@ -360,7 +360,7 @@ class RecommendationSettings(LoginRequiredMixin, View):
             print('отлов ошибки')
         return render(request, 'wb_checker/recommendation_settings.html', context=self.context)
     
-    @time_count
+    
     def post_dispatcher(self, request):
 
         if request.POST.get('form_type', None) == 'search_submit_changes':
@@ -426,7 +426,7 @@ class RecommendationSettings(LoginRequiredMixin, View):
 
 
                                                                     
-    @time_count
+    
     def url_dispatcher(self, request):
         '''Функция разведения по разным модулям парсинга исходя из введенного текста'''
         if re.search(pattern=r'catalog\/\d+\/detail', string=request.GET['url']):

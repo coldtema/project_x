@@ -101,7 +101,7 @@ class PriceUpdater:
 
     @time_count
     def async_update_prices(self):
-        '''Функция обновления цен'''
+        '''Асинхронно обновляем цены'''
         while len(self.prods_to_go) != 0:
             self.fill_prods_to_go()
             parser = Parser()
@@ -127,7 +127,7 @@ class PriceUpdater:
 
     @time_count
     def sync_update_prices(self):
-        '''Функция обновления цен'''
+        '''Синхронно обновляем цены'''
         for product in self.async_exeption_prods:
             try:
                 maybe_new_price = get_shop_of_product(product.url)['price_element']
@@ -208,7 +208,7 @@ class PriceUpdater:
             product.enabled = False
             product.updated = timezone.now()
 
-    @time_count
+
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''
@@ -401,7 +401,7 @@ class RepetitionsPriceUpdater:
             product.enabled = False
             product.updated = timezone.now()
 
-    @time_count
+
     @transaction.atomic
     def save_all_to_db(self):
         '''Занесение всех изменений в БД одной атомарной транзакцией'''

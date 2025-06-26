@@ -148,7 +148,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
 
 
 class DisabledProds(LoginRequiredMixin, View):
-    @time_count
+    
     def get(self, request, *args, **kwargs):
         db_products =  request.user.product_set.filter(enabled=False)
         paginator = Paginator(db_products, 24)

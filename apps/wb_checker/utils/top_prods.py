@@ -27,7 +27,7 @@ class TopBuilder:
 
     @time_count
     def build_top(self):
-        '''Главная функция построения топа'''
+        '''Главная функция построения топа стека товаров'''
         dict_artikuls_and_urls_to_make_tasks = {artikul:get_price_history_url(artikul) for artikul in self.dict_products_in_catalog.keys()}
         dict_artikuls_price_history = asyncio.run(group_all_histories(dict_artikuls_and_urls_to_make_tasks))
         for artikul, product_object in self.dict_products_in_catalog.items():
@@ -37,7 +37,7 @@ class TopBuilder:
                 self.price_history.append((timezone.now(), product_object.latest_price))
             except:
                 self.price_history = [(timezone.now(), product_object.latest_price)]
-            if len(self.price_history) < 4: #вот здесь брать немного по другому в плане если даже истории цены нет,Ю 
+            if len(self.price_history) < 4: #вот здесь брать немного по другому в плане если даже истории цены нет
                 if product_object.feedbacks < 100 or product_object.rating < 4.8:
                     product_object.score, product_object.true_discount = 0, 0
                 else:

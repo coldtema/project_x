@@ -31,9 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True #False True
 
-ALLOWED_HOSTS = ['heavydrop.ru', 'www.heavydrop.ru']
+ALLOWED_HOSTS = ['*'] #['heavydrop.ru', 'www.heavydrop.ru']
 
 LOGIN_REDIRECT_URL  =  "/"
 LOGOUT_REDIRECT_URL  =  "/"
@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB'),
         'USER': os.getenv('POSTGRES_USER'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': 'db', #'127.0.0.1' db
+        'HOST': '127.0.0.1', #'127.0.0.1' db
         'PORT': '5432',
     }
 }
@@ -230,9 +230,9 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-USE_X_FORWARDED_HOST = True
-CSRF_TRUSTED_ORIGINS = ['https://heavydrop.ru', 'https://www.heavydrop.ru']
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_SSL_REDIRECT = True
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# USE_X_FORWARDED_HOST = True
+# CSRF_TRUSTED_ORIGINS = ['https://heavydrop.ru', 'https://www.heavydrop.ru']

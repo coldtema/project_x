@@ -73,7 +73,7 @@ class PriceUpdater:
 
 
 
-    @time_count
+    
     def update_info(self, products_on_page):
         '''Обновление цен продуктов, которые есть наличии + 
         разведение по тем, у кого есть размер, и тем, у кого нет'''
@@ -183,7 +183,7 @@ class PriceUpdater:
                                                                 user=self.current_detail_to_check.author))
 
 
-    @time_count
+    
     @transaction.atomic
     def save_update_prices(self):
         '''Занесение в БД обновления наличия'''
@@ -270,7 +270,7 @@ class AvaliabilityUpdater:
 
 
 
-    @time_count
+    
     def update_avaliability(self, products_on_page):
         '''Обновление наличия продуктов, которые были не в наличии в БД + 
         разведение по тем, у кого есть размер, и тем, у кого нет'''
@@ -348,7 +348,7 @@ class AvaliabilityUpdater:
                                                                         user=detailed_info.author))
 
 
-    @time_count
+    
     @transaction.atomic
     def save_update_avaliability(self):
         '''Занесение в БД обновления наличия'''
