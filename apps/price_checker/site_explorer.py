@@ -1007,7 +1007,8 @@ def get_product_madwave(product_url):
 def get_product_apple_avenue(product_url):
     '''Функция для парсинга товара из apple-avenue'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers, timeout=10)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='price font-price-large bold').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
