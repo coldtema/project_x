@@ -3,10 +3,10 @@ from .models import Product, Price, Shop, Tag
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'shop', 'latest_price', 'created', 'updated']
-    list_filter = ['shop']
+    list_display = ['name', 'shop', 'latest_price', 'author', 'created', 'updated']
+    list_filter = ['shop', 'author']
     search_fields = ['name']
-    ordering = ['-updated']
+    ordering = ['-created']
 
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
