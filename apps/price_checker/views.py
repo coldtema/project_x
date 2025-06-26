@@ -75,7 +75,8 @@ class PriceCheckerMain(LoginRequiredMixin, View):
                 self.get_product_info_and_save(request)
                 #убрать в dispatch потом
                 messages.success(request, 'Успех!')
-        except:
+        except Exception as e:
+            print(e)
             messages.success(request, 'Ошибка..')
         db_products = request.user.product_set.filter(enabled=True) 
         paginator = Paginator(db_products, 24)
@@ -148,7 +149,7 @@ class PriceCheckerMain(LoginRequiredMixin, View):
 
 
 class DisabledProds(LoginRequiredMixin, View):
-    
+
     def get(self, request, *args, **kwargs):
         db_products =  request.user.product_set.filter(enabled=False)
         paginator = Paginator(db_products, 24)
