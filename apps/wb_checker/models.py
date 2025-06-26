@@ -33,7 +33,7 @@ class WBSeller(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя продавца WB')
     wb_id = models.IntegerField(unique=True, verbose_name='ID продавца WB') 
     main_url = models.URLField(blank=True, verbose_name='URL главной страницы')
-    subs = models.ManyToManyField(CustomUser, verbose_name='Подпичсики селлера')
+    subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики селлера')
 
     class Meta:
         verbose_name = 'Продавец WB'
@@ -53,8 +53,8 @@ class WBBrand(models.Model):
     subs = models.ManyToManyField(CustomUser, verbose_name='Подписчики бренда')
 
     class Meta:
-        verbose_name = 'Магазин'
-        verbose_name_plural = 'Магазины'
+        verbose_name = 'Бренд WB'
+        verbose_name_plural = 'Бренды WB'
         indexes = [
             models.Index(fields=['wb_id']),
             ]
