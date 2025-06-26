@@ -53,7 +53,7 @@ Username: {sub.user.username},
 Длительность: {sub.duration} мес.
 Сумма: {sub.price} руб.
 Время создания: {sub.created}''',
-                    from_email=os.getenv('EMAIL_HOST_USER'),
+                    from_email=os.getenv('EMAIL_HEAVY'),
                     recipient_list=[os.getenv('EMAIL_HEAVY')],
                     fail_silently=True)
         
@@ -76,6 +76,6 @@ def send_mail_support_form(name, email, message):
                   message=f'''От: {name}
 Email: {email}
 Текст обращения: {message}''',
-                  from_email=os.getenv('EMAIL_HOST_USER'),
+                  from_email=os.getenv('EMAIL_HEAVY'),
                   recipient_list=[os.getenv('EMAIL_HEAVY')],
                   fail_silently=True)
