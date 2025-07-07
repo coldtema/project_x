@@ -846,7 +846,8 @@ def get_product_ecco(product_url):
 def get_product_xcom_shop(product_url):
     '''Функция для парсинга товара из xcom-shop'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers, timeout=10)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get('https://www.xcom-shop.ru/huawei_matebook_d16_2024_1069324.html', headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('div', class_='card-content-total-price__current').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
