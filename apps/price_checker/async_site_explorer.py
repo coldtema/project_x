@@ -54,14 +54,11 @@ class Parser:
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
         try:
-            price_element = soup_engine.find("div", class_="product-detail__sale-price--black").text.strip()
+            price_element = soup_engine.find("div", class_="text-body-18-r text-black-800 line-through").text.strip()
         except:
-            price_element = soup_engine.find("div", class_="price").text.strip()
-            price_element = price_element.split('₽')[0]
+            price_element = soup_engine.find("div", class_="text-body-18-s text-brand-900").text.strip()
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
-        name = soup_engine.find("div", class_="detail__info-wrapper")
-        name = ' '.join(list(name.stripped_strings)) #переделанный в строку генератор отредактированных строк
-        name = re.search(pattern=r'(.+?) Цвет', string=name).group(1)
+        name = soup_engine.find("title").text
         return {'price_element': price_element, 'name': name, 'shop': 'superstep',}
 
 
