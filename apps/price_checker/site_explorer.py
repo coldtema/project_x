@@ -35,7 +35,7 @@ def get_product_superstep(product_url):
     '''Функция для парсинга товара из superstep'a'''
     headers = {"User-Agent": "Mozilla/5.0"}
     scraper = cloudscraper.create_scraper()
-    response = scraper.get('https://superstep.ru/product/TF0505_70V/', headers=headers, timeout=10)
+    response = scraper.get(product_url, headers=headers, timeout=10)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     try:
         price_element = soup_engine.find("div", class_="text-body-18-r text-black-800 line-through").text.strip()
