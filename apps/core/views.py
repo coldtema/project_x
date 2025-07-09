@@ -86,6 +86,7 @@ def notifications_swap(request):
 
 @csrf_exempt
 def bot_webhook(request):
+    print('привет')
     if request.method == 'POST':
         data = json.loads(request.body)
 
