@@ -9,11 +9,12 @@ from django.contrib import messages
 from apps.core.models import Notification
 from django.http import HttpResponse
 from .models import Post
-from .tasks import send_mail_support_form
+from .tasks import send_mail_support_form, add_tg_user
 from apps.core import bot
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from apps.accounts.models import TelegramUser
 
 
 def index(request):
@@ -86,7 +87,6 @@ def notifications_swap(request):
 
 @csrf_exempt
 def bot_webhook(request):
-    print('привет')
     if request.method == 'POST':
         data = json.loads(request.body)
 
@@ -94,10 +94,12 @@ def bot_webhook(request):
         text = message.get('text', '')
         chat_id = message.get('chat', {}).get('id')
         username = message.get('from', {}).get('username')
+        first_name = message.get('from', {}).get('first_name')
         print(data)
 
         if text == '/start':
             print(f"User @{username} ({chat_id}) нажал /start")
+            add_tg_user.delay(chat_id, username, first_name)
             bot.send_first_telegram_message(chat_id)
         return JsonResponse({'ok': True})
 
