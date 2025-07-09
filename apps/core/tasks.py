@@ -8,6 +8,7 @@ from datetime import date
 from django.core.mail import send_mail
 import os
 from django.conf import settings
+from apps.accounts.models import TelegramUser
 
 
 @shared_task
@@ -79,3 +80,11 @@ Email: {email}
                   from_email=os.getenv('EMAIL_HEAVY'),
                   recipient_list=[os.getenv('EMAIL_HEAVY')],
                   fail_silently=True)
+    
+
+@shared_task
+def add_tg_user(chat_id, username, first_name):
+    TelegramUser.objects.get_or_create(defaults={'tg_id':chat_id},
+                                       username=username,
+                                       first_name=first_name)
+    return True
