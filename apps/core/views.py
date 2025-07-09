@@ -10,6 +10,10 @@ from apps.core.models import Notification
 from django.http import HttpResponse
 from .models import Post
 from .tasks import send_mail_support_form
+from apps.core import bot
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
@@ -78,3 +82,21 @@ def notifications_swap(request):
     if request.GET['type-toggle'] == 'WB':
         wb_notifications = sorted(Notification.objects.filter(user=request.user, wb_product__isnull=False).select_related('wb_product'), key=lambda x: x.time, reverse=True)
         return render(request, 'core/partials/shops_notifications.html', context={'wb_notifications': wb_notifications})
+    
+
+@csrf_exempt
+def bot_webhook(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        message = data.get('message', {})
+        text = message.get('text', '')
+        chat_id = message.get('chat', {}).get('id')
+        username = message.get('from', {}).get('username')
+        print(data)
+
+        if text == '/start':
+            print(f"User @{username} ({chat_id}) нажал /start")
+            bot.send_first_telegram_message(chat_id)
+        return JsonResponse({'ok': True})
+
