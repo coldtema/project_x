@@ -13,5 +13,5 @@ urlpatterns = [
     path('delete_notification/<int:id>', views.delete_notification, name='delete_notification'),
     path('notifications_swap/', views.notifications_swap, name='notifications_swap'),
     path('guide/', views.guide, name='guide'),
-    path(f'bot/{os.getenv("WEBHOOK_TOKEN")}/webhook', views.bot_webhook, name='bot_webhook'),
+    path(f'bot/{os.getenv("WEBHOOK_TOKEN")}/webhook/', views.bot_webhook, name='bot_webhook'),
 ]
