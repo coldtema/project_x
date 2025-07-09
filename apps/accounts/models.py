@@ -3,6 +3,17 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 
+
+class TelegramUser(models.Model):
+    username = models.CharField(max_length=256)
+    first_name = models.CharField(max_length=256)
+    tg_id = models.IntegerField()
+
+    def __str__(self):
+        return self.username
+
+
+
 class CustomUser(AbstractUser):
     class Subscription(models.TextChoices):
         ULTIMA = 'ULTIMA', 'Ultima Status'
@@ -20,10 +31,12 @@ class CustomUser(AbstractUser):
     notification_discount = models.IntegerField(default=10, verbose_name='Скидка для уведомления (%)')
     pricedown_notification = models.BooleanField(default=True)
     priceup_notification = models.BooleanField(default=True)
+    tg_user = models.OneToOneField(to=TelegramUser, on_delete=models.CASCADE, related_name='web_user', null=True)
+    tg_token = models.IntegerField(null=True)
 
     def __str__(self):
         return self.username
-    
+
 
 
 class SubRequest(models.Model):
