@@ -5,10 +5,35 @@
             Привязка к Telegram
   </label>
     {% if telegram_code %}
-    <div class="text-center text-lg font-semibold text-blue-700 dark:text-blue-400">
-            Код: <span class="bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded">{{ telegram_code }}</span>
-            <div class="text-sm text-gray-500 mt-1">Отправьте этот код нашему Telegram-боту <a href="https://t.me/heavydrop_bot" class="text-indigo-600 dark:text-indigo-400 hover:underline">@heavydrop_bot</a></div>
-    </div>
+      {% if telegram_code == 1%}
+        <div class="text-center text-lg font-semibold text-blue-700 dark:text-blue-400">
+            <div class="text-sm text-gray-500 mt-1">Ваш аккаунт уже привязан к профилю Telegram</div>
+            <form method="post"
+                  hx-post="{%url 'accounts:delete_tg_connection'%}"
+                  hx-target=".tg_form"
+                  hx-swap="innerHTML"
+                  hx-trigger="click from:#delete_tg_connection">
+                {% csrf_token %}
+
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 text-center pb-2">
+                    Если хотите выключить Telegram-уведомления, нажмите на кнопку ниже.
+                  </p>
+                  <button type="button"
+                          id="delete_tg_connection"
+                          class="w-full px-4 py-2 rounded-xl bg-red-600 text-white font-medium transition">
+                    Отключить уведомления
+                  </button>
+                </div>
+            </form>
+            
+        </div>
+      {% else %}
+        <div class="text-center text-lg font-semibold text-blue-700 dark:text-blue-400">
+                Код: <span class="bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded">{{ telegram_code }}</span>
+                <div class="text-sm text-gray-500 mt-1">Отправьте этот код нашему Telegram-боту <a href="https://t.me/heavydrop_bot" class="text-indigo-600 dark:text-indigo-400 hover:underline">@heavydrop_bot</a></div>
+        </div>
+      {% endif %}
     {% endif %}
 
 
