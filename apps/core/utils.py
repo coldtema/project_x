@@ -1,4 +1,4 @@
-from apps.accounts.models import CustomUser
+from apps.accounts.models import CustomUser, TelegramUser
 import math
 from django.db import transaction
 from apps.core.models import Notification
@@ -35,3 +35,13 @@ class NotificationsClearer:
     def delete_notif_in_db(self):
         '''Занесение в БД обновления наличия'''
         Notification.objects.filter(pk__in=self.notification_ids_to_delete).delete()
+
+
+
+def check_tg_code(tg_code, chat_id):
+    user_to_connect = CustomUser.objects.filter(tg_token=tg_code).first()
+    if user_to_connect:
+        user_to_connect.tg_user = TelegramUser.objects.get(tg_id=chat_id)
+        user_to_connect.save()
+        return True
+    return False
