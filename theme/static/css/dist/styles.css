@@ -438,6 +438,9 @@
   .aspect-\[4\/5\] {
     aspect-ratio: 4/5;
   }
+  .aspect-auto {
+    aspect-ratio: auto;
+  }
   .h-4 {
     height: calc(var(--spacing) * 4);
   }
@@ -951,8 +954,14 @@
   .pb-6 {
     padding-bottom: calc(var(--spacing) * 6);
   }
+  .pb-10 {
+    padding-bottom: calc(var(--spacing) * 10);
+  }
   .pb-24 {
     padding-bottom: calc(var(--spacing) * 24);
+  }
+  .pb-610 {
+    padding-bottom: calc(var(--spacing) * 610);
   }
   .pl-5 {
     padding-left: calc(var(--spacing) * 5);
@@ -1111,6 +1120,9 @@
   }
   .italic {
     font-style: italic;
+  }
+  .line-through {
+    text-decoration-line: line-through;
   }
   .underline {
     text-decoration-line: underline;
