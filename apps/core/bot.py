@@ -108,6 +108,30 @@ def send_unsuccess_of_pasting_code(chat_id):
 
 
 
+def send_message_unsuccess_paste_code(chat_id):
+    token = os.getenv('BOT_API_KEY')
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    keyboard = {
+        "keyboard": [
+            [{"text": "🔔 Вставить код"}],
+            [{"text": "💬 Поддержка"}]
+        ],
+        "resize_keyboard": True,
+        "one_time_keyboard": False
+    }
+    payload = {
+        'chat_id': chat_id,
+        'text': ('Вы уже получаете уведомления через Telegram. Код больше не понадобится :)'),
+        'parse_mode': 'HTML',
+        "reply_markup": json.dumps(keyboard)
+    }
+
+    response = requests.post(url, data=payload)
+    print("Status:", response.status_code)
+    print("Response:", response.text)
+
+
+
 
 def send_message_of_deleting_connection(chat_id):
     token = os.getenv('BOT_API_KEY')
