@@ -15,7 +15,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from apps.accounts.models import TelegramUser
-from apps.core.utils import check_tg_code
+from apps.core.utils import check_tg_code, check_tg_connection
 
 
 def index(request):
@@ -103,7 +103,10 @@ def bot_webhook(request):
             add_tg_user.delay(chat_id, username, first_name)
             bot.send_first_telegram_message(chat_id)
         elif text == '🔔 Вставить код':
-            bot.send_message_to_paste_code(chat_id)
+            if check_tg_connection(chat_id):
+                bot.send_message_to_paste_code(chat_id)
+            else:
+                bot.send_message_unsuccess_paste_code(chat_id)
         elif text == '💬 Поддержка':
             bot.send_support_message(chat_id)
         elif text == '52':
