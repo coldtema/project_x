@@ -7,7 +7,7 @@ from django.utils import timezone
 class TelegramUser(models.Model):
     username = models.CharField(max_length=256)
     first_name = models.CharField(max_length=256)
-    tg_id = models.IntegerField()
+    tg_id = models.BigIntegerField()
 
     def __str__(self):
         return self.username
