@@ -46,3 +46,9 @@ def check_tg_code(tg_code, chat_id):
         user_to_connect.save()
         return True
     return False
+
+
+def check_tg_connection(chat_id):
+    if not TelegramUser.objects.get(tg_id=chat_id).web_user:
+        return True
+    return False
