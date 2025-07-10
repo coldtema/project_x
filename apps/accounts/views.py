@@ -16,6 +16,7 @@ from django.http import HttpResponseNotAllowed
 from django.conf import settings
 from apps.core.tasks import admin_sub_notif
 import random
+from apps.core import bot
 
 
 
@@ -74,13 +75,15 @@ def notification_edit(request):
         except:
             messages.error(request, message='Ошибка...')
         return render(request, 'accounts/partials/notif_form.html')
+    if request.user.tg_user is not None:
+        return render(request, 'accounts/notification_edit.html', context={'telegram_code': 1})
     return render(request, 'accounts/notification_edit.html', context={'telegram_code': request.user.tg_token})
 
 
 @login_required
 def make_tg_code(request):
     if request.method == 'POST':
-        if request.user.tg_token is None:
+        if request.user.tg_token is None and request.user.tg_user is None:
             code = random.randint(100000, 999999)
             request.user.tg_token = code
             request.user.save()
@@ -88,6 +91,19 @@ def make_tg_code(request):
         else:
             code = request.user.tg_token
             return render(request, 'accounts/partials/tg_form.html', context={'telegram_code': code})
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
+
+@login_required
+def delete_tg_connection(request):
+    if request.method == 'POST':
+        chat_id = request.user.tg_user.chat_id
+        request.user.tg_user = None
+        request.user.save()
+        bot.send_message_of_deleting_connection(chat_id)
+        return render(request, 'accounts/partials/tg_form.html', context={'telegram_code': None})
     else:
         return HttpResponseNotAllowed(['POST']) 
     
