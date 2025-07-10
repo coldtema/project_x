@@ -122,7 +122,7 @@ def send_message_of_deleting_connection(chat_id):
     }
     payload = {
         'chat_id': chat_id,
-        'text': ('Вы успешно отписались от уведомлений через Telegram.\n\nЕсли Вам не понравилось пользоваться сервисом или у вас есть какие-либо вопросы, то обязательно напишите нам в <a href="https://heavydrop.ru/accounts/notification_edit/">поддержку</a>.'),
+        'text': ('Вы успешно отписались от уведомлений через Telegram.\n\nЕсли Вам не понравилось пользоваться сервисом или у вас есть какие-либо вопросы, то обязательно напишите нам в <a href="https://heavydrop.ru/contacts/">поддержку</a>.'),
         'parse_mode': 'HTML',
         "reply_markup": json.dumps(keyboard)
     }
