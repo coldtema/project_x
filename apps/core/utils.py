@@ -42,6 +42,7 @@ def check_tg_code(tg_code, chat_id):
     user_to_connect = CustomUser.objects.filter(tg_token=tg_code).first()
     if user_to_connect:
         user_to_connect.tg_user = TelegramUser.objects.get(tg_id=chat_id)
+        user_to_connect.tg_token = None
         user_to_connect.save()
         return True
     return False
