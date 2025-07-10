@@ -29,3 +29,28 @@ def send_first_telegram_message(chat_id):
     response = requests.post(url, data=payload)
     print("Status:", response.status_code)
     print("Response:", response.text)
+
+
+
+
+def send_message_to_paste_code(chat_id):
+    token = os.getenv('BOT_API_KEY')
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    keyboard = {
+        "keyboard": [
+            [{"text": "🔔 Вставить код"}],
+            [{"text": "💬 Поддержка"}]
+        ],
+        "resize_keyboard": True,
+        "one_time_keyboard": False
+    }
+    payload = {
+        'chat_id': chat_id,
+        'text': ('Жду код для привязки вашего профиля! \n\n (6 цифр без пробелов и дополнительных знаков)'),
+        'parse_mode': 'HTML',
+        "reply_markup": json.dumps(keyboard)
+    }
+
+    response = requests.post(url, data=payload)
+    print("Status:", response.status_code)
+    print("Response:", response.text)
