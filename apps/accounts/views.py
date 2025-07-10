@@ -15,6 +15,7 @@ from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, Authen
 from django.http import HttpResponseNotAllowed
 from django.conf import settings
 from apps.core.tasks import admin_sub_notif
+import random
 
 
 
@@ -73,7 +74,23 @@ def notification_edit(request):
         except:
             messages.error(request, message='Ошибка...')
         return render(request, 'accounts/partials/notif_form.html')
-    return render(request, 'accounts/notification_edit.html')
+    return render(request, 'accounts/notification_edit.html', context={'telegram_code': request.user.tg_token})
+
+
+@login_required
+def make_tg_code(request):
+    if request.method == 'POST':
+        if request.user.tg_token is None:
+            code = random.randint(100000, 999999)
+            request.user.tg_token = code
+            request.user.save()
+            return render(request, 'accounts/partials/tg_form.html', context={'telegram_code': code})
+        else:
+            code = request.user.tg_token
+            return render(request, 'accounts/partials/tg_form.html', context={'telegram_code': code})
+    else:
+        return HttpResponseNotAllowed(['POST']) 
+    
 
 
 
