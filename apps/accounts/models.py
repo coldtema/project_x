@@ -31,8 +31,8 @@ class CustomUser(AbstractUser):
     notification_discount = models.IntegerField(default=10, verbose_name='Скидка для уведомления (%)')
     pricedown_notification = models.BooleanField(default=True)
     priceup_notification = models.BooleanField(default=True)
-    tg_user = models.OneToOneField(to=TelegramUser, on_delete=models.CASCADE, related_name='web_user', null=True)
-    tg_token = models.IntegerField(null=True)
+    tg_user = models.OneToOneField(to=TelegramUser, on_delete=models.CASCADE, related_name='web_user', null=True, blank=True)
+    tg_token = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.username
