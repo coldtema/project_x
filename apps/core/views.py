@@ -104,10 +104,16 @@ def bot_webhook(request):
             bot.send_first_telegram_message(chat_id)
         elif text == '🔔 Вставить код':
             bot.send_message_to_paste_code(chat_id)
+        elif text == '💬 Поддержка':
+            bot.send_support_message(chat_id)
+        elif text == '52':
+            bot.send_52_message(chat_id)
         elif text.isdigit() and len(text) == 6:
             if check_tg_code(text, chat_id):
                 bot.send_success_of_pasting_code(chat_id)
             else:
                 bot.send_unsuccess_of_pasting_code(chat_id)
+        else:
+            bot.send_unknown_message(chat_id)
         return JsonResponse({'ok': True})
 
