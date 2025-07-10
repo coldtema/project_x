@@ -97,7 +97,7 @@ def send_unsuccess_of_pasting_code(chat_id):
     }
     payload = {
         'chat_id': chat_id,
-        'text': ('Что-то пошло не так... Попробуйте снова или напишите в <a href="https://heavydrop.ru/accounts/notification_edit/">поддержку</a>.'),
+        'text': ('Что-то пошло не так... Попробуйте снова или напишите в <a href="https://heavydrop.ru/accounts/contacts/">поддержку</a>.'),
         'parse_mode': 'HTML',
         "reply_markup": json.dumps(keyboard)
     }
