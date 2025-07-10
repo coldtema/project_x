@@ -99,7 +99,7 @@ def make_tg_code(request):
 @login_required
 def delete_tg_connection(request):
     if request.method == 'POST':
-        chat_id = request.user.tg_user.chat_id
+        chat_id = request.user.tg_user.tg_id
         request.user.tg_user = None
         request.user.save()
         bot.send_message_of_deleting_connection(chat_id)
