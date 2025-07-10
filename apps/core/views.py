@@ -101,5 +101,7 @@ def bot_webhook(request):
             print(f"User @{username} ({chat_id}) нажал /start")
             add_tg_user.delay(chat_id, username, first_name)
             bot.send_first_telegram_message(chat_id)
+        elif text == '🔔 Вставить код':
+            bot.send_message_to_paste_code(chat_id)
         return JsonResponse({'ok': True})
 
