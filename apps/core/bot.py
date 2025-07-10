@@ -147,7 +147,7 @@ def send_support_message(chat_id):
     }
     payload = {
         'chat_id': chat_id,
-        'text': ('Контакты\n\nE-mail:<a href="mailto:hello@heavydrop.ru" heavydrop.ru@gmail.com</a>\nTelegram of admin: <a href="https://t.me/coldtema" @coldtema</a>\n\nМы ответим в течение 24 часов в рабочие дни.'),
+        'text': ('Контакты\n\nE-mail: heavydrop.ru@gmail.com\nTelegram of admin: <a href="https://t.me/coldtema" @coldtema</a>\n\nМы ответим в течение 24 часов в рабочие дни.'),
         'parse_mode': 'HTML',
         "reply_markup": json.dumps(keyboard)
     }
