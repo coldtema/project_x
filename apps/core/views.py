@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from apps.accounts.models import TelegramUser
 from apps.core.utils import check_tg_code, check_tg_connection
+from django.utils import timezone
 
 
 def index(request):
@@ -88,16 +89,25 @@ def notifications_swap(request):
 
 @csrf_exempt
 def bot_webhook(request):
+    print('📩 Получен запрос', timezone.now())
     if request.method == 'POST':
-        data = json.loads(request.body)
+        try:
+            raw_body = request.body.decode('utf-8')
+            print("📦 raw_body:", raw_body)
+            data = json.loads(raw_body)
+        except Exception as e:
+            print("❌ Ошибка при разборе JSON:", str(e))
+            return JsonResponse({'ok': False, 'error': 'Invalid JSON'}, status=400)
+
+        print("✅ Parsed JSON:", data)
 
         message = data.get('message', {})
         text = message.get('text', '')
         chat_id = message.get('chat', {}).get('id')
         username = message.get('from', {}).get('username')
         first_name = message.get('from', {}).get('first_name')
-        print(data)
 
+        print(f"🧾 message: {text} от @{username}")
         if text == '/start':
             print(f"User @{username} ({chat_id}) нажал /start")
             add_tg_user.delay(chat_id, username, first_name)
