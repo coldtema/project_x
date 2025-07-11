@@ -8,6 +8,7 @@ import asyncio
 from .async_site_explorer import Parser
 from django.utils import timezone
 from apps.core.models import Notification
+from apps.core import tasks
 # from apps.core.models import Notification
 
 
@@ -72,6 +73,7 @@ class PriceUpdater:
                 if self.broken_prods:
                     self.change_enable_of_broken_prods()
             self.save_all_to_db()
+            self.send_tg_notifications()
             self.products_to_update = []
             self.new_prices = []
             self.broken_prods = []
@@ -171,11 +173,13 @@ class PriceUpdater:
             if product.latest_price > maybe_new_price and product.author.pricedown_notification is True:
                 product.last_notified_price = maybe_new_price
                 self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{product.latest_price - maybe_new_price} ₽</b>! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
+                                                               tg_text=f'<a href="{product.shop.main_url}"><i>🛒{product.shop.name}</i></a>\n<a href="{product.ref_url}"><b>📦{product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{product.latest_price - maybe_new_price} ₽</b>! (-{int((product.latest_price-maybe_new_price)/(product.latest_price/100))}%)',
                                                                     product=product,
                                                                     user=product.author))
             elif product.author.priceup_notification is True:
                 product.last_notified_price = maybe_new_price
                 self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - product.latest_price} ₽</b>! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
+                                                                    tg_text=f'<a href="{product.shop.main_url}"><i>🛒{product.shop.name}</i></a>\n<a href="{product.ref_url}"><b>📦{product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - product.latest_price} ₽</b>! (+{int((maybe_new_price-product.latest_price)/(product.latest_price/100))}%)',
                                                                     product=product,
                                                                     user=product.author))
         product.latest_price = maybe_new_price
@@ -188,6 +192,7 @@ class PriceUpdater:
     def disabled_updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
         self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
+                                                       tg_text=f'<a href="{product.shop.main_url}"><i>🛒{product.shop.name}</i></a>\n<a href="{product.ref_url}"><b>📦{product.name}</b></a>\n<b> ✅ Появился в наличии! </b> Успейте купить!',
                                                             product=product,
                                                             user=product.author))
         if product.latest_price != maybe_new_price:
@@ -216,6 +221,11 @@ class PriceUpdater:
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
         Notification.objects.bulk_create(self.notifications_to_save)
+
+    def send_tg_notifications(self):
+        for notif in self.notifications_to_save:
+            if notif.user.tg_user:
+                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text)
 
 
 
@@ -253,6 +263,7 @@ class RepetitionsPriceUpdater:
                 if self.broken_prods:
                     self.change_enable_of_broken_prods()
             self.save_all_to_db()
+            self.send_tg_notifications()
             self.products_to_update = []
             self.new_prices = []
             self.broken_prods = []
@@ -360,11 +371,13 @@ class RepetitionsPriceUpdater:
                 if repetition.latest_price > maybe_new_price and repetition.author.pricedown_notification is True:
                     repetition.last_notified_price = maybe_new_price
                     self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
+                                                                    text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
                 elif repetition.author.priceup_notification is True:
                     repetition.last_notified_price = maybe_new_price
                     self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
+                                                                    text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
             repetition.latest_price = maybe_new_price
@@ -379,6 +392,7 @@ class RepetitionsPriceUpdater:
         repetitions = Product.objects.filter(url=product.url).select_related('author', 'shop')
         for repetition in repetitions:
             self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
+                                                           tg_text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n<b> ✅ Появился в наличии! </b> Успейте купить!',
                                                             product=repetition,
                                                             user=repetition.author))
             if repetition.latest_price != maybe_new_price:
@@ -409,6 +423,11 @@ class RepetitionsPriceUpdater:
         Price.objects.all().bulk_create(self.new_prices)
         Product.objects.all().bulk_update(self.broken_prods, fields = ['enabled', 'updated'])
         Notification.objects.bulk_create(self.notifications_to_save)
+
+    def send_tg_notifications(self):
+        for notif in self.notifications_to_save:
+            if notif.user.tg_user:
+                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text)
 
 
 
