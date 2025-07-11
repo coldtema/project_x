@@ -233,10 +233,25 @@ def send_52_message(chat_id):
 
 
 
-def send_notification_message(chat_id, text):
+def send_notification_message(chat_id, text, photo_url=None):
     token = os.getenv('BOT_API_KEY')
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
-    fifty_two_list = os.getenv('fifty_two_list').split('\n')
+    if not photo_url:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        payload = {
+            'chat_id': chat_id,
+            'text': text,
+            'parse_mode': 'HTML',
+            "reply_markup": json.dumps(keyboard)
+        }
+    else:
+        url = f"https://api.telegram.org/bot{token}/sendPhoto"
+        payload = {
+        'chat_id': chat_id,
+        'photo': photo_url,
+        'caption': text,
+        'parse_mode': 'HTML',
+        "reply_markup": json.dumps(keyboard)
+    }
     keyboard = {
         "keyboard": [
             [{"text": "🔔 Вставить код"}],
@@ -244,12 +259,6 @@ def send_notification_message(chat_id, text):
         ],
         "resize_keyboard": True,
         "one_time_keyboard": False
-    }
-    payload = {
-        'chat_id': chat_id,
-        'text': text,
-        'parse_mode': 'HTML',
-        "reply_markup": json.dumps(keyboard)
     }
 
     response = requests.post(url, data=payload)
