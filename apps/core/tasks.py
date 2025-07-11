@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 import os
 from django.conf import settings
 from apps.accounts.models import TelegramUser
+from apps.core import bot
 
 
 @shared_task
@@ -88,3 +89,7 @@ def add_tg_user(chat_id, username, first_name):
                                        username=username,
                                        first_name=first_name)
     return True
+
+@shared_task
+def send_tg_notification(chat_id, text):
+    bot.send_notification_message(chat_id, text)
