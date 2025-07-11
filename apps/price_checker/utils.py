@@ -371,13 +371,13 @@ class RepetitionsPriceUpdater:
                 if repetition.latest_price > maybe_new_price and repetition.author.pricedown_notification is True:
                     repetition.last_notified_price = maybe_new_price
                     self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
-                                                                    text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
+                                                                    tg_text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{repetition.latest_price - maybe_new_price} ₽</b>! (-{int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
                 elif repetition.author.priceup_notification is True:
                     repetition.last_notified_price = maybe_new_price
                     self.notifications_to_save.append(Notification(text=f'<i>🛒{repetition.shop.name}</i> <br> <b>📦{repetition.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
-                                                                    text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
+                                                                    tg_text=f'<a href="{repetition.shop.main_url}"><i>🛒{repetition.shop.name}</i></a>\n<a href="{repetition.ref_url}"><b>📦{repetition.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {maybe_new_price - repetition.latest_price} ₽</b>! (+{int((maybe_new_price-repetition.latest_price)/(repetition.latest_price/100))}%)',
                                                                     product=repetition,
                                                                     user=repetition.author))
             repetition.latest_price = maybe_new_price
