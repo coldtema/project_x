@@ -229,3 +229,29 @@ def send_52_message(chat_id):
     response = requests.post(url, data=payload)
     print("Status:", response.status_code)
     print("Response:", response.text)
+
+
+
+
+def send_notification_message(chat_id, text):
+    token = os.getenv('BOT_API_KEY')
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    fifty_two_list = os.getenv('fifty_two_list').split('\n')
+    keyboard = {
+        "keyboard": [
+            [{"text": "🔔 Вставить код"}],
+            [{"text": "💬 Поддержка"}]
+        ],
+        "resize_keyboard": True,
+        "one_time_keyboard": False
+    }
+    payload = {
+        'chat_id': chat_id,
+        'text': text,
+        'parse_mode': 'HTML',
+        "reply_markup": json.dumps(keyboard)
+    }
+
+    response = requests.post(url, data=payload)
+    print("Status:", response.status_code)
+    print("Response:", response.text)
