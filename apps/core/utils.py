@@ -49,6 +49,7 @@ def check_tg_code(tg_code, chat_id):
 
 
 def check_tg_connection(chat_id):
-    if not TelegramUser.objects.get(tg_id=chat_id).web_user:
+    user_in_tg = TelegramUser.objects.filter(tg_id=chat_id).first()
+    if user_in_tg and user_in_tg.web_user:
         return True
     return False
