@@ -9,6 +9,7 @@ from apps.accounts.models import CustomUser
 from apps.wb_checker.utils.general_utils import time_count
 from ..models import WBPrice, WBDetailedInfo, WBProduct
 from apps.core.models import Notification
+from apps.core import tasks
 
 
 
@@ -35,6 +36,7 @@ class PriceUpdater:
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=True).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
             self.go_through_all_authors()
             self.save_update_prices()
+            self.send_tg_notifications()
             self.new_prices = []
             self.updated_details = []
             self.prods_artikuls_to_delete = []
@@ -120,6 +122,7 @@ class PriceUpdater:
     def disable_product(self):
         '''Отключение товара (тк его больше нет в наличии)'''
         self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ❌ Нет в наличии! </b>  Добавлен во вкладку "Нет в наличии".',
+                                                        text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ❌ Нет в наличии! </b>',
                                                         wb_product=self.current_detail_to_check,
                                                         user=self.current_detail_to_check.author))
         self.current_detail_to_check.enabled = False
@@ -162,6 +165,7 @@ class PriceUpdater:
         if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
             if self.current_detail_to_check.volume >= 10 and volume < 10:
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br>  ❗️<b>Менее 10 штук в наличии!</b> Успейте купить :)',
+                                                               tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n❗️<b>Менее 10 штук в наличии!</b> Успейте купить :)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
             flag_change = True
@@ -174,11 +178,13 @@ class PriceUpdater:
             if self.current_detail_to_check.latest_price > price_of_detail and self.current_detail_to_check.author.pricedown_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
             elif self.current_detail_to_check.author.priceup_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
 
@@ -191,6 +197,13 @@ class PriceUpdater:
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
         Notification.objects.bulk_create(self.notifications_to_save)
+
+
+
+    def send_tg_notifications(self):
+        for notif in self.notifications_to_save:
+            if notif.user.tg_user:
+                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text)
 
 
 
@@ -224,9 +237,11 @@ class AvaliabilityUpdater:
                                                                             queryset=WBDetailedInfo.objects.filter(enabled=False).select_related('product')))[i*self.batch_size:(i+1)*self.batch_size]
             self.go_through_all_authors()     
             self.save_update_avaliability()
+            self.send_tg_notifications()
             self.new_prices = []
             self.updated_details = []
             self.prods_artikuls_to_delete = []
+            self.notifications_to_save = []
         print(f'Товаров проверено:{self.test_counter}')
 
 
@@ -334,8 +349,9 @@ class AvaliabilityUpdater:
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
         self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
-                                                                        wb_product=self.current_detail_to_check,
-                                                                        user=self.current_detail_to_check.author))
+                                                        text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ✅ Появился в наличии! </b> Успейте купить!',                
+                                                        wb_product=self.current_detail_to_check,
+                                                        user=self.current_detail_to_check.author))
         
 
     def make_deletion_notification(self):
@@ -344,6 +360,7 @@ class AvaliabilityUpdater:
             if prod.wbdetailedinfo_set.exists():
                 for detailed_info in prod.wbdetailedinfo_set:
                     self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{detailed_info.name}</b> <br> <b> ❗️Больше нет на сайте WB.</b> <br> Нам пришлось его полностью удалить. Если это ошибка, то напишите нам в поддержку.',
+                                                                   tg_text=f'<i>🛒WildBerries</i>\n<a href="{detailed_info.product.url}"><b>📦{detailed_info.name}</b></a>\n<b> ❗️Больше нет на сайте WB.</b>\nНам пришлось его полностью удалить. Если это ошибка, то напишите нам в поддержку.',
                                                                         additional_link = prod.url,
                                                                         user=detailed_info.author))
 
@@ -356,6 +373,12 @@ class AvaliabilityUpdater:
         WBPrice.objects.bulk_create(self.new_prices)
         WBProduct.objects.filter(artikul__in=self.prods_artikuls_to_delete).delete()
         Notification.objects.bulk_create(self.notifications_to_save)
+
+
+    def send_tg_notifications(self):
+        for notif in self.notifications_to_save:
+            if notif.user.tg_user:
+                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text)
 
 
 
