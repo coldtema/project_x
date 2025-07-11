@@ -91,5 +91,5 @@ def add_tg_user(chat_id, username, first_name):
     return True
 
 @shared_task
-def send_tg_notification(chat_id, text):
-    bot.send_notification_message(chat_id, text)
+def send_tg_notification(chat_id, text, photo_url=None):
+    bot.send_notification_message(chat_id, text, photo_url)
