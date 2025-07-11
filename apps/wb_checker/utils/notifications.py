@@ -69,6 +69,6 @@ class SmartNotification():
     def send_tg_notifications(self):
         for notif in self.notifications_to_save:
             if notif.user.tg_user:
-                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text)
+                tasks.send_tg_notification.delay(notif.user.tg_user.tg_id, notif.tg_text, notif.wb_product.product.image_url)
 
 
