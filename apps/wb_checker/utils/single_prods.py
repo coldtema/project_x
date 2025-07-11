@@ -122,7 +122,7 @@ class PriceUpdater:
     def disable_product(self):
         '''Отключение товара (тк его больше нет в наличии)'''
         self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ❌ Нет в наличии! </b>  Добавлен во вкладку "Нет в наличии".',
-                                                        text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ❌ Нет в наличии! </b>',
+                                                        tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ❌ Нет в наличии! </b>',
                                                         wb_product=self.current_detail_to_check,
                                                         user=self.current_detail_to_check.author))
         self.current_detail_to_check.enabled = False
@@ -349,7 +349,7 @@ class AvaliabilityUpdater:
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
         self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
-                                                        text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ✅ Появился в наличии! </b> Успейте купить!',                
+                                                        tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n<b> ✅ Появился в наличии! </b> Успейте купить!',                
                                                         wb_product=self.current_detail_to_check,
                                                         user=self.current_detail_to_check.author))
         
