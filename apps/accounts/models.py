@@ -9,9 +9,6 @@ class TelegramUser(models.Model):
     first_name = models.CharField(max_length=256, null=True, blank=True)
     tg_id = models.BigIntegerField()
 
-    def __str__(self):
-        return self.username
-
 
 
 class CustomUser(AbstractUser):
