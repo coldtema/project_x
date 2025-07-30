@@ -218,7 +218,7 @@ def send_52_message(chat_id):
         ],
         "resize_keyboard": True,
         "one_time_keyboard": False
-    }
+    } 
     payload = {
         'chat_id': chat_id,
         'text': fifty_two_list[random.randint(0, len(fifty_two_list)-1)],
