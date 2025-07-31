@@ -31,25 +31,31 @@ class SmartNotification():
                     self.make_notification(current_prod)
 
     def make_notification(self, current_prod):
+        detailed_text = ''
+        if current_prod.latest_price < current_prod.first_price:
+            detailed_text = f' (↓{abs(current_prod.first_price-current_prod.latest_price)}₽)'
+        elif current_prod.latest_price > current_prod.first_price:
+            detailed_text = f' (↑{abs(current_prod.first_price-current_prod.latest_price)}₽)'
+
         if current_prod.last_notified_price:
             if current_prod.last_notified_price > current_prod.latest_price and current_prod.author.pricedown_notification is True:
-                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_prod.last_notified_price - current_prod.latest_price} ₽</b>! (-{int((current_prod.last_notified_price-current_prod.latest_price)/(current_prod.last_notified_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_prod.last_notified_price - current_prod.latest_price} ₽</b>! (-{int((current_prod.last_notified_price-current_prod.latest_price)/(current_prod.last_notified_price/100))}%)\n💵<b>Текущая цена:</b> {current_prod.latest_price}₽{detailed_text}',
                                                                 product=current_prod,
                                                                 user=current_prod.author))
                 current_prod.last_notified_price = current_prod.latest_price
             elif current_prod.author.priceup_notification is True:
-                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_prod.latest_price - current_prod.last_notified_price} ₽</b>! (+{int((current_prod.latest_price - current_prod.last_notified_price)/(current_prod.latest_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_prod.latest_price - current_prod.last_notified_price} ₽</b>! (+{int((current_prod.latest_price - current_prod.last_notified_price)/(current_prod.latest_price/100))}%)\n💵<b>Текущая цена:</b> {current_prod.latest_price}₽{detailed_text}',
                                                                     product=current_prod,
                                                                     user=current_prod.author))
                 current_prod.last_notified_price = current_prod.latest_price
         else:
             if current_prod.first_price > current_prod.latest_price and current_prod.author.pricedown_notification is True:
-                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_prod.first_price - current_prod.latest_price} ₽</b>! (-{int((current_prod.first_price-current_prod.latest_price)/(current_prod.first_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_prod.first_price - current_prod.latest_price} ₽</b>! (-{int((current_prod.first_price-current_prod.latest_price)/(current_prod.first_price/100))}%)\n💵<b>Текущая цена:</b> {current_prod.latest_price}₽{detailed_text}',
                                                                 product=current_prod,
                                                                 user=current_prod.author))
                 current_prod.last_notified_price = current_prod.latest_price
             elif current_prod.author.priceup_notification is True:
-                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_prod.latest_price - current_prod.first_price} ₽</b>! (+{int((current_prod.latest_price - current_prod.first_price)/(current_prod.latest_price/100))}%)',
+                self.notifications_to_save.append(Notification(text=f'<i>🛒{current_prod.shop.name}</i> <br> <b>📦{current_prod.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_prod.latest_price - current_prod.first_price} ₽</b>! (+{int((current_prod.latest_price - current_prod.first_price)/(current_prod.latest_price/100))}%)\n💵<b>Текущая цена:</b> {current_prod.latest_price}₽{detailed_text}',
                                                                     product=current_prod,
                                                                     user=current_prod.author))
                 current_prod.last_notified_price = current_prod.latest_price
