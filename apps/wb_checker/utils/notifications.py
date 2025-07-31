@@ -33,29 +33,36 @@ class SmartNotification():
                     self.make_notification(current_detailed_info)
 
     def make_notification(self, current_detailed_info):
+        detailed_text = ''
+        if current_detailed_info.latest_price < current_detailed_info.first_price:
+            detailed_text = f' (↓{abs(current_detailed_info.first_price-current_detailed_info.latest_price)}₽)'
+        elif current_detailed_info.latest_price > current_detailed_info.first_price:
+            detailed_text = f' (↑{abs(current_detailed_info.first_price-current_detailed_info.latest_price)}₽)'
+
+
         if current_detailed_info.last_notified_price:
             if current_detailed_info.last_notified_price > current_detailed_info.latest_price and current_detailed_info.author.pricedown_notification is True:
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{current_detailed_info.product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_detailed_info.last_notified_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.last_notified_price-current_detailed_info.latest_price)/(current_detailed_info.last_notified_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{current_detailed_info.last_notified_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.last_notified_price-current_detailed_info.latest_price)/(current_detailed_info.last_notified_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{current_detailed_info.last_notified_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.last_notified_price-current_detailed_info.latest_price)/(current_detailed_info.last_notified_price/100))}%)\n💵<b>Текущая цена:</b> {current_detailed_info.latest_price}₽{detailed_text}',
                                                                 wb_product=current_detailed_info,
                                                                 user=current_detailed_info.author))
                 current_detailed_info.last_notified_price = current_detailed_info.latest_price
             elif current_detailed_info.author.priceup_notification is True:
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{current_detailed_info.product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.last_notified_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.last_notified_price)/(current_detailed_info.latest_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.last_notified_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.last_notified_price)/(current_detailed_info.latest_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.last_notified_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.last_notified_price)/(current_detailed_info.latest_price/100))}%)\n💵<b>Текущая цена:</b> {current_detailed_info.latest_price}₽{detailed_text}',
                                                                 wb_product=current_detailed_info,
                                                                 user=current_detailed_info.author))
                 current_detailed_info.last_notified_price = current_detailed_info.latest_price
         else:
             if current_detailed_info.first_price > current_detailed_info.latest_price and current_detailed_info.author.pricedown_notification is True:
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{current_detailed_info.product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{current_detailed_info.first_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.first_price-current_detailed_info.latest_price)/(current_detailed_info.first_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{current_detailed_info.first_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.first_price-current_detailed_info.latest_price)/(current_detailed_info.first_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{current_detailed_info.first_price - current_detailed_info.latest_price} ₽</b>! (-{int((current_detailed_info.first_price-current_detailed_info.latest_price)/(current_detailed_info.first_price/100))}%)\n💵<b>Текущая цена:</b> {current_detailed_info.latest_price}₽{detailed_text}',
                                                                 wb_product=current_detailed_info,
                                                                 user=current_detailed_info.author))
                 current_detailed_info.last_notified_price = current_detailed_info.latest_price
             elif current_detailed_info.author.priceup_notification is True:
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{current_detailed_info.product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.first_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.first_price)/(current_detailed_info.latest_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.first_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.first_price)/(current_detailed_info.latest_price/100))}%)',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{current_detailed_info.product.url}"><b>📦{current_detailed_info.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {current_detailed_info.latest_price - current_detailed_info.first_price} ₽</b>! (+{int((current_detailed_info.latest_price - current_detailed_info.first_price)/(current_detailed_info.latest_price/100))}%)\n💵<b>Текущая цена:</b> {current_detailed_info.latest_price}₽{detailed_text}',
                                                                 wb_product=current_detailed_info,
                                                                 user=current_detailed_info.author))
                 current_detailed_info.last_notified_price = current_detailed_info.latest_price
