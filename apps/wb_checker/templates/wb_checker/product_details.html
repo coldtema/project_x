@@ -22,7 +22,7 @@
 
       <!-- Картинка -->
       <div class="flex-shrink-0 w-full md:w-48">
-        <a href="{{ product_to_watch.product.url }}">
+        <a href="{{ product_to_watch.product.url }}" target="_blank">
           <img src="{{ product_to_watch.product.image_url }}" alt="{{ product_to_watch.product.name }}"
                class="w-full h-auto rounded-xl border border-gray-300 dark:border-neutral-700 hover:opacity-90 transition">
         </a>
@@ -31,7 +31,7 @@
       <!-- Инфо -->
       <div class="flex-1 space-y-2">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">
-          <a href="{{ product_to_watch.product.url }}" class="hover:underline text-blue-700 dark:text-blue-400">
+          <a href="{{ product_to_watch.product.url }}" class="hover:underline text-blue-700 dark:text-blue-400" target="_blank">
             {{ product_to_watch.product.name }}
           </a>
         </h2>
