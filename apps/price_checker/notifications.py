@@ -33,9 +33,9 @@ class SmartNotification():
     def make_notification(self, current_prod):
         detailed_text = ''
         if current_prod.latest_price < current_prod.first_price:
-            detailed_text = f' (↓{abs(current_prod.first_price-current_prod.latest_price)}₽)'
+            detailed_text = f' (↓ {abs(current_prod.first_price-current_prod.latest_price)}₽)'
         elif current_prod.latest_price > current_prod.first_price:
-            detailed_text = f' (↑{abs(current_prod.first_price-current_prod.latest_price)}₽)'
+            detailed_text = f' (↑ {abs(current_prod.first_price-current_prod.latest_price)}₽)'
 
         if current_prod.last_notified_price:
             if current_prod.last_notified_price > current_prod.latest_price and current_prod.author.pricedown_notification is True:

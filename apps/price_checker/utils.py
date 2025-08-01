@@ -177,9 +177,9 @@ class PriceUpdater:
 
         detailed_text = ''
         if product.latest_price < product.first_price:
-            detailed_text = f' (↓{abs(product.first_price-product.latest_price)}₽)'
+            detailed_text = f' (↓ {abs(product.first_price-product.latest_price)}₽)'
         elif product.latest_price > product.first_price:
-            detailed_text = f' (↑{abs(product.first_price-product.latest_price)}₽)'
+            detailed_text = f' (↑ {abs(product.first_price-product.latest_price)}₽)'
 
 
         if abs(product.latest_price - maybe_new_price) > product.author.notification_discount_price or abs(int((product.latest_price-maybe_new_price)/(product.latest_price/100))) > product.author.notification_discount:
@@ -210,9 +210,9 @@ class PriceUpdater:
 
         detailed_text = ''
         if product.latest_price < product.first_price:
-            detailed_text = f' (↓{abs(product.first_price-product.latest_price)}₽)'
+            detailed_text = f' (↓ {abs(product.first_price-product.latest_price)}₽)'
         elif product.latest_price > product.first_price:
-            detailed_text = f' (↑{abs(product.first_price-product.latest_price)}₽)'
+            detailed_text = f' (↑ {abs(product.first_price-product.latest_price)}₽)'
         self.notifications_to_save.append(Notification(text=f'<i>🛒{product.shop.name}</i> <br> <b>📦{product.name}</b> <br> <b> ✅ Появился в наличии! </b> Успейте купить!',
                                                        tg_text=f'<a href="{product.shop.main_url}"><i>🛒{product.shop.name}</i></a>\n<a href="{product.ref_url}"><b>📦{product.name}</b></a>\n<b>✅ Появился в наличии! </b> Успейте купить!\n💵<b>Текущая цена:</b> {product.latest_price}₽{detailed_text}',
                                                         product=product,
@@ -390,9 +390,9 @@ class RepetitionsPriceUpdater:
 
             detailed_text = ''
             if repetition.latest_price < repetition.first_price:
-                detailed_text = f' (↓{abs(repetition.first_price-repetition.latest_price)}₽)'
+                detailed_text = f' (↓ {abs(repetition.first_price-repetition.latest_price)}₽)'
             elif repetition.latest_price > repetition.first_price:
-                detailed_text = f' (↑{abs(repetition.first_price-repetition.latest_price)}₽)'
+                detailed_text = f' (↑ {abs(repetition.first_price-repetition.latest_price)}₽)'
 
             if abs(repetition.latest_price - maybe_new_price) > repetition.author.notification_discount_price or abs(int((repetition.latest_price-maybe_new_price)/(repetition.latest_price/100))) > repetition.author.notification_discount:
                 if repetition.latest_price > maybe_new_price and repetition.author.pricedown_notification is True:
