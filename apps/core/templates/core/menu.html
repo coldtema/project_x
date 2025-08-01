@@ -52,7 +52,7 @@
           {%endfor%}
           {%for elem in prods_wb_snippet%}
             <li class="flex justify-between items-center bg-white dark:bg-neutral-900 border-2 border-gray-300 dark:border-neutral-700 p-3 rounded-xl">
-              <a href="{%url 'price_checker:price_history' id=elem.pk%}">
+              <a href="{%url 'wb_checker:wb_product_details' id=elem.pk%}">
                 <span class="text-gray-900 dark:text-gray-200">{{elem.product.name}}</span>
               </a>
               <span class="font-semibold text-gray-900 dark:text-gray-200">{{elem.latest_price}}₽</span>
