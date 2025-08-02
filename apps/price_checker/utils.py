@@ -196,7 +196,7 @@ class PriceUpdater:
                                                                     product=product,
                                                                     user=product.author))
 
-
+ 
 
     def disabled_updating_plus_notification(self, maybe_new_price, product):
         '''Функция-точка входа для уведомления пользователя о том что продукт снова в наличии + изменения продукта (при изменении его цены)'''
