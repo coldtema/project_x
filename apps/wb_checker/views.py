@@ -14,7 +14,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib import messages
 from django.db.models import ExpressionWrapper, IntegerField, F
 from apps.wb_checker.utils.notifications import SmartNotification
@@ -337,7 +337,17 @@ class RecommendationSettings(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         if request.GET.get('form_type', None) == 'search_categories':
-            search_categories = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=request.GET.get('query'))
+            query = request.GET.get('query')
+            vector = SearchVector('name', config='russian')
+            search_query = SearchQuery(query)
+
+            search_categories = (
+                WBMenuCategory.objects
+                .annotate(search=vector, rank=SearchRank(vector, search_query))
+                .filter(search=search_query)
+                .order_by('-rank')
+            )
+            # search_categories = WBMenuCategory.objects.all().annotate(search=SearchVector('name')).filter(search=request.GET.get('query'))
             search_categories = list(filter(lambda x: True if x.shard_key != 'blackhole' else False, search_categories))
             subs_cats_ids = request.user.wbmenucategory_set.all().values('pk')
             subs_cats_ids = list(map(lambda x: x['pk'], subs_cats_ids))
