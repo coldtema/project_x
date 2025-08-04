@@ -155,13 +155,13 @@ class PriceUpdater:
         flag_change = False           
         if self.current_detail_to_check.latest_price != price_of_detail: #and abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price > 0.03: #сделать потом поле у пользователя (на сколько отслеживаем цену)
             # print(abs(self.current_detail_to_check.latest_price - price_of_detail) /self.current_detail_to_check.latest_price)
+            self.make_notification(price_of_detail)
             flag_change = True
             self.current_detail_to_check.latest_price = price_of_detail
             self.current_detail_to_check.updated = timezone.now()
             self.new_prices.append(WBPrice(price=price_of_detail,
                                         added_time=timezone.now(),
                                         detailed_info=self.current_detail_to_check))
-            self.make_notification(price_of_detail)
         if self.current_detail_to_check.volume != volume: #по количеству постоянные изменения - просто пишу в бд без уведомлений (пока что)
             if self.current_detail_to_check.volume >= 10 and volume < 10:
                 detailed_text = ''
