@@ -96,7 +96,7 @@ def bot_webhook(request):
             print("📦 raw_body:", raw_body)
             data = json.loads(raw_body)
         except Exception as e:
-            print("❌ Ошибка при разборе JSON:", str(e))
+            print("❌ Ошибка при разборе JSON:", str(e)) 
             return JsonResponse({'ok': False, 'error': 'Invalid JSON'}, status=400)
 
         print("✅ Parsed JSON:", data)
