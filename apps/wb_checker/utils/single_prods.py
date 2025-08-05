@@ -181,22 +181,22 @@ class PriceUpdater:
 
     def make_notification(self, price_of_detail):
         detailed_text = ''
-        if self.current_detail_to_check.latest_price < self.current_detail_to_check.first_price:
-            detailed_text = f' (↓ {abs(self.current_detail_to_check.first_price-self.current_detail_to_check.latest_price)}₽)'
-        elif self.current_detail_to_check.latest_price > self.current_detail_to_check.first_price:
-            detailed_text = f' (↑ {abs(self.current_detail_to_check.first_price-self.current_detail_to_check.latest_price)}₽)'
+        if price_of_detail < self.current_detail_to_check.first_price:
+            detailed_text = f' (↓ {abs(self.current_detail_to_check.first_price-price_of_detail)}₽)'
+        elif price_of_detail > self.current_detail_to_check.first_price:
+            detailed_text = f' (↑ {abs(self.current_detail_to_check.first_price-price_of_detail)}₽)'
 
         if abs(self.current_detail_to_check.latest_price - price_of_detail) > self.current_detail_to_check.author.notification_discount_price or abs(int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))) > self.current_detail_to_check.author.notification_discount:
             if self.current_detail_to_check.latest_price > price_of_detail and self.current_detail_to_check.author.pricedown_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)\n💵<b>Текущая цена:</b> {self.current_detail_to_check.latest_price}₽{detailed_text}',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🟢 Цена <b>упала</b> на <b>{self.current_detail_to_check.latest_price - price_of_detail} ₽</b>! (-{int((self.current_detail_to_check.latest_price-price_of_detail)/(self.current_detail_to_check.latest_price/100))}%)\n💵<b>Текущая цена:</b> {price_of_detail}₽{detailed_text}',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
             elif self.current_detail_to_check.author.priceup_notification is True:
                 self.current_detail_to_check.last_notified_price = price_of_detail
                 self.notifications_to_save.append(Notification(text=f'<i>🛒WildBerries</i> <br> <b>📦{self.current_detail_to_check.product.name}</b> <br> 🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)',
-                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)\n💵<b>Текущая цена:</b> {self.current_detail_to_check.latest_price}₽{detailed_text}',
+                                                                tg_text=f'<i>🛒WildBerries</i>\n<a href="{self.current_detail_to_check.product.url}"><b>📦{self.current_detail_to_check.product.name}</b></a>\n🔴 Цена <b>поднялась</b> на <b> {price_of_detail - self.current_detail_to_check.latest_price} ₽</b>! (+{int((price_of_detail-self.current_detail_to_check.latest_price)/(self.current_detail_to_check.latest_price/100))}%)\n💵<b>Текущая цена:</b> {price_of_detail}₽{detailed_text}',
                                                                 wb_product=self.current_detail_to_check,
                                                                 user=self.current_detail_to_check.author))
 
