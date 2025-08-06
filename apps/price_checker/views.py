@@ -188,8 +188,10 @@ def price_history(request, id):
     if not product_to_watch:
         return Http404('??? (нет такого продукта)')
     prices_of_product = product_to_watch.price_set.all().order_by('added_time')
+    back_button_link = request.GET.get('anchor', None)
     return render(request, 'price_checker/price_history.html', context={'product_to_watch': product_to_watch, 
-                                                                        'prices_of_product': prices_of_product})
+                                                                        'prices_of_product': prices_of_product,
+                                                                        'back_button_link': back_button_link})
 
 
 
