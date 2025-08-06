@@ -4,7 +4,7 @@
         <li class='notif'>
             <a href="{% url 'price_checker:price_history' id=elem.product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
               
-              <div class="flex justify-between items-start p-4">
+              <div id='{{elem.pk}}' class="flex justify-between items-start p-4">
                 <!-- Основной текст -->
                 <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
                   {{ elem.text|safe }}
@@ -44,7 +44,7 @@
           <li class='notif'>
             <a href="{% url 'wb_checker:wb_product_details' id=elem.wb_product.pk %}" class="group block bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-xl shadow hover:ring-2 hover:ring-indigo-500 transition duration-200 relative overflow-hidden">
               
-              <div class="flex justify-between items-start p-4">
+              <div id='{{elem.pk}}' class="flex justify-between items-start p-4">
                 <!-- Основной текст -->
                 <p class="text-gray-800 dark:text-gray-100 text-base font-medium w-full pb-6">
                   {{ elem.text|safe }}
