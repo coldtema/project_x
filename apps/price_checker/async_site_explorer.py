@@ -603,10 +603,10 @@ class Parser:
         '''Функция для парсинга товара из fablestore'''
         response = await self.client.get(product_url)
         soup_engine = BeautifulSoup(response.text, 'lxml')
-        price_element = soup_engine.find('div', class_='product-result__price body-text').text.strip()
-        price_element = price_element.split('₽')[0]
+        all_info = re.search(pattern=r'(var obbx_).+\s=\snew\sJCCatalogElement\((.+)\)', string=response.text).group(2)
+        price_element = re.search(pattern=r"\'(PRINT_PRICE)\'\:\'(.+?)\'", string=all_info).group(2).split('#')[0]
+        name = soup_engine.find('h3').text.strip()
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-        name = soup_engine.find('h1', class_='product-info__title').text.strip()
         return {'price_element': price_element, 'name': name, 'shop': 'fablestore'}
 
 
