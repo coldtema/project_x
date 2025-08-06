@@ -263,8 +263,11 @@ def wbproduct_details(request, id):
     if not detailed_info_to_watch:
         return Http404('??? (нет такого продукта)')
     prices_of_detailed_info = list(detailed_info_to_watch.wbprice_set.all().order_by('added_time'))
+    back_button_link = request.GET.get('anchor', None)
+    print(back_button_link)
     return render(request, 'wb_checker/product_details.html', context={'product_to_watch': detailed_info_to_watch, 
-                                                                       'prices_of_product': prices_of_detailed_info,})
+                                                                       'prices_of_product': prices_of_detailed_info,
+                                                                       'back_button_link': back_button_link})
 
 
 @login_required
