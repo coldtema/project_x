@@ -39,7 +39,7 @@
     
     <!-- Отслеживаемые товары -->
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Отслеживаемые товары</h2>
+      <h2 id='goods' class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Отслеживаемые товары</h2>
       <ul class="space-y-3">
         {%if prods_snippet or prods_wb_snippet%}
           {%for elem in prods_snippet%}
@@ -71,7 +71,7 @@
   
     <!-- Лучшие находки - сделать, если у пользователя крутой тариф -->
     <div>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Лучшие находки</h2>
+      <h2 id='recs' class="text-xl font-semibold text-gray-900 dark:text-gray-200 mb-4">Лучшие находки</h2>
       <ul class="space-y-3">
         {%if recs_snippet%}
           {%for elem in recs_snippet%}
@@ -95,7 +95,7 @@
   
     <div>
   <div class='flex justify-between items-center pb-6'>
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-200">Уведомления</h2>
+    <h2 id='notif' class="text-xl font-semibold text-gray-900 dark:text-gray-200">Уведомления</h2>
     <div class="inline-flex items-center bg-gray-200 dark:bg-neutral-700 rounded-full p-1 text-sm font-medium">
           
           <input type="radio" name="type-toggle" id="WB" value="WB" class="hidden peer/monthly" checked
