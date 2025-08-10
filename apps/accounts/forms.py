@@ -9,7 +9,7 @@ class SignUpForm(UserCreationForm):
     # username = forms.CharField(max_length=30)
     # email = forms.EmailField(max_length=200)
     error_messages = {
-        "password_mismatch": "Пароли не совпадают.",
+        "password_mismatch": "Пароли не совпадают.", 
     }
 
     class Meta:
