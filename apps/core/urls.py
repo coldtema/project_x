@@ -14,4 +14,5 @@ urlpatterns = [
     path('notifications_swap/', views.notifications_swap, name='notifications_swap'),
     path('guide/', views.guide, name='guide'),
     path(f'bot/{os.getenv("WEBHOOK_TOKEN")}/webhook/', views.bot_webhook, name='bot_webhook'),
+    path('video/', views.video, name='video'),
 ]
