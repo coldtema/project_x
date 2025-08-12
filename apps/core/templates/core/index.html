@@ -83,13 +83,12 @@
       <!-- Видеоблок с идеальной адаптацией -->
       <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
         <div class="mobile-video-container w-full" style="max-width: 320px">
-          <video 
-            autoplay loop muted playsinline
-            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
-            style="aspect-ratio: 9/16;"
-          >
-            <source src={%static 'core/wb_add.MP4'%} type="video/mp4">
-          </video>
+          <form class='video_loader'
+                hx-get={%url 'core:video'%}?vid_name=wb_add.MP4
+                hx-trigger='revealed'
+                hx-target='closest .mobile-video-container'
+                hx-swap="innerHTML">
+          </form>
         </div>
       </div>
 
@@ -208,13 +207,12 @@
       <!-- Видеоблок с идеальной адаптацией -->
       <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
         <div class="mobile-video-container w-full" style="max-width: 320px">
-          <video 
-            autoplay loop muted playsinline
-            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
-            style="aspect-ratio: 9/16;"
-          >
-            <source src={%static 'core/connect_notif.MP4'%} type="video/mp4">
-          </video>
+          <form class='video_loader'
+                hx-get={%url 'core:video'%}?vid_name=connect_notif.MP4
+                hx-trigger='revealed'
+                hx-target='closest .mobile-video-container'
+                hx-swap="innerHTML">
+          </form>
         </div>
       </div>
 
@@ -258,13 +256,12 @@
       <!-- Видеоблок с идеальной адаптацией -->
       <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
         <div class="mobile-video-container w-full" style="max-width: 320px">
-          <video 
-            autoplay loop muted playsinline
-            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
-            style="aspect-ratio: 9/16;"
-          >
-            <source src={%static 'core/recs_setting.MP4'%} type="video/mp4">
-          </video>
+          <form class='video_loader'
+                hx-get={%url 'core:video'%}?vid_name=recs_setting.MP4
+                hx-trigger='revealed'
+                hx-target='closest .mobile-video-container'
+                hx-swap="innerHTML">
+          </form>
         </div>
       </div>
 
@@ -282,26 +279,24 @@
       <!-- Видеоблок с идеальной адаптацией -->
       <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
         <div class="mobile-video-container w-full" style="max-width: 320px">
-          <video 
-            autoplay loop muted playsinline
-            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
-            style="aspect-ratio: 9/16;"
-          >
-            <source src={%static 'core/e-shop_bargain.MP4'%} type="video/mp4">
-          </video>
+          <form class='video_loader'
+                hx-get={%url 'core:video'%}?vid_name=e-shop_bargain.MP4
+                hx-trigger='revealed'
+                hx-target='closest .mobile-video-container'
+                hx-swap="innerHTML">
+          </form>
         </div>
       </div>
 
       <!-- Видеоблок с идеальной адаптацией -->
       <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
         <div class="mobile-video-container w-full" style="max-width: 320px">
-          <video 
-            autoplay loop muted playsinline
-            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
-            style="aspect-ratio: 9/16;"
-          >
-            <source src={%static 'core/wb_bargain.MP4'%} type="video/mp4">
-          </video>
+          <form class='video_loader'
+                hx-get={%url 'core:video'%}?vid_name=wb_bargain.MP4
+                hx-trigger='revealed'
+                hx-target='closest .mobile-video-container'
+                hx-swap="innerHTML">
+          </form>
         </div>
       </div>
 
