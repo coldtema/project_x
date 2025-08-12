@@ -1,7 +1,314 @@
 {% extends 'base.html' %}
 {% block title %}Новости — HeavyDrop{% endblock title %}
+{%load static%}
 
 {% block content %}
+
+<!-- Минималистичный герой -->
+<section class="py-16 border-b border-gray-200 dark:border-gray-700">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">HeavyDrop</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300">Агрегатор реальных скидок — без маркетинговых уловок</p>
+  </div>
+</section>
+
+<!-- Как это работает (минималистично) -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
+  <div class="max-w-3xl mx-auto px-4">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Как устроен HeavyDrop</h2>
+    
+    <div class="space-y-8">
+      <div class="flex">
+        <div class="text-gray-400 dark:text-gray-500 mr-4 text-xl">1</div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white mb-2">Анализ данных</h3>
+          <p class="text-gray-600 dark:text-gray-400">Каждый час мы проверяем цены цены в 160+ магазинах, через систему проходит более 100.000 товаров каждый день.</p>
+        </div>
+      </div>
+      
+      <div class="flex">
+        <div class="text-gray-400 dark:text-gray-500 mr-4 text-xl">2</div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white mb-2">Фильтрация</h3>
+          <p class="text-gray-600 dark:text-gray-400">Система отбирает только предложения с реальным снижением цены относительно предыдущей, а не той, что написал продавец.</p>
+        </div>
+      </div>
+      
+      <div class="flex">
+        <div class="text-gray-400 dark:text-gray-500 mr-4 text-xl">3</div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white mb-2">Уведомления</h3>
+          <p class="text-gray-600 dark:text-gray-400">Вы получаете только релевантные для вас скидки, без спама.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- Вертикальное видео с идеальным расположением текста -->
+<section class="py-8 md:py-12">
+  <div class="mx-auto px-4 max-w-6xl">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-8 xl:gap-12">
+
+      <!-- Текстовый блок -->
+      <div class="lg:w-1/2 xl:w-2/5 text-center lg:text-left">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Как находить скидки</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Просто добавьте товары в отслеживаемые — мы сообщим, когда цена упадёт.</p>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Скопируйте ссылку или артикул (WB) на товар.</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Вставьте ссылку или артикул в форму, как на видео.</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Получайте уведомления на сайте или в Telegram, смотрите подробную аналитику по товару в личном кабинете.</span>
+          </li>
+        </ul>
+      </div>
+
+
+      <!-- Видеоблок с идеальной адаптацией -->
+      <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
+        <div class="mobile-video-container w-full" style="max-width: 320px">
+          <video 
+            autoplay loop muted playsinline
+            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
+            style="aspect-ratio: 9/16;"
+          >
+            <source src={%static 'core/wb_add.MP4'%} type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Секция с гифкой уведомлений -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+  <div class="max-w-5xl mx-auto px-4">
+    <div class="flex flex-col md:flex-row-reverse items-center gap-8">
+      <div class="md:w-1/2">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Мгновенные уведомления</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Как только цена на отслеживаемый товар снижается — вы сразу получаете оповещение.</p>
+        <div class="space-y-4">
+          <div class="flex items-start">
+            <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full p-2 mr-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900 dark:text-white">Telegram-уведомления</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Молниеносная скорость</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <div class="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full p-2 mr-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-medium text-gray-900 dark:text-white">Оповещения на сайте</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">Ежедневный дайджест лучших скидок</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="md:w-1/2 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+        <!-- Гифка с уведомлениями -->
+        <img 
+          src= {% static 'core/notif.PNG'%}
+          alt="Уведомления HeavyDrop"
+          class="w-full h-auto"
+          loading="lazy"
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Секция с гифкой истории цен -->
+<section class="py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex flex-col md:flex-row items-center gap-8">
+      <div class="md:w-1/2">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Анализ истории цен</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Мы показываем не просто скидку, а реальное изменение цены за последние месяцы с довольно удобной и понятной инфографикой.</p>
+        <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+          <div class="flex items-center text-sm text-gray-500 mb-2">
+            <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+            <span>Текущая цена: 44 386₽</span>
+          </div>
+          <div class="flex items-center text-sm text-gray-500">
+            <div class="w-3 h-3 bg-rose-500 rounded-full mr-2"></div>
+            <span>Самая низкая цена: 44 179₽ (1 месяц назад)</span>
+          </div>
+        </div>
+      </div>
+      <div class="md:w-1/2 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+        <!-- Гифка с графиком цен -->
+        <img 
+          src= {% static 'core/show_stats.PNG'%}
+          alt="График цен HeavyDrop"
+          class="w-full h-auto"
+          loading="lazy"
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Вертикальное видео с идеальным расположением текста -->
+<section class="py-8 md:py-12">
+  <div class="mx-auto px-4 max-w-6xl">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-8 xl:gap-12">
+      <!-- Текстовый блок -->
+      <div class="lg:w-1/2 xl:w-2/5 text-center lg:text-left">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">Как включить уведомления</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto lg:mx-0">
+          Нужно привязать аккаунт Telegram к аккаунту в системе
+        </p>
+        <ul class="space-y-3 text-left max-w-md mx-auto lg:mx-0">
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Пройдите регистрацию на нашем сайте</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Запустите нашего Telegram-бота</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Зайдите на вкладку <a href="{%url 'accounts:notification_edit'%}" class='text-indigo-500 underline'>Уведомления</a>, сгенерируйте код и отправьте его нашему боту.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Видеоблок с идеальной адаптацией -->
+      <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
+        <div class="mobile-video-container w-full" style="max-width: 320px">
+          <video 
+            autoplay loop muted playsinline
+            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
+            style="aspect-ratio: 9/16;"
+          >
+            <source src={%static 'core/connect_notif.MP4'%} type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Вертикальное видео с идеальным расположением текста -->
+<section class="py-8 md:py-12">
+  <div class="mx-auto px-4 max-w-6xl">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-8 xl:gap-12">
+      <!-- Текстовый блок -->
+      <div class="lg:w-1/2 xl:w-2/5 text-center lg:text-left">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">Как настроить подборку</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto lg:mx-0">
+          Лучшие товары от любимых брендов и продавцов в одном месте.
+        </p>
+        <ul class="space-y-3 text-left max-w-md mx-auto lg:mx-0">
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Скопируйте, ссылку или артикул любого товара вашего любимомго продавца/бренда.</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Добавьте бренда или продавца в вашу подписку, выбрав его и нажав "Сохранить".</span>
+          </li>
+          <li class="flex items-start">
+            <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span class="text-gray-700 dark:text-gray-300">Наслаждайтесь лучшими товарами, не тратя время на поиск идеала!</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Видеоблок с идеальной адаптацией -->
+      <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
+        <div class="mobile-video-container w-full" style="max-width: 320px">
+          <video 
+            autoplay loop muted playsinline
+            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
+            style="aspect-ratio: 9/16;"
+          >
+            <source src={%static 'core/recs_setting.MP4'%} type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-12 mt-10 text-center">Примеры выгодных предложений</h2>
+<!-- Вертикальное видео с идеальным расположением текста -->
+<section class="py-8 md:py-12">
+  <div class="mx-auto px-4 max-w-6xl">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-8 xl:gap-12">
+      <!-- Видеоблок с идеальной адаптацией -->
+      <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
+        <div class="mobile-video-container w-full" style="max-width: 320px">
+          <video 
+            autoplay loop muted playsinline
+            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
+            style="aspect-ratio: 9/16;"
+          >
+            <source src={%static 'core/e-shop_bargain.MP4'%} type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <!-- Видеоблок с идеальной адаптацией -->
+      <div class="lg:w-1/2 xl:w-2/5 flex justify-center">
+        <div class="mobile-video-container w-full" style="max-width: 320px">
+          <video 
+            autoplay loop muted playsinline
+            class="w-full h-auto rounded-xl border-2 border-gray-300 dark:border-gray-600 shadow-lg"
+            style="aspect-ratio: 9/16;"
+          >
+            <source src={%static 'core/wb_bargain.MP4'%} type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
 
 <section class="py-16 ">
@@ -66,4 +373,51 @@
     </div>
   </div>
 </section>
+
+<style>
+  /* Адаптация под разные устройства */
+  .mobile-video-container {
+    max-width: 320px; /* Стандарт для мобильных */
+  }
+
+  @media (max-width: 1023px) {
+    /* На планшетах/телефонах - видео под текстом */
+    .lg\:flex-row {
+      flex-direction: column;
+    }
+    .lg\:w-1\/2, .xl\:w-2\/5 {
+      width: 100%;
+      max-width: 500px;
+    }
+  }
+
+  @media (max-width: 767px) and (orientation: landscape) {
+    /* В альбомной ориентации на телефонах */
+    .mobile-video-container {
+      max-width: 40vh;
+      margin: 0 auto;
+    }
+    .text-center, .text-left {
+      text-align: center !important;
+    }
+  }
+</style>
+
+<script>
+  // Автоматическая коррекция размера видео
+  function adjustVideoSize() {
+    const container = document.querySelector('.mobile-video-container');
+    if (window.innerWidth < 768 && window.matchMedia("(orientation: landscape)").matches) {
+      container.style.maxWidth = '40vh';
+    } else {
+      container.style.maxWidth = '320px';
+    }
+  }
+
+  window.addEventListener('resize', adjustVideoSize);
+  window.addEventListener('orientationchange', adjustVideoSize);
+  document.addEventListener('DOMContentLoaded', adjustVideoSize);
+</script>
+
+
 {% endblock content %}
