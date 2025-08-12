@@ -24,6 +24,10 @@ def index(request):
     return render(request, 'core/index.html', context={'posts':posts})
 
 
+def video(request):
+    return render(request, 'core/partials/video.html', context={'vid_name':request.GET.get('vid_name', None)})
+
+
 
 def contacts(request):
     if request.method == 'POST':
