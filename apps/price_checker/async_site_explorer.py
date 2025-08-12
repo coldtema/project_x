@@ -117,7 +117,7 @@ class Parser:
             price_element = price_element[1]
         else:
             price_element = price_element[0]
-        brand = soup_engine.find("span", class_=re.compile(r'Properties__text___\w+')).text.strip()
+        brand = soup_engine.find("div", class_=re.compile(r'Properties__text___\w+')).text.strip()
         category = soup_engine.find("h1", class_=re.compile(r'Description__productName___\w+')).text.strip()
         category = re.search(pattern=r'[А-Я].+', string=category).group(0)
         price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element.split()))))
