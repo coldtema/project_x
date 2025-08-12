@@ -798,7 +798,8 @@ def get_product_tefal(product_url):
 def get_product_yves_rocher(product_url):
     '''Функция для парсинга товара из yves-rocher'''
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = request('GET', product_url, headers=headers, timeout=10)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(product_url, headers=headers)
     soup_engine = BeautifulSoup(response.text, 'lxml')
     price_element = soup_engine.find('span', class_='bold text_size_20 tab_text_size_24').text.strip()
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
