@@ -2293,8 +2293,7 @@ def get_product_bookvoed(product_url):
     price_element = soup_engine.find('div', class_='price-block-price-info__price').text.strip()
     price_element = price_element.split('₽')[0]
     price_element = int(''.join(list(filter(lambda x: True if x.isdigit() else False, price_element))))
-    name = soup_engine.find('title').text.strip()
-    name = re.search(pattern=r'(.+)\s\-\s(купить)', string=name).group(1)
+    name = f'{soup_engine.find('h1').text.strip()} ({soup_engine.find('h2').text.strip()})'
     return {'price_element': price_element, 'name': name, 'shop': 'bookvoed'}
 
 
