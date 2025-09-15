@@ -193,4 +193,7 @@ class TopWBProductMenuCategoryUpdater():
         for category in self.all_categories:
             if category.shard_key != 'blackhole' and category.query != None and category.shard_key != None and category.shard_key != '':
                 TopWBProduct.objects.filter(source='CATEGORY', menu_category=category).delete()
-                MenuCategory(f'https://www.wildberries.ru{category.main_url}', author_object, celery_task=True).run()
+                try:
+                    MenuCategory(f'https://www.wildberries.ru{category.main_url}', author_object, celery_task=True).run()
+                except:
+                    print(f'Не обновляется категория {category.name}')
